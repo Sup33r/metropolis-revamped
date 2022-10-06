@@ -1,8 +1,10 @@
 package live.supeer.metropolisrevamped;
 
 import co.aikar.commands.PaperCommandManager;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +16,7 @@ public final class MetropolisRevamped extends JavaPlugin {
     public static MetropolisRevampedConfiguration configuration;
     public static MetropolisRevamped plugin;
     private LanguageManager languageManager;
+    private static Economy econ = null;
 
 
     @Override
@@ -23,6 +26,12 @@ public final class MetropolisRevamped extends JavaPlugin {
         configuration = new MetropolisRevampedConfiguration(this);
         Database.plugin = this;
         this.languageManager = new LanguageManager(this, "sv_se");
+
+        if (!setupEconomy() ) {
+            this.getLogger().severe((String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName())));
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         PaperCommandManager manager = new PaperCommandManager(this);
         manager.enableUnstableAPI("brigadier");
@@ -36,9 +45,22 @@ public final class MetropolisRevamped extends JavaPlugin {
         // Plugin shutdown logic
     }
 
+    private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
+    }
+
     public static MetropolisRevamped getPlugin() {
         return plugin;
     }
+    public static Economy getEconomy() { return econ; }
 
     public void sendMessage(@NotNull CommandSender sender, @NotNull String key, String... replacements) {
         String message = this.languageManager.getValue(key, getLocale(sender), replacements);
