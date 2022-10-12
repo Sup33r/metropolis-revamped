@@ -33,4 +33,12 @@ public class CityDatabase {
         return 0;
     }
 
+    public int getCityBalance(String cityName) {
+        try {
+            return DB.getFirstRow("SELECT `cityBalance` FROM `mp_cities` WHERE `cityName` = " + Database.sqlString(cityName) + ";").getInt("cityBalance");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

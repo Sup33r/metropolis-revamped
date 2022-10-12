@@ -13,10 +13,10 @@ public class HCDatabase {
     public void setHomeCity(String uuid, String cityname) {
         try {
             if (getHomeCity(uuid) == null) {
-                DB.executeInsert("INSERT INTO `mp_homecities` " + "(`playerUUID`, `playerName`, `cityName`) " + "VALUES('" + uuid + "', " + plugin.getServer().getOfflinePlayer(UUID.fromString(uuid)) + ", " + cityname + ");");
+                DB.executeInsert("INSERT INTO `mp_homecities` " + "(`playerUUID`, `playerName`, `cityName`) " + "VALUES('" + uuid + "', " + Database.sqlString(plugin.getServer().getOfflinePlayer(UUID.fromString(uuid)).toString()) + ", " + Database.sqlString(cityname) + ");");
                 return;
             }
-            DB.executeUpdateAsync("UPDATE `mp_homecities` SET `cityName` = " + Database.sqlString(cityname) + "AND `playerName` = " + plugin.getServer().getOfflinePlayer(UUID.fromString(uuid)) + " WHERE `playerUUID` = " + Database.sqlString(uuid) + ";");
+            DB.executeUpdateAsync("UPDATE `mp_homecities` SET `cityName` = " + Database.sqlString(cityname) + "AND `playerName` = " + Database.sqlString(plugin.getServer().getOfflinePlayer(UUID.fromString(uuid)).toString()) + " WHERE `playerUUID` = " + Database.sqlString(uuid) + ";");
         } catch (SQLException e) {
             e.printStackTrace();
         }
