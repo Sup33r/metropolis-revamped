@@ -1,10 +1,7 @@
 package live.supeer.metropolisrevamped;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.Optional;
-import co.aikar.commands.annotation.Subcommand;
+import co.aikar.commands.annotation.*;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import net.milkbowl.vault.economy.Economy;
@@ -21,13 +18,14 @@ public class CommandCity extends BaseCommand {
     }
 
     @Subcommand("bank")
-    public static void onBank(Player player, @Optional String input) {
+    @Syntax("")
+    public static void onBank(Player player, @Optional String input, @Optional String reason) {
         if (!player.hasPermission("metropolis.city.bank")) {
             plugin.sendMessage(player,"messages.error.permissionDenied");
             return;
         }
         Economy economy = MetropolisRevamped.getEconomy();
-        if (balance.isEmpty()) {
+        if (input.isEmpty()) {
             if (homeCityDatabase.getHomeCity(player.getUniqueId().toString()) == null) {
                 plugin.sendMessage(player,"messages.error.noHomeCity");
                 return;
@@ -36,6 +34,11 @@ public class CommandCity extends BaseCommand {
             String cityBalance = Utilities.formattedMoney(cityDatabase.getCityBalance(homeCity));
             plugin.sendMessage(player,"messages.city.balance","%balance%",cityBalance,"%cityname%",homeCity);
         }
-        if (balance.)
+        if (input.startsWith("+")) {
+            int balance = Integer.parseInt(input.replaceAll("[0-9]",""));
+        }
+        if (input.startsWith("-")) {
+
+        }
     }
 }
