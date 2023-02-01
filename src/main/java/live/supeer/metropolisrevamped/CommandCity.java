@@ -18,7 +18,7 @@ public class CommandCity extends BaseCommand {
     }
 
     @Subcommand("bank")
-    @Syntax("")
+    @Syntax("§7Syntax: /city bank\nTest")
     public static void onBank(Player player, @Optional String input, @Optional String reason) {
         if (!player.hasPermission("metropolis.city.bank")) {
             plugin.sendMessage(player,"messages.error.permissionDenied");

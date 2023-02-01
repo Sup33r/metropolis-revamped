@@ -1,6 +1,8 @@
 name: MetropolisRevamped
 version: '${project.version}'
 main: live.supeer.metropolisrevamped.MetropolisRevamped
+depend:
+  - Vault
 api-version: 1.19.3
 authors: [ Supeeer ]
 description: A kinda cool plugin
