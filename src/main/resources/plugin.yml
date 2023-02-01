@@ -1,7 +1,7 @@
-name: Metropolis Revamped
+name: MetropolisRevamped
 version: '${project.version}'
 main: live.supeer.metropolisrevamped.MetropolisRevamped
-api-version: 1.19
+api-version: 1.19.3
 authors: [ Supeeer ]
 description: A kinda cool plugin
 website: supeer.live

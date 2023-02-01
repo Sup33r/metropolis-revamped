@@ -1,0 +1,4 @@
+messages:
+  error:
+    permissionDenied: "§cÅtkomst nekad."
+    noHomeCity: "§cDu har ingen hemstad."

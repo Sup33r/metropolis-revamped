@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.logging.Logger;
 
@@ -28,7 +27,7 @@ public final class MetropolisRevamped extends JavaPlugin {
         this.languageManager = new LanguageManager(this, "sv_se");
 
         if (!setupEconomy() ) {
-            this.getLogger().severe((String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName())));
+            this.getLogger().severe("[Metropolis] Vault not found, disabling plugin");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }

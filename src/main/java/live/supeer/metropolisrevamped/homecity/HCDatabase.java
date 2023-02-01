@@ -32,4 +32,13 @@ public class HCDatabase {
     public void removeHomeCity(String uuid) {
         DB.executeUpdateAsync("DELETE FROM `mp_homecities` WHERE `playerUUID` = " + Database.sqlString(uuid) + ";");
     }
+
+    public String[] homeCityList(String uuid) {
+        try {
+            return DB.getResults("SELECT `cityName` FROM `mp_homecities` WHERE `playerUUID` = " + Database.sqlString(uuid) + ";").stream().map(row -> row.getString("cityName")).toArray(String[]::new);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

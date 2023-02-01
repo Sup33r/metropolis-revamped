@@ -2,10 +2,6 @@ package live.supeer.metropolisrevamped;
 
 import co.aikar.idb.BukkitDB;
 import co.aikar.idb.DB;
-import co.aikar.idb.DbRow;
-import lombok.var;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 
@@ -23,7 +19,7 @@ public class Database {
             );
             return createTables();
         } catch (Exception e) {
-            plugin.getLogger().warning("Anslutningen till databasen misslyckades, avslutar pluginet.");
+            plugin.getLogger().warning("Failed to initialize database, disabling plugin.");
             plugin.getServer().getPluginManager().disablePlugin(plugin);
             return false;
         }
@@ -35,7 +31,7 @@ public class Database {
             return true;
         } catch (Exception exception) {
             exception.printStackTrace();
-            plugin.getLogger().warning("Misslyckades med att synkronisera databasen, avslutar pluginet.");
+            plugin.getLogger().warning("Failed to synchronize with database, disabling plugin.");
             plugin.getServer().getPluginManager().disablePlugin(plugin);
             return false;
         }
@@ -46,45 +42,49 @@ public class Database {
     public static boolean createTables() {
         try {
 
-            DB.executeUpdate("CREATE TABLE IF NOT EXISTS `mp_cities` (\n" +
-                    "  `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n" +
-                    "  `originalMayorUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n" +
-                    "  `originalMayorName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n" +
-                    "  `cityBalance` int(25) NOT NULL,\n" +
-                    " `citySpawn` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n" +
-                    " `cityUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n" +
-                    "  `isRemoved` tinyint(1) NOT NULL,\n" +
-                    "  PRIMARY KEY (`cityName`)\n" +
-                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+            DB.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS `mp_cities` (
+                      `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `originalMayorUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `originalMayorName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `cityBalance` int(25) NOT NULL,
+                     `citySpawn` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                     `cityUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `isRemoved` tinyint(1) NOT NULL,
+                      PRIMARY KEY (`cityName`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;""");
 
-            DB.executeUpdate("CREATE TABLE IF NOT EXISTS `mp_members` (\n" +
-                    "  `playerName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n" +
-                    "  `playerUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n" +
-                    "  `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n" +
-                    "  `cityRole` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n" +
-                    "  `joinDate` bigint(30) DEFAULT NULL,\n" +
-                    "  PRIMARY KEY (`cityName`)\n" +
-                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+            DB.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS `mp_members` (
+                      `playerName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `playerUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `cityRole` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                      `joinDate` bigint(30) DEFAULT NULL,
+                      PRIMARY KEY (`cityName`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
 
-            DB.executeUpdate("CREATE TABLE IF NOT EXISTS `mp_homecities` (\n" +
-                    "  `playerUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n" +
-                    "  `playerName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n" +
-                    "  `cityName` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n" +
-                    "  PRIMARY KEY (`playerUUID`)\n" +
-                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+            DB.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS `mp_homecities` (
+                      `playerUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `playerName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `cityName` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                      PRIMARY KEY (`playerUUID`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
 
-            DB.executeUpdate("CREATE TABLE IF NOT EXISTS `mp_claims` (\n" +
-                    "  `claimId` int(11) NOT NULL AUTO_INCREMENT,\n" +
-                    "  `claimerName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n" +
-                    "  `claimerUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n" +
-                    "  `world` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,\n" +
-                    "  `xPosition` mediumint(9) NOT NULL,\n" +
-                    "  `zPosition` mediumint(9) NOT NULL,\n" +
-                    "  `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n" +
-                    "  `claimDate` bigint(30) DEFAULT NULL,\n" +
-                    "  `outpost` tinyint(1) DEFAULT '0',\n" +
-                    "  PRIMARY KEY (`claimId`)\n" +
-                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+            DB.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS `mp_claims` (
+                      `claimId` int(11) NOT NULL AUTO_INCREMENT,
+                      `claimerName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `claimerUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `world` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `xPosition` mediumint(9) NOT NULL,
+                      `zPosition` mediumint(9) NOT NULL,
+                      `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `claimDate` bigint(30) DEFAULT NULL,
+                      `outpost` tinyint(1) DEFAULT '0',
+                      PRIMARY KEY (`claimId`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
             return true;
 
 

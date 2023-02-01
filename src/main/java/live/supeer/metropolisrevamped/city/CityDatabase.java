@@ -4,7 +4,6 @@ import co.aikar.idb.DB;
 import live.supeer.metropolisrevamped.Database;
 
 import java.sql.SQLException;
-import java.util.UUID;
 
 public class CityDatabase {
     public boolean cityExists(String cityName) {
