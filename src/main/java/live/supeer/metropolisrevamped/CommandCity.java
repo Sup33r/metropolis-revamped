@@ -6,11 +6,9 @@ import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
-@CommandAlias("c")
+@CommandAlias("city|c")
 public class CommandCity extends BaseCommand {
     static MetropolisRevamped plugin;
-    static CityDatabase cityDatabase;
-    static HCDatabase homeCityDatabase;
     @Subcommand("info")
     @Default
     public static void onInfo(Player player, @Optional String cityName) {
@@ -25,14 +23,15 @@ public class CommandCity extends BaseCommand {
             return;
         }
         Economy economy = MetropolisRevamped.getEconomy();
-        if (input.isEmpty()) {
-            if (homeCityDatabase.getHomeCity(player.getUniqueId().toString()) == null) {
+        if (input == null) {
+            if (HCDatabase.getHomeCity(player.getUniqueId().toString()) == null) {
                 plugin.sendMessage(player,"messages.error.noHomeCity");
                 return;
             }
-            String homeCity = homeCityDatabase.getHomeCity(player.getUniqueId().toString());
-            String cityBalance = Utilities.formattedMoney(cityDatabase.getCityBalance(homeCity));
+            String homeCity = HCDatabase.getHomeCity(player.getUniqueId().toString());
+            String cityBalance = Utilities.formattedMoney(CityDatabase.getCityBalance(homeCity));
             plugin.sendMessage(player,"messages.city.balance","%balance%",cityBalance,"%cityname%",homeCity);
+            return;
         }
         if (input.startsWith("+")) {
             int balance = Integer.parseInt(input.replaceAll("[0-9]",""));

@@ -5,7 +5,6 @@ import org.bukkit.block.banner.PatternType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 
-import java.util.Collections;
 import java.util.Objects;
 
 public class Utilities {
@@ -18,8 +17,8 @@ public class Utilities {
         String letterLower = letter.toLowerCase();
         ItemStack banner = new ItemStack(org.bukkit.Material.WHITE_BANNER);
         BannerMeta bannerMeta = (BannerMeta)banner.getItemMeta();
-        bannerMeta.setDisplayName("");
-        bannerMeta.setLore(Collections.singletonList(lore));
+        bannerMeta.setDisplayName("§5§o" + lore);
+        bannerMeta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_POTION_EFFECTS);
         if (Objects.equals(letterLower, "a") || Objects.equals(letterLower, "å")|| Objects.equals(letterLower, "ä")) {
             bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.BLACK, PatternType.STRIPE_RIGHT));
             bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.BLACK, PatternType.STRIPE_LEFT));
@@ -76,8 +75,10 @@ public class Utilities {
             bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.WHITE, PatternType.BORDER));
         }
         if (Objects.equals(letterLower, "h")) {
-            bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.BLACK, PatternType.STRIPE_TOP));
-            bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.BLACK, PatternType.STRIPE_BOTTOM));
+            bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.BLACK, PatternType.HALF_HORIZONTAL));
+            bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.BLACK, PatternType.HALF_HORIZONTAL_MIRROR));
+            bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.WHITE, PatternType.STRIPE_TOP));
+            bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.WHITE, PatternType.STRIPE_BOTTOM));
             bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.BLACK, PatternType.STRIPE_LEFT));
             bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.BLACK, PatternType.STRIPE_RIGHT));
             bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.WHITE, PatternType.BORDER));
@@ -137,6 +138,8 @@ public class Utilities {
             bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.WHITE, PatternType.BORDER));
         }
         if (Objects.equals(letterLower, "q")) {
+            bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.BLACK, PatternType.HALF_HORIZONTAL));
+            bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.BLACK, PatternType.HALF_HORIZONTAL_MIRROR));
             bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.WHITE, PatternType.RHOMBUS_MIDDLE));
             bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.BLACK, PatternType.STRIPE_RIGHT));
             bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.BLACK, PatternType.STRIPE_LEFT));

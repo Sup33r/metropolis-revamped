@@ -9,7 +9,7 @@ public class Database {
 
     public static MetropolisRevamped plugin;
 
-    public static boolean initialize() {
+    public static void initialize() {
         try {
             BukkitDB.createHikariDatabase(MetropolisRevamped.getPlugin(),
                     MetropolisRevamped.configuration.getSqlUsername(),
@@ -17,29 +17,16 @@ public class Database {
                     MetropolisRevamped.configuration.getSqlDatabase(),
                     MetropolisRevamped.configuration.getSqlHost() + ":" + MetropolisRevamped.configuration.getSqlPort()
             );
-            return createTables();
+            createTables();
         } catch (Exception e) {
             plugin.getLogger().warning("Failed to initialize database, disabling plugin.");
             plugin.getServer().getPluginManager().disablePlugin(plugin);
-            return false;
-        }
-    }
-
-    public static boolean synchronize() {
-        try {
-
-            return true;
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            plugin.getLogger().warning("Failed to synchronize with database, disabling plugin.");
-            plugin.getServer().getPluginManager().disablePlugin(plugin);
-            return false;
         }
     }
     public static String sqlString(String string) {
         return string == null ? "NULL" : "'" + string.replace("\\", "\\\\").replace("'", "\\'") + "'";
     }
-    public static boolean createTables() {
+    public static void createTables() {
         try {
 
             DB.executeUpdate("""
@@ -61,7 +48,7 @@ public class Database {
                       `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `cityRole` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                       `joinDate` bigint(30) DEFAULT NULL,
-                      PRIMARY KEY (`cityName`)
+                      PRIMARY KEY (cityName,playerUUID)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
 
             DB.executeUpdate("""
@@ -85,12 +72,10 @@ public class Database {
                       `outpost` tinyint(1) DEFAULT '0',
                       PRIMARY KEY (`claimId`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
-            return true;
 
 
         } catch (SQLException exception) {
             exception.printStackTrace();
-            return false;
         }
     }
 }

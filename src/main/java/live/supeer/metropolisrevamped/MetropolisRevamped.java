@@ -1,6 +1,8 @@
 package live.supeer.metropolisrevamped;
 
 import co.aikar.commands.PaperCommandManager;
+import co.aikar.idb.DB;
+import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,7 +15,7 @@ import java.util.logging.Logger;
 public final class MetropolisRevamped extends JavaPlugin {
     public Logger logger = null;
     public static MetropolisRevampedConfiguration configuration;
-    public static MetropolisRevamped plugin;
+    private static MetropolisRevamped plugin;
     private LanguageManager languageManager;
     private static Economy econ = null;
 
@@ -23,9 +25,12 @@ public final class MetropolisRevamped extends JavaPlugin {
         plugin = this;
         this.logger = getLogger();
         configuration = new MetropolisRevampedConfiguration(this);
+        CommandCity.plugin = this;
+        CommandHomeCity.plugin = this;
         Database.plugin = this;
+        HCDatabase.plugin = this;
         this.languageManager = new LanguageManager(this, "sv_se");
-
+        Database.initialize();
         if (!setupEconomy() ) {
             this.getLogger().severe("[Metropolis] Vault not found, disabling plugin");
             getServer().getPluginManager().disablePlugin(this);
@@ -41,7 +46,7 @@ public final class MetropolisRevamped extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        DB.close();
     }
 
     private boolean setupEconomy() {

@@ -10,11 +10,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import java.util.Objects;
 
-@CommandAlias("hc")
+@CommandAlias("homecity|hc")
 public class CommandHomeCity extends BaseCommand {
     static MetropolisRevamped plugin;
-    static CityDatabase cityDatabase;
-    static HCDatabase homeCityDatabase;
 
     @Default
     public static void onHomeCity(Player player, @Optional String cityname) {
@@ -25,14 +23,15 @@ public class CommandHomeCity extends BaseCommand {
         if (cityname == null) {
             playerGui(player);
         } else {
-            if (cityDatabase.cityExists(cityname)) {
-                if (Objects.equals(cityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"mayor") || Objects.equals(cityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"vicemayor") || Objects.equals(cityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"assistant") || Objects.equals(cityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"inviter") || Objects.equals(cityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"member")) {
-                    if (cityDatabase.getPlayerCityCount(player.getUniqueId().toString()) < 1) {
-                        plugin.sendMessage(player,"messages.error.missing.membership");
+            if (!CityDatabase.cityExists(cityname)) {
+                if (Objects.equals(CityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"mayor") || Objects.equals(CityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"vicemayor") || Objects.equals(CityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"assistant") || Objects.equals(CityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"inviter") || Objects.equals(CityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"member")) {
+                    if (CityDatabase.getPlayerCityCount(player.getUniqueId().toString()) < 1) {
+                        plugin.sendMessage(player,"messages.error.missing.homeCity");
                         return;
                     }
-                    homeCityDatabase.setHomeCity(player.getUniqueId().toString(),cityname);
-                    plugin.sendMessage(player,"messages.save.membership");
+                    String realCityName = CityDatabase.getCityName(cityname);
+                    HCDatabase.setHomeCity(player.getUniqueId().toString(),realCityName);
+                    plugin.sendMessage(player,"messages.save.membership","%cityname%",realCityName);
                 } else {
                     plugin.sendMessage(player,"messages.error.missing.membership");
                 }
@@ -44,26 +43,65 @@ public class CommandHomeCity extends BaseCommand {
     }
 
     private static void playerGui(Player player) {
-        String[] cityNames = homeCityDatabase.homeCityList(player.getUniqueId().toString());
-        if (cityDatabase.getPlayerCityCount(player.getUniqueId().toString()) < 1) {
+        String[] cityNames = CityDatabase.memberCityList(player.getUniqueId().toString());
+        if (cityNames == null) {
+            plugin.sendMessage(player,"messages.error.missing.membership");
+            return;
+        }
+        if (CityDatabase.getPlayerCityCount(player.getUniqueId().toString()) < 1) {
             plugin.sendMessage(player,"messages.error.missing.membership");
             return;
         }
         if (cityNames.length == 1) {
             Inventory gui = Bukkit.createInventory(player, 9, "Homecity");
-            for (int i = 0; i < cityNames.length; i++) {
-                for (int j = 0; j < cityNames[i].length(); j++) {
-                   if (j > 9) {
-                       return;
-                   }
-                   ItemStack item = Utilities.letterBanner(String.valueOf(cityNames[i].charAt(j)),cityNames[i]);
-                    gui.setItem(i, item);
-                }
-
+                for (int j = 0; j < cityNames[0].length(); j++) {
+                    if (j < 9) {
+                        ItemStack item = Utilities.letterBanner(String.valueOf(cityNames[0].charAt(j)), cityNames[0]);
+                        gui.setItem(j, item);
+                    }
 
             }
             player.openInventory(gui);
         }
-    }
+        if (cityNames.length == 2) {
+            Inventory gui = Bukkit.createInventory(player, 9+9, "Homecity");
+            for (int i = 0; i < cityNames[0].length(); i++) {
+                if (i < 9) {
+                    ItemStack item = Utilities.letterBanner(String.valueOf(cityNames[0].charAt(i)), cityNames[0]);
+                    gui.setItem(i, item);
+                }
 
+            }
+            for (int i = 0; i < cityNames[1].length(); i++) {
+                if (i < 9) {
+                    ItemStack item = Utilities.letterBanner(String.valueOf(cityNames[1].charAt(i)), cityNames[1]);
+                    gui.setItem(i+9, item);
+                }
+            }
+            player.openInventory(gui);
+        }
+        if (cityNames.length == 3) {
+            Inventory gui = Bukkit.createInventory(player, 9+9+9, "Homecity");
+            for (int i = 0; i < cityNames[0].length(); i++) {
+                if (i < 9) {
+                    ItemStack item = Utilities.letterBanner(String.valueOf(cityNames[0].charAt(i)), cityNames[0]);
+                    gui.setItem(i, item);
+                }
+
+            }
+            for (int i = 0; i < cityNames[1].length(); i++) {
+                if (i < 9) {
+                    ItemStack item = Utilities.letterBanner(String.valueOf(cityNames[1].charAt(i)), cityNames[1]);
+                    gui.setItem(i+9, item);
+                }
+            }
+            for (int i = 0; i < cityNames[2].length(); i++) {
+                if (i < 9) {
+                    ItemStack item = Utilities.letterBanner(String.valueOf(cityNames[2].charAt(i)), cityNames[2]);
+                    gui.setItem(i+18, item);
+                }
+            }
+            player.openInventory(gui);
+        }
+    }
 }

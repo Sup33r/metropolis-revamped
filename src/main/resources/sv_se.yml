@@ -1,11 +1,11 @@
 messages:
   error:
     permissionDenied: "§cÅtkomst nekad."
-    noHomeCity: "§cDu är inte medlem i någon stad."
     missing:
+      homeCity: "§cDu är inte medlem i någon stad."
       membership: "§cDu är inte medlem i staden."
       city: "§cStaden finns inte."
-    save:
-      membership: "§aDin hemstad är nu %cityname%."
-    city:
-      balance: "§e%cityname% §7|§a Stadskassa: %balance% minemynt."
+  save:
+    membership: "§aDin hemstad är nu %cityname%."
+  city:
+    balance: "§e%cityname% §7|§a Stadskassa: %balance% minemynt."
