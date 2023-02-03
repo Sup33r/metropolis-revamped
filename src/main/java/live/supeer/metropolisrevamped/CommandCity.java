@@ -42,7 +42,7 @@ public class CommandCity extends BaseCommand {
             String cityName = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
             String playerCity = HCDatabase.getHomeCity(player.getUniqueId().toString());
 
-            if (!CityDatabase.cityExists(cityName)) {
+            if (CityDatabase.cityExists(cityName)) {
                 plugin.sendMessage(player,"messages.error.missing.city");
                 return;
             }

@@ -8,7 +8,7 @@ import java.sql.SQLException;
 public class CityDatabase {
     public static boolean cityExists(String cityName) {
         try {
-            return DB.getResults("SELECT * FROM `mp_cities` WHERE `cityName` = " + Database.sqlString(cityName)).isEmpty();
+            return !DB.getResults("SELECT * FROM `mp_cities` WHERE `cityName` = " + Database.sqlString(cityName)).isEmpty();
         } catch (SQLException e) {
           e.printStackTrace();
         }
@@ -39,9 +39,6 @@ public class CityDatabase {
             e.printStackTrace();
         }
         return 0;
-    }
-    public static void setCityBalance(String cityName, int amount) {
-        DB.executeUpdateAsync("UPDATE `mp_cities` SET `cityBalance` = " + amount + " WHERE `cityName` = " + Database.sqlString(cityName) + ";");
     }
     public static void addCityBalance(String cityName, int amount) {
         DB.executeUpdateAsync("UPDATE `mp_cities` SET `cityBalance` = `cityBalance` + " + amount + " WHERE `cityName` = " + Database.sqlString(cityName) + ";");
