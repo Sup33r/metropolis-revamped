@@ -43,6 +43,12 @@ public class CityDatabase {
     public static void setCityBalance(String cityName, int amount) {
         DB.executeUpdateAsync("UPDATE `mp_cities` SET `cityBalance` = " + amount + " WHERE `cityName` = " + Database.sqlString(cityName) + ";");
     }
+    public static void addCityBalance(String cityName, int amount) {
+        DB.executeUpdateAsync("UPDATE `mp_cities` SET `cityBalance` = `cityBalance` + " + amount + " WHERE `cityName` = " + Database.sqlString(cityName) + ";");
+    }
+    public static void removeCityBalance(String cityName, int amount) {
+        DB.executeUpdateAsync("UPDATE `mp_cities` SET `cityBalance` = `cityBalance` - " + amount + " WHERE `cityName` = " + Database.sqlString(cityName) + ";");
+    }
     public static String[] memberCityList(String uuid) {
         try {
             return DB.getResults("SELECT `cityName` FROM `mp_members` WHERE `playerUUID` = " + Database.sqlString(uuid) + ";").stream().map(row -> row.getString("cityName")).toArray(String[]::new);

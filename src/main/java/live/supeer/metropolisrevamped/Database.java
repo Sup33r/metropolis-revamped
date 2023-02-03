@@ -37,6 +37,7 @@ public class Database {
                       `cityBalance` int(25) NOT NULL,
                      `citySpawn` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                      `cityUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                     `createDate` timestamp NOT NULL,
                       `isRemoved` tinyint(1) NOT NULL,
                       PRIMARY KEY (`cityName`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;""");
@@ -47,7 +48,7 @@ public class Database {
                       `playerUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `cityRole` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-                      `joinDate` bigint(30) DEFAULT NULL,
+                      `joinDate` timestamp NOT NULL,
                       PRIMARY KEY (cityName,playerUUID)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
 
@@ -68,12 +69,18 @@ public class Database {
                       `xPosition` mediumint(9) NOT NULL,
                       `zPosition` mediumint(9) NOT NULL,
                       `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-                      `claimDate` bigint(30) DEFAULT NULL,
+                      `claimDate` timestamp NOT NULL,
                       `outpost` tinyint(1) DEFAULT '0',
                       PRIMARY KEY (`claimId`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
 
-
+            DB.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS `mp_citylogs` (
+                      `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `dateTime` timestamp NOT NULL,
+                      `jsonLog` json NOT NULL,
+                      PRIMARY KEY (dateTime,cityName)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
         } catch (SQLException exception) {
             exception.printStackTrace();
         }

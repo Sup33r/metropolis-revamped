@@ -2,10 +2,16 @@ messages:
   error:
     permissionDenied: "§cÅtkomst nekad."
     missing:
+      balance: "§e%cityname% §7| §cStaden måste ha minst 100 000 minemynt i stadskassan."
+      playerBalance: "§e%cityname% §7| §cDu har inte nog med minemynt i din plånbok."
       homeCity: "§cDu är inte medlem i någon stad."
       membership: "§cDu är inte medlem i staden."
       city: "§cStaden finns inte."
+      reasonLength: "§e%cityname% §7| §cAnledningen är inte tillräckligt bra. Tydliggör, precisera!"
   save:
     membership: "§aDin hemstad är nu %cityname%."
   city:
     balance: "§e%cityname% §7|§a Stadskassa: %balance% minemynt."
+    successful:
+      withdraw: "§e%cityname% §7|§a Du tog ut %amount% minemynt från stadskassan."
+      deposit: "§e%cityname% §7|§a Du satte in %amount% minemynt i stadskassan."

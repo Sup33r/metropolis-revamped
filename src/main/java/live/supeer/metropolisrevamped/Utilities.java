@@ -1,17 +1,20 @@
 package live.supeer.metropolisrevamped;
-
 import org.bukkit.DyeColor;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
-
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Objects;
 
 public class Utilities {
     public static String formattedMoney(Integer money) {
-        double doubleMoney = money;
-        return String.format("%,.0f",doubleMoney).replace(","," ");
+        NumberFormat formatter = NumberFormat.getInstance(Locale.US);
+        formatter.setGroupingUsed(true);
+        return formatter.format(money).replace(",", " ");
     }
+
+
 
     public static ItemStack letterBanner(String letter,String lore) {
         String letterLower = letter.toLowerCase();
@@ -19,6 +22,7 @@ public class Utilities {
         BannerMeta bannerMeta = (BannerMeta)banner.getItemMeta();
         bannerMeta.setDisplayName("§5§o" + lore);
         bannerMeta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_POTION_EFFECTS);
+
         if (Objects.equals(letterLower, "a") || Objects.equals(letterLower, "å")|| Objects.equals(letterLower, "ä")) {
             bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.BLACK, PatternType.STRIPE_RIGHT));
             bannerMeta.addPattern(new org.bukkit.block.banner.Pattern(DyeColor.BLACK, PatternType.STRIPE_LEFT));
