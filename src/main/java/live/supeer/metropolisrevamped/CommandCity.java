@@ -38,10 +38,8 @@ public class CommandCity extends BaseCommand {
             return;
         }
         if (args[0].startsWith("+")) {
-            if (args[0].replaceAll("[^0-9]", "").equals("")) {
-                plugin.sendMessage(player,"messages.syntax.city.bank.bank");
+            if (args[0].substring(1).replaceAll("[0-9]", "").matches("[^0-9]") || args.length < 2 || args[0].length() == 1) {
                 plugin.sendMessage(player,"messages.syntax.city.bank.deposit");
-                plugin.sendMessage(player,"messages.syntax.city.bank.withdraw");
                 return;
             }
 
@@ -49,7 +47,7 @@ public class CommandCity extends BaseCommand {
             String cityName = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
             String playerCity = HCDatabase.getHomeCity(player.getUniqueId().toString());
 
-            if (CityDatabase.cityExists(cityName)) {
+            if (!CityDatabase.cityExists(cityName)) {
                 plugin.sendMessage(player,"messages.error.missing.city");
                 return;
             }
@@ -65,6 +63,11 @@ public class CommandCity extends BaseCommand {
             return;
         }
         if (args[0].startsWith("-")) {
+            if (args[0].substring(1).replaceAll("[0-9]", "").matches("[^0-9]") || args.length < 2 || args[0].length() == 1) {
+                plugin.sendMessage(player,"messages.syntax.city.bank.withdraw");
+                return;
+            }
+
             if (HCDatabase.getHomeCity(player.getUniqueId().toString()) == null) {
                 plugin.sendMessage(player,"messages.error.missing.homeCity");
                 return;
