@@ -17,7 +17,8 @@ public class CityDatabase {
 
     public static String getCityRole(String cityName, String playerUUID) {
         try {
-            return DB.getFirstRow("SELECT `cityRole` FROM `mp_members` WHERE `playerUUID` = " + Database.sqlString(playerUUID) + " AND `cityName` = " + Database.sqlString(cityName) + ";").getString("cityRole");
+            if (DB.getResults("SELECT * FROM `mp_members` WHERE `playerUUID` = " + Database.sqlString(playerUUID) + " AND `cityName` = " + Database.sqlString(cityName) + ";").isEmpty()) return null;
+            return DB.getFirstRow("SELECT * FROM `mp_members` WHERE `playerUUID` = " + Database.sqlString(playerUUID) + " AND `cityName` = " + Database.sqlString(cityName) + ";").getString("cityRole");
         } catch (SQLException e) {
             e.printStackTrace();
         }

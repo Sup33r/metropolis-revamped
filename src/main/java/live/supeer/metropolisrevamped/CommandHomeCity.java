@@ -28,6 +28,10 @@ public class CommandHomeCity extends BaseCommand implements Listener {
             playerGui(player);
         } else {
             if (CityDatabase.cityExists(cityname)) {
+                if (CityDatabase.getCityRole(cityname,player.getUniqueId().toString()) == null) {
+                    plugin.sendMessage(player,"messages.error.missing.membership");
+                    return;
+                }
                 if (Objects.equals(CityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"mayor") || Objects.equals(CityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"vicemayor") || Objects.equals(CityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"assistant") || Objects.equals(CityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"inviter") || Objects.equals(CityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"member")) {
                     if (CityDatabase.getPlayerCityCount(player.getUniqueId().toString()) < 1) {
                         plugin.sendMessage(player,"messages.error.missing.homeCity");
