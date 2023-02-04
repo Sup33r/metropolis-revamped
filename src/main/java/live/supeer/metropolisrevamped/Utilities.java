@@ -1,5 +1,7 @@
 package live.supeer.metropolisrevamped;
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
+import org.bukkit.Location;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
@@ -13,8 +15,21 @@ public class Utilities {
         formatter.setGroupingUsed(true);
         return formatter.format(money).replace(",", " ");
     }
+    public static String locationToString(Location location) {
+        if (location == null) {
+            return null;
+        }
 
+        return location.getWorld().getName() + " " + location.getX() + " " + location.getY() + " " + location.getZ() + " " + location.getYaw() + " " + location.getPitch();
+    }
+    public static Location stringToLocation(String string) {
+        if (string == null || string.length() == 0) {
+            return null;
+        }
 
+        String[] split = string.split(" ");
+        return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
+    }
 
     public static ItemStack letterBanner(String letter,String lore) {
         String letterLower = letter.toLowerCase();

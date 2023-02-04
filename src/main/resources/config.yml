@@ -4,3 +4,8 @@ sql:
   database:
   username:
   password:
+
+settings:
+  city:
+    creationcost: 500000
+    startingbalance: 100000

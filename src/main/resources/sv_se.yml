@@ -8,6 +8,13 @@ messages:
   error:
     city:
       permissionDenied: "§e%cityname% §7| §cÅtkomst nekad."
+      cityExists: "§cDen specifierade staden finns redan."
+      nameLength: "§cStadens namn måste vara mellan 1-16 tecken långt."
+      maxCityCount: "§cMan kan inte vara medlem i fler än 3 städer."
+      claimExists: "§cDenna markbit är redan upptagen."
+      missing:
+        balance:
+          cityCost: "§cDu har inte råd med 500 000 minemynt som en stad kostar."
     permissionDenied: "§cÅtkomst nekad."
     missing:
       balance: "§e%cityname% §7| §cStaden måste ha minst 100 000 minemynt i stadskassan."
@@ -23,3 +30,4 @@ messages:
     successful:
       withdraw: "§e%cityname% §7|§a Du tog ut %amount% minemynt från stadskassan."
       deposit: "§e%cityname% §7|§a Du satte in %amount% minemynt i stadskassan."
+      creation: "§b%playername% skapade staden %cityname%."

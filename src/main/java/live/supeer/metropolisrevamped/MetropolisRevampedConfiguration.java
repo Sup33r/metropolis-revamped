@@ -10,6 +10,8 @@ public class MetropolisRevampedConfiguration {
     private final String sqlDatabase;
     private final String sqlUsername;
     private final String sqlPassword;
+    private final int cityCreationCost;
+    private final int cityStartingBalance;
 
     MetropolisRevampedConfiguration(MetropolisRevamped plugin) {
         plugin.saveDefaultConfig();
@@ -20,5 +22,7 @@ public class MetropolisRevampedConfiguration {
         sqlDatabase = plugin.getConfig().getString("sql.database");
         sqlUsername = plugin.getConfig().getString("sql.username");
         sqlPassword = plugin.getConfig().getString("sql.password");
+        cityCreationCost = plugin.getConfig().getInt("settings.city.creationcost");
+        cityStartingBalance = plugin.getConfig().getInt("settings.city.startingbalance");
     }
 }

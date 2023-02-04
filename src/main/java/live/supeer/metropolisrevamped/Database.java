@@ -36,7 +36,6 @@ public class Database {
                       `originalMayorName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `cityBalance` int(25) NOT NULL,
                      `citySpawn` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-                     `cityUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                      `createDate` timestamp NOT NULL,
                       `isRemoved` tinyint(1) NOT NULL,
                       PRIMARY KEY (`cityName`)
@@ -68,7 +67,6 @@ public class Database {
                       `world` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `xPosition` mediumint(9) NOT NULL,
                       `zPosition` mediumint(9) NOT NULL,
-                      `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `claimDate` timestamp NOT NULL,
                       `outpost` tinyint(1) DEFAULT '0',
                       PRIMARY KEY (`claimId`)
@@ -76,10 +74,11 @@ public class Database {
 
             DB.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS `mp_citylogs` (
+                      `logId` int(11) NOT NULL AUTO_INCREMENT,
                       `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `dateTime` timestamp NOT NULL,
                       `jsonLog` json NOT NULL,
-                      PRIMARY KEY (dateTime,cityName)
+                      PRIMARY KEY (logId)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
         } catch (SQLException exception) {
             exception.printStackTrace();

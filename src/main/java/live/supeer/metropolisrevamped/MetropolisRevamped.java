@@ -2,6 +2,7 @@ package live.supeer.metropolisrevamped;
 
 import co.aikar.commands.PaperCommandManager;
 import co.aikar.idb.DB;
+import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
@@ -29,6 +30,7 @@ public final class MetropolisRevamped extends JavaPlugin {
         CommandHomeCity.plugin = this;
         Database.plugin = this;
         HCDatabase.plugin = this;
+        CityDatabase.plugin = this;
         this.languageManager = new LanguageManager(this, "sv_se");
         Database.initialize();
         if (!setupEconomy() ) {

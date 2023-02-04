@@ -5,6 +5,7 @@ import co.aikar.commands.annotation.*;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -25,7 +26,6 @@ public class CommandCity extends BaseCommand {
             return;
         }
         Economy economy = MetropolisRevamped.getEconomy();
-
         if (args.length == 0) {
             if (HCDatabase.getHomeCity(player.getUniqueId().toString()) == null) {
                 plugin.sendMessage(player,"messages.error.missing.homeCity");
@@ -103,5 +103,41 @@ public class CommandCity extends BaseCommand {
         plugin.sendMessage(player,"messages.syntax.city.bank.bank");
         plugin.sendMessage(player,"messages.syntax.city.bank.deposit");
         plugin.sendMessage(player,"messages.syntax.city.bank.withdraw");
+    }
+
+    @Subcommand("new")
+    @Syntax("<cityname>")
+    public static void onNew(Player player, String cityName) {
+        Economy economy = MetropolisRevamped.getEconomy();
+        if (!player.hasPermission("metropolis.city.new")) {
+            plugin.sendMessage(player,"messages.error.permissionDenied");
+            return;
+        }
+        if (CityDatabase.getPlayerCityCount(player.getUniqueId().toString()) >= 3) {
+            plugin.sendMessage(player,"messages.error.city.maxCityCount");
+            return;
+        }
+        if (economy.getBalance(player) < MetropolisRevamped.configuration.getCityCreationCost()) {
+            plugin.sendMessage(player,"messages.error.city.missing.balance.cityCost");
+            return;
+        }
+        if (cityName.length() < 1 || cityName.length() > 16) {
+            plugin.sendMessage(player,"messages.error.city.nameLength");
+            return;
+        }
+        if (CityDatabase.cityExists(cityName)) {
+            plugin.sendMessage(player,"messages.error.city.cityExists");
+            return;
+        }
+        if (CityDatabase.getClaim(player.getLocation()) != null) {
+            plugin.sendMessage(player,"messages.error.city.claimExists");
+            return;
+        }
+        CityDatabase.createCity(cityName,player.getUniqueId().toString(),player.getName(),player.getLocation());
+        CityDatabase.createClaim(cityName,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
+        economy.withdrawPlayer(player,MetropolisRevamped.configuration.getCityCreationCost());
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            plugin.sendMessage(onlinePlayer,"messages.city.successful.creation","%playername%",player.getDisplayName(),"%cityname%",cityName);
+        }
     }
 }
