@@ -5,13 +5,17 @@ import co.aikar.commands.annotation.*;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import java.util.Objects;
 
 @CommandAlias("homecity|hc")
-public class CommandHomeCity extends BaseCommand {
+public class CommandHomeCity extends BaseCommand implements Listener {
     static MetropolisRevamped plugin;
 
     @Default
@@ -41,6 +45,32 @@ public class CommandHomeCity extends BaseCommand {
             }
         }
     }
+    @EventHandler
+    public void OnInventory(final InventoryClickEvent e) {
+        if (e.getView().getTitle().equals("§8Homecity")) {
+
+            e.setCancelled(true);
+            if (e.getCurrentItem() == null) {
+                return;
+            }
+            if (e.getCurrentItem().getItemMeta() == null) {
+                return;
+            }
+            if (!e.getCurrentItem().getType().equals(Material.WHITE_BANNER)) {
+                return;
+            }
+            if (!e.getCurrentItem().getItemMeta().getDisplayName().startsWith("§")) {
+                return;
+            }
+
+            String cityname = e.getCurrentItem().getItemMeta().getDisplayName().substring(4);
+            Player player = (Player) e.getWhoClicked();
+
+            HCDatabase.setHomeCity(player.getUniqueId().toString(),cityname);
+            plugin.sendMessage(player,"messages.save.membership","%cityname%",cityname);
+            player.closeInventory();
+        }
+    }
 
     private static void playerGui(Player player) {
         String[] cityNames = CityDatabase.memberCityList(player.getUniqueId().toString());
@@ -53,7 +83,7 @@ public class CommandHomeCity extends BaseCommand {
             return;
         }
         if (cityNames.length == 1) {
-            Inventory gui = Bukkit.createInventory(player, 9, "Homecity");
+            Inventory gui = Bukkit.createInventory(player, 9, "§8Homecity");
                 for (int j = 0; j < cityNames[0].length(); j++) {
                     if (j < 9) {
                         ItemStack item = Utilities.letterBanner(String.valueOf(cityNames[0].charAt(j)), cityNames[0]);
@@ -64,7 +94,7 @@ public class CommandHomeCity extends BaseCommand {
             player.openInventory(gui);
         }
         if (cityNames.length == 2) {
-            Inventory gui = Bukkit.createInventory(player, 9+9, "Homecity");
+            Inventory gui = Bukkit.createInventory(player, 9+9, "§8Homecity");
             for (int i = 0; i < cityNames[0].length(); i++) {
                 if (i < 9) {
                     ItemStack item = Utilities.letterBanner(String.valueOf(cityNames[0].charAt(i)), cityNames[0]);
@@ -81,7 +111,7 @@ public class CommandHomeCity extends BaseCommand {
             player.openInventory(gui);
         }
         if (cityNames.length == 3) {
-            Inventory gui = Bukkit.createInventory(player, 9+9+9, "Homecity");
+            Inventory gui = Bukkit.createInventory(player, 9+9+9, "§8Homecity");
             for (int i = 0; i < cityNames[0].length(); i++) {
                 if (i < 9) {
                     ItemStack item = Utilities.letterBanner(String.valueOf(cityNames[0].charAt(i)), cityNames[0]);

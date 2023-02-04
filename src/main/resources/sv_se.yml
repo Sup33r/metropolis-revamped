@@ -1,4 +1,10 @@
 messages:
+  syntax:
+    city:
+      bank:
+        deposit: "§7Syntax: /city bank +§nbelopp§r§7 §nstad"
+        withdraw: "§7Syntax: /city bank -§nbelopp§r§7 §nanledning"
+        bank: "§7Syntax: /city bank"
   error:
     permissionDenied: "§cÅtkomst nekad."
     missing:

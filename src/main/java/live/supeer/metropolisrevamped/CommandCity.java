@@ -38,6 +38,13 @@ public class CommandCity extends BaseCommand {
             return;
         }
         if (args[0].startsWith("+")) {
+            if (args[0].replaceAll("[^0-9]", "").equals("")) {
+                plugin.sendMessage(player,"messages.syntax.city.bank.bank");
+                plugin.sendMessage(player,"messages.syntax.city.bank.deposit");
+                plugin.sendMessage(player,"messages.syntax.city.bank.withdraw");
+                return;
+            }
+
             int inputBalance = Integer.parseInt(args[0].replaceAll("[^0-9]",""));
             String cityName = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
             String playerCity = HCDatabase.getHomeCity(player.getUniqueId().toString());
@@ -55,6 +62,7 @@ public class CommandCity extends BaseCommand {
             economy.withdrawPlayer(player,inputBalance);
             CityDatabase.addCityBalance(cityName,inputBalance);
             plugin.sendMessage(player,"messages.city.successful.deposit","%amount%",Utilities.formattedMoney(inputBalance),"%cityname%",cityName);
+            return;
         }
         if (args[0].startsWith("-")) {
             if (HCDatabase.getHomeCity(player.getUniqueId().toString()) == null) {
@@ -88,6 +96,10 @@ public class CommandCity extends BaseCommand {
             economy.depositPlayer(player,inputBalance);
 
             plugin.sendMessage(player,"messages.city.successful.withdraw","%amount%",inputBalanceFormatted,"%cityname%",playerCity);
+            return;
         }
+        plugin.sendMessage(player,"messages.syntax.city.bank.bank");
+        plugin.sendMessage(player,"messages.syntax.city.bank.deposit");
+        plugin.sendMessage(player,"messages.syntax.city.bank.withdraw");
     }
 }
