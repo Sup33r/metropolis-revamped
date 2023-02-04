@@ -6,6 +6,8 @@ messages:
         withdraw: "§7Syntax: /city bank -§nbelopp§r§7 §nanledning"
         bank: "§7Syntax: /city bank"
   error:
+    city:
+      permissionDenied: "§e%cityname% §7| §cÅtkomst nekad."
     permissionDenied: "§cÅtkomst nekad."
     missing:
       balance: "§e%cityname% §7| §cStaden måste ha minst 100 000 minemynt i stadskassan."
