@@ -45,6 +45,7 @@ public final class MetropolisRevamped extends JavaPlugin {
         manager.registerCommand(new CommandHomeCity());
         manager.registerCommand(new CommandCity());
         this.getServer().getPluginManager().registerEvents(new CommandHomeCity(), this);
+        this.getServer().getPluginManager().registerEvents(new ScoreboardListener(), this);
     }
 
     @Override

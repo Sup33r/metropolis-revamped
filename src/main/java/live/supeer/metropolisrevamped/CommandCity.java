@@ -137,6 +137,7 @@ public class CommandCity extends BaseCommand {
             plugin.sendMessage(player,"messages.error.city.tooCloseToOtherCity");
             return;
         }
+
         CityDatabase.createCity(cityName,player.getUniqueId().toString(),player.getName(),player.getLocation());
         CityDatabase.createClaim(cityName,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
         economy.withdrawPlayer(player,MetropolisRevamped.configuration.getCityCreationCost());
@@ -156,7 +157,6 @@ public class CommandCity extends BaseCommand {
             return;
         }
         String cityName = HCDatabase.getHomeCity(player.getUniqueId().toString());
-        plugin.sendMessage(player,"messages.city.successful.claim","%cityname%",cityName, "%amount%", Utilities.formattedMoney(MetropolisRevamped.configuration.getCityClaimCost()));
         if (CityDatabase.getClaim(player.getLocation()) != null) {
             plugin.sendMessage(player,"messages.error.city.claimExists");
             return;

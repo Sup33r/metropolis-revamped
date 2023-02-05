@@ -6,11 +6,14 @@ import live.supeer.metropolisrevamped.MetropolisRevamped;
 import live.supeer.metropolisrevamped.Utilities;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import org.bukkit.Location;
+import org.bukkit.World;
 
 import java.sql.SQLException;
 
 public class CityDatabase {
     public static MetropolisRevamped plugin;
+
+
     public static boolean cityExists(String cityName) {
         try {
             return !DB.getResults("SELECT * FROM `mp_cities` WHERE `cityName` = " + Database.sqlString(cityName)).isEmpty();
@@ -99,12 +102,21 @@ public class CityDatabase {
         }
         return null;
     }
-    public static boolean hasClaim(int x, int z, String world) {
+    public static boolean hasClaim(int x, int z, World world) {
         try {
             return !DB.getResults("SELECT * FROM `mp_claims` WHERE `world` = '" + world + "' AND `xPosition` = " + x + " AND `zPosition` = " + z + ";").isEmpty();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static int getCityMemberCount(String cityName) {
+        try {
+            return DB.getResults("SELECT * FROM `mp_members` WHERE `cityName` = " + Database.sqlString(cityName) + ";").size();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }
