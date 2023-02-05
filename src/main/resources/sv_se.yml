@@ -28,6 +28,11 @@ messages:
     membership: "§aDin hemstad är nu %cityname%."
   city:
     balance: "§e%cityname% §7|§a Stadskassa: %balance% minemynt."
+    scoreboard:
+      plots: "§2§lAntal tomter:"
+      members: "§2§lAntal medlemmar:"
+      nature: "§2§lIcke detaljplanerad mark"
+      pvp_on: "§4§lPVP aktiverat"
     successful:
       withdraw: "§e%cityname% §7|§a Du tog ut %amount% minemynt från stadskassan."
       deposit: "§e%cityname% §7|§a Du satte in %amount% minemynt i stadskassan."

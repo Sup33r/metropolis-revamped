@@ -27,10 +27,12 @@ public final class MetropolisRevamped extends JavaPlugin {
         this.logger = getLogger();
         configuration = new MetropolisRevampedConfiguration(this);
         CommandCity.plugin = this;
+        CommandPlot.plugin = this;
         CommandHomeCity.plugin = this;
         Database.plugin = this;
         HCDatabase.plugin = this;
         CityDatabase.plugin = this;
+        MetropolisListener.plugin = this;
         this.languageManager = new LanguageManager(this, "sv_se");
         Database.initialize();
         if (!setupEconomy() ) {
@@ -44,8 +46,9 @@ public final class MetropolisRevamped extends JavaPlugin {
 
         manager.registerCommand(new CommandHomeCity());
         manager.registerCommand(new CommandCity());
+        manager.registerCommand(new CommandPlot());
         this.getServer().getPluginManager().registerEvents(new CommandHomeCity(), this);
-        this.getServer().getPluginManager().registerEvents(new ScoreboardListener(), this);
+        this.getServer().getPluginManager().registerEvents(new MetropolisListener(), this);
     }
 
     @Override
@@ -76,6 +79,15 @@ public final class MetropolisRevamped extends JavaPlugin {
         if (message != null && !message.isEmpty()) {
             sender.sendMessage(message);
         }
+    }
+
+    public String getMessage(@NotNull String key, String... replacements) {
+        String message = this.languageManager.getValue(key, "sv_se", replacements);
+
+        if (message != null && !message.isEmpty()) {
+            return message;
+        }
+        return null;
     }
 
     private @NotNull String getLocale(@NotNull CommandSender sender) {
