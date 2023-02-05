@@ -32,3 +32,4 @@ messages:
       withdraw: "§e%cityname% §7|§a Du tog ut %amount% minemynt från stadskassan."
       deposit: "§e%cityname% §7|§a Du satte in %amount% minemynt i stadskassan."
       creation: "§b%playername% skapade staden %cityname%."
+      claim: "§e%cityname% §7|§a Markbit övertagen för %amount% minemynt."

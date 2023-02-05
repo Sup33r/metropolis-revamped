@@ -133,6 +133,10 @@ public class CommandCity extends BaseCommand {
             plugin.sendMessage(player,"messages.error.city.claimExists");
             return;
         }
+        if (Utilities.isCloseToOtherCity(player,player.getLocation())) {
+            plugin.sendMessage(player,"messages.error.city.tooCloseToOtherCity");
+            return;
+        }
         CityDatabase.createCity(cityName,player.getUniqueId().toString(),player.getName(),player.getLocation());
         CityDatabase.createClaim(cityName,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
         economy.withdrawPlayer(player,MetropolisRevamped.configuration.getCityCreationCost());
@@ -142,7 +146,7 @@ public class CommandCity extends BaseCommand {
     }
 
     @Subcommand("claim")
-    public static void onClaim(Player player, @Optional int mass) {
+    public static void onClaim(Player player, @Optional String mass) {
         if (!player.hasPermission("metropolis.city.claim")) {
             plugin.sendMessage(player,"messages.error.permissionDenied");
             return;
@@ -152,6 +156,7 @@ public class CommandCity extends BaseCommand {
             return;
         }
         String cityName = HCDatabase.getHomeCity(player.getUniqueId().toString());
+        plugin.sendMessage(player,"messages.city.successful.claim","%cityname%",cityName, "%amount%", Utilities.formattedMoney(MetropolisRevamped.configuration.getCityClaimCost()));
         if (CityDatabase.getClaim(player.getLocation()) != null) {
             plugin.sendMessage(player,"messages.error.city.claimExists");
             return;
@@ -166,6 +171,6 @@ public class CommandCity extends BaseCommand {
         }
         CityDatabase.createClaim(cityName,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
         CityDatabase.removeCityBalance(cityName,MetropolisRevamped.configuration.getCityClaimCost());
-        plugin.sendMessage(player,"messages.city.successful.claim","%cityname%",cityName);
+        plugin.sendMessage(player,"messages.city.successful.claim","%cityname%",cityName, "%amount%", Utilities.formattedMoney(MetropolisRevamped.configuration.getCityClaimCost()));
     }
 }

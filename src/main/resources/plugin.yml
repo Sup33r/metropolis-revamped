@@ -7,9 +7,6 @@ api-version: 1.19
 authors: [ Supeeer ]
 description: A kinda cool plugin
 website: supeer.live
-commands:
-  city:
 
-  homecity:
 
 
