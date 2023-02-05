@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 @CommandAlias("city|c")
 public class CommandCity extends BaseCommand {
@@ -106,7 +107,6 @@ public class CommandCity extends BaseCommand {
     }
 
     @Subcommand("new")
-    @Syntax("<cityname>")
     public static void onNew(Player player, String cityName) {
         Economy economy = MetropolisRevamped.getEconomy();
         if (!player.hasPermission("metropolis.city.new")) {
@@ -139,5 +139,33 @@ public class CommandCity extends BaseCommand {
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             plugin.sendMessage(onlinePlayer,"messages.city.successful.creation","%playername%",player.getDisplayName(),"%cityname%",cityName);
         }
+    }
+
+    @Subcommand("claim")
+    public static void onClaim(Player player, @Optional int mass) {
+        if (!player.hasPermission("metropolis.city.claim")) {
+            plugin.sendMessage(player,"messages.error.permissionDenied");
+            return;
+        }
+        if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
+            plugin.sendMessage(player,"messages.error.missing.homeCity");
+            return;
+        }
+        String cityName = HCDatabase.getHomeCity(player.getUniqueId().toString());
+        if (CityDatabase.getClaim(player.getLocation()) != null) {
+            plugin.sendMessage(player,"messages.error.city.claimExists");
+            return;
+        }
+        if (Utilities.isCloseToOtherCity(player,player.getLocation())) {
+            plugin.sendMessage(player,"messages.error.city.tooCloseToOtherCity");
+            return;
+        }
+        if (CityDatabase.getCityRole(cityName,player.getUniqueId().toString()) == null || Objects.equals(CityDatabase.getCityRole(cityName, player.getUniqueId().toString()), "member") || Objects.equals(CityDatabase.getCityRole(cityName, player.getUniqueId().toString()), "inviter")) {
+            plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",cityName);
+            return;
+        }
+        CityDatabase.createClaim(cityName,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
+        CityDatabase.removeCityBalance(cityName,MetropolisRevamped.configuration.getCityClaimCost());
+        plugin.sendMessage(player,"messages.city.successful.claim","%cityname%",cityName);
     }
 }

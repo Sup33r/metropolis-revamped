@@ -99,4 +99,12 @@ public class CityDatabase {
         }
         return null;
     }
+    public static boolean hasClaim(int x, int z, String world) {
+        try {
+            return !DB.getResults("SELECT * FROM `mp_claims` WHERE `world` = '" + world + "' AND `xPosition` = " + x + " AND `zPosition` = " + z + ";").isEmpty();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

@@ -1,8 +1,9 @@
 package live.supeer.metropolisrevamped;
-import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
-import org.bukkit.Location;
+import live.supeer.metropolisrevamped.city.CityDatabase;
+import live.supeer.metropolisrevamped.homecity.HCDatabase;
+import org.bukkit.*;
 import org.bukkit.block.banner.PatternType;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import java.text.NumberFormat;
@@ -29,6 +30,23 @@ public class Utilities {
 
         String[] split = string.split(" ");
         return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
+    }
+
+    public static boolean isCloseToOtherCity(Player player, Location location) {
+        int centerZ = location.getChunk().getZ();
+        int centerX = location.getChunk().getX();
+
+        for (int x = centerX - 13 / 2; x <= centerX + 12 / 2; x++) {
+            for (int z = centerZ - 12 / 2; z <= centerZ + 12 / 2; z++) {
+                Location chunkLocation = new Location(location.getWorld(), x * 16, 0, z * 16);
+                if (CityDatabase.hasClaim(x, z, location.getWorld().getName())) {
+                    if (!Objects.equals(CityDatabase.getClaim(chunkLocation), HCDatabase.getHomeCity(player.getUniqueId().toString()))) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public static ItemStack letterBanner(String letter,String lore) {

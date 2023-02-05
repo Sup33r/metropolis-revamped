@@ -12,6 +12,7 @@ messages:
       nameLength: "§cStadens namn måste vara mellan 1-16 tecken långt."
       maxCityCount: "§cMan kan inte vara medlem i fler än 3 städer."
       claimExists: "§cDenna markbit är redan upptagen."
+      tooCloseToOtherCity: "§cDenna markbit är för nära en annan stad."
       missing:
         balance:
           cityCost: "§cDu har inte råd med 500 000 minemynt som en stad kostar."
