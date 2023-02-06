@@ -21,7 +21,8 @@ public class City {
     private String cityName;
     private final String originalMayorName;
     private final String originalMayorUUID;
-    private Map<String, City> cityMembers = new HashMap<>();
+    private Map<Member, City> cityMembers = new HashMap<>();
+    private Map<Claim, City> cityClaims = new HashMap<>();
     private int cityBalance;
     private Location citySpawn;
     private final Timestamp cityCreationDate;
@@ -58,6 +59,12 @@ public class City {
         DB.executeUpdateAsync("UPDATE `mp_cities` SET `isRemoved` = " + (isRemoved ? 1 : 0) + " WHERE `cityID` = " + cityID + ";");
     }
 
-    public void addCityMember( )
+    public void addCityMember(Member member) {
+        cityMembers.put(member, this);
+    }
+
+    public void addCityClaim(Claim claim) {
+        cityClaims.put(claim, this);
+    }
 
 }

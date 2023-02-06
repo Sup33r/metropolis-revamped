@@ -2,7 +2,9 @@ package live.supeer.metropolisrevamped;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
+import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
+import live.supeer.metropolisrevamped.city.Claim;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -169,6 +171,8 @@ public class CommandCity extends BaseCommand {
             plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",cityName);
             return;
         }
+        City city = CityDatabase.newCity(cityName,player);
+        city.addCityClaim(new Claim());
         CityDatabase.createClaim(cityName,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
         CityDatabase.removeCityBalance(cityName,MetropolisRevamped.configuration.getCityClaimCost());
         plugin.sendMessage(player,"messages.city.successful.claim","%cityname%",cityName, "%amount%", Utilities.formattedMoney(MetropolisRevamped.configuration.getCityClaimCost()));
