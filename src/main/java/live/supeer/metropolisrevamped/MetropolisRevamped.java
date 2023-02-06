@@ -2,6 +2,7 @@ package live.supeer.metropolisrevamped;
 
 import co.aikar.commands.PaperCommandManager;
 import co.aikar.idb.DB;
+import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import net.milkbowl.vault.economy.Economy;
@@ -32,9 +33,11 @@ public final class MetropolisRevamped extends JavaPlugin {
         Database.plugin = this;
         HCDatabase.plugin = this;
         CityDatabase.plugin = this;
+        City.plugin = this;
         MetropolisListener.plugin = this;
         this.languageManager = new LanguageManager(this, "sv_se");
         Database.initialize();
+        Database.synchronize();
         if (!setupEconomy() ) {
             this.getLogger().severe("[Metropolis] Vault not found, disabling plugin");
             getServer().getPluginManager().disablePlugin(this);

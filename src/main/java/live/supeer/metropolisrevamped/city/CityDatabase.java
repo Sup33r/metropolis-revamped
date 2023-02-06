@@ -1,6 +1,7 @@
 package live.supeer.metropolisrevamped.city;
 
 import co.aikar.idb.DB;
+import co.aikar.idb.DbRow;
 import live.supeer.metropolisrevamped.Database;
 import live.supeer.metropolisrevamped.MetropolisRevamped;
 import live.supeer.metropolisrevamped.Utilities;
@@ -9,9 +10,26 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CityDatabase {
     public static MetropolisRevamped plugin;
+    private static List<City> cities = new ArrayList<>();
+
+    public static void initDBSync() throws SQLException {
+        loadCities();
+    }
+
+    private static void loadCities() throws SQLException {
+        var dbRows = DB.getResults("SELECT * FROM `mp_cities` WHERE `isRemoved` = 0;");
+
+        for (DbRow dbRow : dbRows) {
+            City city = new City(dbRow);
+            cities.add(city);
+            plugin.getLogger().info("Loaded city " + city.getCityName());
+        }
+    }
 
 
     public static boolean cityExists(String cityName) {

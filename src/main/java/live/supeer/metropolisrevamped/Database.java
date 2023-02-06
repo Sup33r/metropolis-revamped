@@ -2,6 +2,7 @@ package live.supeer.metropolisrevamped;
 
 import co.aikar.idb.BukkitDB;
 import co.aikar.idb.DB;
+import live.supeer.metropolisrevamped.city.CityDatabase;
 
 import java.sql.SQLException;
 
@@ -23,6 +24,17 @@ public class Database {
             plugin.getServer().getPluginManager().disablePlugin(plugin);
         }
     }
+
+    public static void synchronize() {
+        try {
+            CityDatabase.initDBSync();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            plugin.getLogger().warning("Failed to synchronize database, disabling plugin.");
+            plugin.getServer().getPluginManager().disablePlugin(plugin);
+        }
+    }
+
     public static String sqlString(String string) {
         return string == null ? "NULL" : "'" + string.replace("\\", "\\\\").replace("'", "\\'") + "'";
     }
@@ -31,6 +43,7 @@ public class Database {
 
             DB.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS `mp_cities` (
+                      `cityID` int(11) NOT NULL AUTO_INCREMENT,
                       `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `originalMayorUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `originalMayorName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
