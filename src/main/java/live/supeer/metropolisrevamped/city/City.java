@@ -9,6 +9,9 @@ import lombok.Getter;
 import org.bukkit.Location;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
+
 @Getter
 public class City {
 
@@ -18,6 +21,7 @@ public class City {
     private String cityName;
     private final String originalMayorName;
     private final String originalMayorUUID;
+    private Map<String, City> cityMembers = new HashMap<>();
     private int cityBalance;
     private Location citySpawn;
     private final Timestamp cityCreationDate;
@@ -53,5 +57,7 @@ public class City {
         this.isRemoved = isRemoved;
         DB.executeUpdateAsync("UPDATE `mp_cities` SET `isRemoved` = " + (isRemoved ? 1 : 0) + " WHERE `cityID` = " + cityID + ";");
     }
+
+    public void addCityMember( )
 
 }

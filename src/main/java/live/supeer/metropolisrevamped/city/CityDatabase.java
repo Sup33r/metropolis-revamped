@@ -31,12 +31,19 @@ public class CityDatabase {
         }
     }
 
+    private static void loadMembers(City rCity) throws SQLException {
+        var members = DB.getResults("SELECT * FROM `mp_members` WHERE `cityName` = " + rCity.getCityName() + ";");
+
+        for (DbRow member : members) {
+            rCity.
+            plugin.getLogger().info("Loaded member " + member.getPlayerName());
+        }
+    }
+
 
     public static boolean cityExists(String cityName) {
-        try {
-            return !DB.getResults("SELECT * FROM `mp_cities` WHERE `cityName` = " + Database.sqlString(cityName)).isEmpty();
-        } catch (SQLException e) {
-          e.printStackTrace();
+        for (City city : cities) {
+            if (city.getCityName().equalsIgnoreCase(cityName)) return true;
         }
         return false;
     }
