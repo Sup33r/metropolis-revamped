@@ -49,19 +49,20 @@ public class Database {
                       `originalMayorName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `cityBalance` int(25) NOT NULL,
                      `citySpawn` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-                     `createDate` timestamp NOT NULL,
+                     `createDate` bigint(30) DEFAULT NULL,
                       `isRemoved` tinyint(1) NOT NULL,
-                      PRIMARY KEY (`cityName`)
+                      PRIMARY KEY (`cityID`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;""");
 
             DB.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS `mp_members` (
                       `playerName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `playerUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                       `cityID` int(11) NOT NULL,
                       `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `cityRole` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-                      `joinDate` timestamp NOT NULL,
-                      PRIMARY KEY (cityName,playerUUID)
+                      `joinDate` bigint(30) DEFAULT NULL,
+                      PRIMARY KEY (cityID,playerUUID)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
 
             DB.executeUpdate("""
@@ -80,7 +81,7 @@ public class Database {
                       `world` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `xPosition` mediumint(9) NOT NULL,
                       `zPosition` mediumint(9) NOT NULL,
-                      `claimDate` timestamp NOT NULL,
+                      `claimDate` bigint(30) DEFAULT NULL,
                       `outpost` tinyint(1) DEFAULT '0',
                       PRIMARY KEY (`claimId`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
@@ -89,7 +90,7 @@ public class Database {
                     CREATE TABLE IF NOT EXISTS `mp_citylogs` (
                       `logId` int(11) NOT NULL AUTO_INCREMENT,
                       `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-                      `dateTime` timestamp NOT NULL,
+                      `dateTime` bigint(30) DEFAULT NULL,
                       `jsonLog` json NOT NULL,
                       PRIMARY KEY (logId)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");

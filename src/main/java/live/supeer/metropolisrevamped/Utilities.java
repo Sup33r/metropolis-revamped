@@ -16,6 +16,9 @@ public class Utilities {
         formatter.setGroupingUsed(true);
         return formatter.format(money).replace(",", " ");
     }
+    public static long getTimestamp() {
+        return System.currentTimeMillis() / 1000L;
+    }
     public static String locationToString(Location location) {
         if (location == null) {
             return null;
@@ -48,7 +51,6 @@ public class Utilities {
         }
         return false;
     }
-
     public static ItemStack letterBanner(String letter,String lore) {
         String letterLower = letter.toLowerCase();
         ItemStack banner = new ItemStack(org.bukkit.Material.WHITE_BANNER);

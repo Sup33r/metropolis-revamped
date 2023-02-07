@@ -38,8 +38,6 @@ public final class MetropolisRevamped extends JavaPlugin {
         Member.plugin = this;
         MetropolisListener.plugin = this;
         this.languageManager = new LanguageManager(this, "sv_se");
-        Database.initialize();
-        Database.synchronize();
         if (!setupEconomy() ) {
             this.getLogger().severe("[Metropolis] Vault not found, disabling plugin");
             getServer().getPluginManager().disablePlugin(this);
@@ -54,6 +52,8 @@ public final class MetropolisRevamped extends JavaPlugin {
         manager.registerCommand(new CommandPlot());
         this.getServer().getPluginManager().registerEvents(new CommandHomeCity(), this);
         this.getServer().getPluginManager().registerEvents(new MetropolisListener(), this);
+        Database.initialize();
+        Database.synchronize();
     }
 
     @Override

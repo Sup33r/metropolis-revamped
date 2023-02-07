@@ -4,7 +4,6 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
-import live.supeer.metropolisrevamped.city.Claim;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -49,7 +48,7 @@ public class CommandCity extends BaseCommand {
             String cityName = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
             String playerCity = HCDatabase.getHomeCity(player.getUniqueId().toString());
 
-            if (!CityDatabase.cityExists(cityName)) {
+            if (CityDatabase.getCity(cityName).isEmpty()) {
                 plugin.sendMessage(player,"messages.error.missing.city");
                 return;
             }
@@ -75,32 +74,36 @@ public class CommandCity extends BaseCommand {
                 return;
             }
             int inputBalance = Integer.parseInt(args[0].replaceAll("[^0-9]",""));
+            if (CityDatabase.getCity(HCDatabase.getHomeCity(player.getUniqueId().toString())).isEmpty()) {
+                plugin.sendMessage(player,"messages.error.missing.city");
+                return;
+            }
+            City city = CityDatabase.getCity(HCDatabase.getHomeCity(player.getUniqueId().toString())).get();
             String inputBalanceFormatted = Utilities.formattedMoney(inputBalance);
             String reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-            String playerCity = HCDatabase.getHomeCity(player.getUniqueId().toString());
-            int cityBalance = CityDatabase.getCityBalance(playerCity);
-            String cityRole = CityDatabase.getCityRole(playerCity,player.getUniqueId().toString());
+            int cityBalance = city.getCityBalance();
+            String cityRole = CityDatabase.getCityRole(city,player.getUniqueId().toString());
 
             if (cityRole == null || cityRole.equals("member") || cityRole.equals("inviter") || cityRole.equals("assistant")) {
-                plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",playerCity);
+                plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",city.getCityName());
                 return;
             }
 
 
             if (!(reason.length() >= 8)) {
-                plugin.sendMessage(player,"messages.error.missing.reasonLength","%cityname%",playerCity);
+                plugin.sendMessage(player,"messages.error.missing.reasonLength","%cityname%",city.getCityName());
                 return;
             }
 
             if (cityBalance <= 100000 || inputBalance > cityBalance - 100000) {
-                plugin.sendMessage(player,"messages.error.missing.balance","%cityname%",playerCity);
+                plugin.sendMessage(player,"messages.error.missing.balance","%cityname%",city.getCityName());
                 return;
             }
 
-            CityDatabase.removeCityBalance(playerCity,inputBalance);
+            CityDatabase.removeCityBalance(city.getCityName(),inputBalance);
             economy.depositPlayer(player,inputBalance);
 
-            plugin.sendMessage(player,"messages.city.successful.withdraw","%amount%",inputBalanceFormatted,"%cityname%",playerCity);
+            plugin.sendMessage(player,"messages.city.successful.withdraw","%amount%",inputBalanceFormatted,"%cityname%",city.getCityName());
             return;
         }
         plugin.sendMessage(player,"messages.syntax.city.bank.bank");
@@ -127,7 +130,7 @@ public class CommandCity extends BaseCommand {
             plugin.sendMessage(player,"messages.error.city.nameLength");
             return;
         }
-        if (CityDatabase.cityExists(cityName)) {
+        if (CityDatabase.getCity(cityName).isPresent()) {
             plugin.sendMessage(player,"messages.error.city.cityExists");
             return;
         }
@@ -140,8 +143,8 @@ public class CommandCity extends BaseCommand {
             return;
         }
 
-        CityDatabase.createCity(cityName,player.getUniqueId().toString(),player.getName(),player.getLocation());
-        CityDatabase.createClaim(cityName,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
+        City city = CityDatabase.newCity(cityName,player);
+        CityDatabase.createClaim(city,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
         economy.withdrawPlayer(player,MetropolisRevamped.configuration.getCityCreationCost());
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             plugin.sendMessage(onlinePlayer,"messages.city.successful.creation","%playername%",player.getDisplayName(),"%cityname%",cityName);
@@ -172,8 +175,7 @@ public class CommandCity extends BaseCommand {
             return;
         }
         City city = CityDatabase.newCity(cityName,player);
-        city.addCityClaim(new Claim());
-        CityDatabase.createClaim(cityName,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
+        CityDatabase.createClaim(city,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
         CityDatabase.removeCityBalance(cityName,MetropolisRevamped.configuration.getCityClaimCost());
         plugin.sendMessage(player,"messages.city.successful.claim","%cityname%",cityName, "%amount%", Utilities.formattedMoney(MetropolisRevamped.configuration.getCityClaimCost()));
     }

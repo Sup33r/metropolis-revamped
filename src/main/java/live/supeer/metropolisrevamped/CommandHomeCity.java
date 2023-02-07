@@ -27,7 +27,7 @@ public class CommandHomeCity extends BaseCommand implements Listener {
         if (cityname == null) {
             playerGui(player);
         } else {
-            if (CityDatabase.cityExists(cityname)) {
+            if (CityDatabase.getCity(cityname).isEmpty()) {
                 if (CityDatabase.getCityRole(cityname,player.getUniqueId().toString()) == null) {
                     plugin.sendMessage(player,"messages.error.missing.membership");
                     return;

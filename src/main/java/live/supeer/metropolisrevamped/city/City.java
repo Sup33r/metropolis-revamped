@@ -25,7 +25,7 @@ public class City {
     private Map<Claim, City> cityClaims = new HashMap<>();
     private int cityBalance;
     private Location citySpawn;
-    private final Timestamp cityCreationDate;
+    private final long cityCreationDate;
     private boolean isRemoved;
 
     public City(DbRow data) {
@@ -35,8 +35,8 @@ public class City {
         this.originalMayorUUID = data.getString("originalMayorUUID");
         this.cityBalance = data.getInt("cityBalance");
         this.citySpawn = Utilities.stringToLocation(data.getString("citySpawn"));
-        this.cityCreationDate = Timestamp.valueOf(data.getString("cityCreationDate"));
-        this.isRemoved = data.getInt("isRemoved") != 0;
+        this.cityCreationDate = data.getInt("createDate");
+        this.isRemoved = data.get("isRemoved");
     }
 
     public void setCityName(String cityName) {

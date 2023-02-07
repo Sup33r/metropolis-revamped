@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CityDatabase {
     public static MetropolisRevamped plugin;
@@ -36,7 +37,7 @@ public class CityDatabase {
 
     private static void loadMembers(City rCity) throws SQLException {
 
-        var members = DB.getResults("SELECT * FROM `mp_members` WHERE `cityName` = " + rCity.getCityName() + ";");
+        var members = DB.getResults("SELECT * FROM `mp_members` WHERE `cityID` = " + rCity.getCityID() + ";");
         for (DbRow member : members) {
             rCity.addCityMember(new Member(member));
         }
@@ -52,7 +53,7 @@ public class CityDatabase {
 
     public static City newCity(String cityName, Player player) {
         try {
-            DB.executeUpdateAsync("INSERT INTO `mp_cities` (`cityName`, `originalMayorName`, `originalMayorUUID`, `citySpawn`) VALUES (" + Database.sqlString(cityName) + ", " + Database.sqlString(player.getDisplayName()) + ", " + Database.sqlString(player.getUniqueId().toString()) + ", " + Database.sqlString(Utilities.locationToString(player.getLocation())) + ");");
+            DB.executeUpdate("INSERT INTO `mp_cities` (`cityName`, `originalMayorUUID`, `originalMayorName`, `cityBalance`, `citySpawn`, `createDate`, `isRemoved`) VALUES (" + Database.sqlString(cityName) + ", " + Database.sqlString(player.getUniqueId().toString()) + ", " + Database.sqlString(player.getDisplayName()) + ", " + MetropolisRevamped.configuration.getCityStartingBalance() + ", " + Database.sqlString(Utilities.locationToString(player.getLocation())) + ", " + Utilities.getTimestamp() + ", " + "0" + ");");
             City city = new City(DB.getFirstRow("SELECT * FROM `mp_cities` WHERE `cityName` = " + Database.sqlString(cityName) + ";"));
             cities.add(city);
             newMember(city, player);
@@ -67,8 +68,26 @@ public class CityDatabase {
     private static void newMember(City city, Player player) {
         try {
             String cityName = city.getCityName();
-            DB.executeUpdateAsync("INSERT INTO `mp_members` (`cityName`, `playerName`, `playerUUID`, `cityRole`) VALUES (" + Database.sqlString(cityName) + ", " + Database.sqlString(player.getDisplayName()) + ", " + Database.sqlString(player.getUniqueId().toString()) + ", 'mayor');");
+            DB.executeUpdate("INSERT INTO `mp_members` (`playerName`, `playerUUID`, `cityID`, `cityName`, `cityRole`, `joinDate`) VALUES (" + Database.sqlString(player.getDisplayName()) + ", " + Database.sqlString(player.getUniqueId().toString()) + ", " + city.getCityID() + ", " + Database.sqlString(cityName) + ", " + Utilities.getTimestamp() + ", " + "'mayor');");
             city.addCityMember(new Member(DB.getFirstRow("SELECT * FROM `mp_members` WHERE `cityName` = " + Database.sqlString(cityName) + " AND `playerUUID` = " + Database.sqlString(player.getUniqueId().toString()) + ";")));
+            HCDatabase.setHomeCity(player.getUniqueId().toString(), city.getCityName());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Optional<City> getCity(String cityName) {
+        for (City city : cities) {
+            if (city.getCityName().equals(cityName)) return Optional.of(city);
+        }
+        return Optional.empty();
+    }
+
+    public static void createClaim(City city, Location location, boolean outpost, String playername, String playerUUID) {
+        try {
+            String cityName = city.getCityName();
+            DB.executeInsert("INSERT INTO `mp_claims` (`claimerName`, `claimerUUID`, `world`, `xPosition`, `zPosition`, `cityName`, `outpost`) VALUES (" + Database.sqlString(playername) + ", " + Database.sqlString(playerUUID) + ", '" + location.getChunk().getWorld() + "', " + location.getChunk().getX() + ", " + location.getChunk().getZ() + ", '" + cityName + "', " + outpost + ");");
+            city.addCityClaim(new Claim(DB.getFirstRow("SELECT * FROM `mp_claims` WHERE `cityName` = " + Database.sqlString(cityName) + " AND `claimLocation` = " + Database.sqlString(Utilities.locationToString(location)) + ";")));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -78,6 +97,16 @@ public class CityDatabase {
         try {
             if (DB.getResults("SELECT * FROM `mp_members` WHERE `playerUUID` = " + Database.sqlString(playerUUID) + " AND `cityName` = " + Database.sqlString(cityName) + ";").isEmpty()) return null;
             return DB.getFirstRow("SELECT * FROM `mp_members` WHERE `playerUUID` = " + Database.sqlString(playerUUID) + " AND `cityName` = " + Database.sqlString(cityName) + ";").getString("cityRole");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String getCityRole(City city, String playerUUID) {
+        try {
+            if (DB.getResults("SELECT * FROM `mp_members` WHERE `playerUUID` = " + Database.sqlString(playerUUID) + " AND `cityName` = " + Database.sqlString(city.getCityName()) + ";").isEmpty()) return null;
+            return DB.getFirstRow("SELECT * FROM `mp_members` WHERE `playerUUID` = " + Database.sqlString(playerUUID) + " AND `cityName` = " + Database.sqlString(city.getCityName()) + ";").getString("cityRole");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -123,27 +152,6 @@ public class CityDatabase {
         return null;
     }
 
-    public static void createCity(String cityName, String playerUUID, String playerName, Location spawnLocation) {
-        try {
-            DB.executeInsert("INSERT INTO `mp_cities` (`cityName`, `originalMayorUUID`, `originalMayorName`, `cityBalance`, `citySpawn`, `isRemoved`) VALUES (" + Database.sqlString(cityName) + ", " + Database.sqlString(playerUUID) + ", " + Database.sqlString(playerName) + ", " + MetropolisRevamped.configuration.getCityStartingBalance() + ", '" + Utilities.locationToString(spawnLocation) + "', " + 0 + ");");
-            DB.executeInsert("INSERT INTO `mp_members` (`playerName`, `playerUUID`, `cityName`, `cityRole`) VALUES (" + Database.sqlString(playerName) + ", " + Database.sqlString(playerUUID) + ", " + Database.sqlString(cityName) + ", " + Database.sqlString("mayor") + ");");
-            HCDatabase.setHomeCity(playerUUID, cityName);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void createClaim(String cityName, Location location, boolean outpost, String playername, String playerUUID) {
-        int outpostCount = 0;
-        if (outpost) {
-            outpostCount = 1;
-        }
-        try {
-            DB.executeInsert("INSERT INTO `mp_claims` (`claimerName`, `claimerUUID`, `world`, `xPosition`, `zPosition`, `cityName`, `outpost`) VALUES (" + Database.sqlString(playername) + ", " + Database.sqlString(playerUUID) + ", '" + location.getChunk().getWorld() + "', " + location.getChunk().getX() + ", " + location.getChunk().getZ() + ", '" + cityName + "', " + outpostCount + ");");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
     public static String getClaim(Location location) {
         try {
             if (DB.getResults("SELECT * FROM `mp_claims` WHERE `world` = '" + location.getChunk().getWorld() + "' AND `xPosition` = " + location.getChunk().getX() + " AND `zPosition` = " + location.getChunk().getZ() + ";").isEmpty()) return null;

@@ -24,6 +24,7 @@ public class HCDatabase {
     }
     public static String getHomeCity(String uuid) {
         try {
+            if (DB.getFirstRow("SELECT `cityName` FROM `mp_homecities` WHERE `playerUUID` = " + Database.sqlString(uuid) + ";").isEmpty()) return null;
             return DB.getFirstRow("SELECT `cityName` FROM `mp_homecities` WHERE `playerUUID` = " + Database.sqlString(uuid) + ";").getString("cityName");
         } catch (SQLException e) {
             e.printStackTrace();
