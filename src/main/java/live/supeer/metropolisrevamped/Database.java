@@ -82,6 +82,7 @@ public class Database {
                       `xPosition` mediumint(9) NOT NULL,
                       `zPosition` mediumint(9) NOT NULL,
                       `claimDate` bigint(30) DEFAULT NULL,
+                        `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `outpost` tinyint(1) DEFAULT '0',
                       PRIMARY KEY (`claimId`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");

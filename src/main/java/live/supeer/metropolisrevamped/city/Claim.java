@@ -16,7 +16,7 @@ public class Claim {
     private final int xPosition;
     private final int zPosition;
     private String cityName;
-    private final Timestamp claimDate;
+    private final long claimDate;
     private final boolean outpost;
 
     public Claim (DbRow data) {
@@ -27,8 +27,8 @@ public class Claim {
         this.xPosition = data.getInt("xPosition");
         this.zPosition = data.getInt("zPosition");
         this.cityName = data.getString("cityName");
-        this.claimDate = Timestamp.valueOf(data.getString("claimDate"));
-        this.outpost = data.getInt("outpost") != 0;
+        this.claimDate = data.getInt("claimDate");
+        this.outpost = data.get("outpost");
     }
 
 }

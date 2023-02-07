@@ -11,18 +11,18 @@ public class Member {
 
     private String playerName;
     private final String playerUUID;
-    private final String cityID;
+    private final int cityID;
     private String cityName;
     private String cityRole;
-    private final Timestamp joinDate;
+    private final long joinDate;
 
     public Member (DbRow data) {
         this.playerName = data.getString("playerName");
         this.playerUUID = data.getString("playerUUID");
-        this.cityID = data.getString("cityID");
+        this.cityID = data.getInt("cityID");
         this.cityName = data.getString("cityName");
         this.cityRole = data.getString("cityRole");
-        this.joinDate = Timestamp.valueOf(data.getString("joinDate"));
+        this.joinDate = data.getInt("joinDate");
     }
 
 }
