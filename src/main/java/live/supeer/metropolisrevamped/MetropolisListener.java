@@ -23,15 +23,15 @@ public class MetropolisListener implements Listener {
             String city = CityDatabase.getClaim(player.getLocation());
             board.updateLines(
                     "",
-                    plugin.getMessage("message.city.scoreboard.members"),
+                    plugin.getMessage("messages.city.scoreboard.members"),
                     "§a" + CityDatabase.getCityMemberCount(city),
                     "",
-                    plugin.getMessage("message.city.scoreboard.plots"),
+                    plugin.getMessage("messages.city.scoreboard.plots"),
                     "§a" + CityDatabase.getCityMemberCount(city)
             );
         } else {
-            board.updateTitle(plugin.getMessage("message.city.scoreboard.nature"));
-            board.updateLine(0,plugin.getMessage("message.city.scoreboard.pvp_on"));
+            board.updateTitle(plugin.getMessage("messages.city.scoreboard.nature"));
+            board.updateLine(0,plugin.getMessage("messages.city.scoreboard.pvp_on"));
         }
     }
     @EventHandler
@@ -44,14 +44,14 @@ public class MetropolisListener implements Listener {
             String city = CityDatabase.getClaim(player.getLocation());
             board.updateTitle("§a§l" + city);
             board.updateLine(5,"§a" + CityDatabase.getCityMemberCount(city));
-            board.updateLine(4,plugin.getMessage("message.city.scoreboard.plots"));
+            board.updateLine(4,plugin.getMessage("messages.city.scoreboard.plots"));
             board.updateLine(3," ");
             board.updateLine(2,"§a" + CityDatabase.getCityMemberCount(city));
-            board.updateLine(1,plugin.getMessage("message.city.scoreboard.members"));
+            board.updateLine(1,plugin.getMessage("messages.city.scoreboard.members"));
             board.updateLine(0," ");
         } else {
-            board.updateTitle(plugin.getMessage("message.city.scoreboard.nature"));
-            board.updateLine(0,plugin.getMessage("message.city.scoreboard.pvp_on"));
+            board.updateTitle(plugin.getMessage("messages.city.scoreboard.nature"));
+            board.updateLine(0,plugin.getMessage("messages.city.scoreboard.pvp_on"));
         }
     }
 

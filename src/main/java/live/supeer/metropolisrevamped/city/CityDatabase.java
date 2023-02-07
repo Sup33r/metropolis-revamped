@@ -6,6 +6,7 @@ import live.supeer.metropolisrevamped.Database;
 import live.supeer.metropolisrevamped.MetropolisRevamped;
 import live.supeer.metropolisrevamped.Utilities;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -44,7 +45,9 @@ public class CityDatabase {
     }
 
     private static void loadClaims(City rCity) throws SQLException {
-        var claims = DB.getResults("SELECT * FROM `mp_claims` WHERE `cityName` = " + rCity.getCityName() + ";");
+        String cityName = rCity.getCityName();
+        Bukkit.broadcastMessage(cityName);
+        var claims = DB.getResults("SELECT * FROM `mp_claims` WHERE `cityName` = '" + cityName + "';");
         for (DbRow claim : claims) {
             rCity.addCityClaim(new Claim(claim));
         }
