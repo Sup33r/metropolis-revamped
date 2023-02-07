@@ -4,7 +4,6 @@ import co.aikar.idb.DbRow;
 import live.supeer.metropolisrevamped.MetropolisRevamped;
 import lombok.Getter;
 
-import java.sql.Timestamp;
 @Getter
 public class Member {
     public static MetropolisRevamped plugin;

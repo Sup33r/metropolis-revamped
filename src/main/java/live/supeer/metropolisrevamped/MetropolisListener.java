@@ -1,6 +1,7 @@
 package live.supeer.metropolisrevamped;
 
 import fr.mrmicky.fastboard.FastBoard;
+import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -20,14 +21,18 @@ public class MetropolisListener implements Listener {
         FastBoard board = new FastBoard(player);
 
         if (CityDatabase.getClaim(player.getLocation()) != null) {
-            String city = CityDatabase.getClaim(player.getLocation());
+            String cityUn = CityDatabase.getClaim(player.getLocation());
+            if (CityDatabase.getCity(cityUn).isEmpty()) {
+                return;
+            }
+            City city = CityDatabase.getCity(cityUn).get();
             board.updateLines(
                     "",
                     plugin.getMessage("messages.city.scoreboard.members"),
-                    "§a" + CityDatabase.getCityMemberCount(city),
+                    "§a" + city.getCityMembers().size(),
                     "",
                     plugin.getMessage("messages.city.scoreboard.plots"),
-                    "§a" + CityDatabase.getCityMemberCount(city)
+                    "§a" + city.getCityClaims().size()
             );
         } else {
             board.updateTitle(plugin.getMessage("messages.city.scoreboard.nature"));
@@ -41,12 +46,15 @@ public class MetropolisListener implements Listener {
         Player player = event.getPlayer();
         FastBoard board = new FastBoard(player);
         if (CityDatabase.getClaim(player.getLocation()) != null) {
-            String city = CityDatabase.getClaim(player.getLocation());
-            board.updateTitle("§a§l" + city);
-            board.updateLine(5,"§a" + CityDatabase.getCityMemberCount(city));
+            if (CityDatabase.getCity(CityDatabase.getClaim(player.getLocation())).isEmpty()) {
+                return;
+            }
+            City city = CityDatabase.getCity(CityDatabase.getClaim(player.getLocation())).get();
+            board.updateTitle("§a§l" + city.getCityName());
+            board.updateLine(5,"§a" + city.getCityClaims().size());
             board.updateLine(4,plugin.getMessage("messages.city.scoreboard.plots"));
             board.updateLine(3," ");
-            board.updateLine(2,"§a" + CityDatabase.getCityMemberCount(city));
+            board.updateLine(2,"§a" + city.getCityMembers().size());
             board.updateLine(1,plugin.getMessage("messages.city.scoreboard.members"));
             board.updateLine(0," ");
         } else {

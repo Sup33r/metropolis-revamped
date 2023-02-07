@@ -2,6 +2,7 @@ package live.supeer.metropolisrevamped;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
+import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import org.bukkit.Bukkit;
@@ -27,17 +28,18 @@ public class CommandHomeCity extends BaseCommand implements Listener {
         if (cityname == null) {
             playerGui(player);
         } else {
-            if (CityDatabase.getCity(cityname).isEmpty()) {
-                if (CityDatabase.getCityRole(cityname,player.getUniqueId().toString()) == null) {
+            if (CityDatabase.getCity(cityname).isPresent()) {
+                City city = CityDatabase.getCity(cityname).get();
+                if (CityDatabase.getCityRole(city,player.getUniqueId().toString()) == null) {
                     plugin.sendMessage(player,"messages.error.missing.membership");
                     return;
                 }
-                if (Objects.equals(CityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"mayor") || Objects.equals(CityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"vicemayor") || Objects.equals(CityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"assistant") || Objects.equals(CityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"inviter") || Objects.equals(CityDatabase.getCityRole(cityname,player.getUniqueId().toString()),"member")) {
+                if (Objects.equals(CityDatabase.getCityRole(city,player.getUniqueId().toString()),"mayor") || Objects.equals(CityDatabase.getCityRole(city,player.getUniqueId().toString()),"vicemayor") || Objects.equals(CityDatabase.getCityRole(city,player.getUniqueId().toString()),"assistant") || Objects.equals(CityDatabase.getCityRole(city,player.getUniqueId().toString()),"inviter") || Objects.equals(CityDatabase.getCityRole(city,player.getUniqueId().toString()),"member")) {
                     if (CityDatabase.getPlayerCityCount(player.getUniqueId().toString()) < 1) {
                         plugin.sendMessage(player,"messages.error.missing.homeCity");
                         return;
                     }
-                    String realCityName = CityDatabase.getCityName(cityname);
+                    String realCityName = city.getCityName();
                     HCDatabase.setHomeCity(player.getUniqueId().toString(),realCityName);
                     plugin.sendMessage(player,"messages.save.membership","%cityname%",realCityName);
                 } else {

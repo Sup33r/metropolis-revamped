@@ -44,9 +44,13 @@ public class City {
         DB.executeUpdateAsync("UPDATE `mp_cities` SET `cityName` = " + Database.sqlString(cityName) + " WHERE `cityID` = " + cityID + ";");
     }
 
-    public void setCityBalance(int cityBalance) {
-        this.cityBalance = cityBalance;
-        DB.executeUpdateAsync("UPDATE `mp_cities` SET `cityBalance` = " + cityBalance + " WHERE `cityID` = " + cityID + ";");
+    public void addCityBalance(int cityBalance) {
+        this.cityBalance += cityBalance;
+        DB.executeUpdateAsync("UPDATE `mp_cities` SET `cityBalance` = " + this.cityBalance + " WHERE `cityID` = " + cityID + ";");
+    }
+    public void removeCityBalance(int cityBalance) {
+        this.cityBalance -= cityBalance;
+        DB.executeUpdateAsync("UPDATE `mp_cities` SET `cityBalance` = " + this.cityBalance + " WHERE `cityID` = " + cityID + ";");
     }
 
     public void setCitySpawn(Location citySpawn) {

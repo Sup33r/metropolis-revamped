@@ -78,14 +78,6 @@ public class CityDatabase {
             e.printStackTrace();
         }
     }
-
-    public static Optional<City> getCity(String cityName) {
-        for (City city : cities) {
-            if (city.getCityName().equals(cityName)) return Optional.of(city);
-        }
-        return Optional.empty();
-    }
-
     public static void createClaim(City city, Location location, boolean outpost, String playername, String playerUUID) {
         try {
             String cityName = city.getCityName();
@@ -95,15 +87,11 @@ public class CityDatabase {
             e.printStackTrace();
         }
     }
-
-    public static String getCityRole(String cityName, String playerUUID) {
-        try {
-            if (DB.getResults("SELECT * FROM `mp_members` WHERE `playerUUID` = " + Database.sqlString(playerUUID) + " AND `cityName` = " + Database.sqlString(cityName) + ";").isEmpty()) return null;
-            return DB.getFirstRow("SELECT * FROM `mp_members` WHERE `playerUUID` = " + Database.sqlString(playerUUID) + " AND `cityName` = " + Database.sqlString(cityName) + ";").getString("cityRole");
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public static Optional<City> getCity(String cityName) {
+        for (City city : cities) {
+            if (city.getCityName().equals(cityName)) return Optional.of(city);
         }
-        return null;
+        return Optional.empty();
     }
 
     public static String getCityRole(City city, String playerUUID) {
@@ -124,19 +112,14 @@ public class CityDatabase {
         return 0;
     }
 
-    public static int getCityBalance(String cityName) {
-        try {
-            return DB.getFirstRow("SELECT `cityBalance` FROM `mp_cities` WHERE `cityName` = " + Database.sqlString(cityName) + ";").getInt("cityBalance");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
+    public static int getCityBalance(City city) {
+        return city.getCityBalance();
     }
-    public static void addCityBalance(String cityName, int amount) {
-        DB.executeUpdateAsync("UPDATE `mp_cities` SET `cityBalance` = `cityBalance` + " + amount + " WHERE `cityName` = " + Database.sqlString(cityName) + ";");
+    public static void addCityBalance(City city, int amount) {
+        city.addCityBalance(amount);
     }
-    public static void removeCityBalance(String cityName, int amount) {
-        DB.executeUpdateAsync("UPDATE `mp_cities` SET `cityBalance` = `cityBalance` - " + amount + " WHERE `cityName` = " + Database.sqlString(cityName) + ";");
+    public static void removeCityBalance(City city, int amount) {
+        city.removeCityBalance(amount);
     }
     public static String[] memberCityList(String uuid) {
         try {
@@ -146,15 +129,6 @@ public class CityDatabase {
         }
         return null;
     }
-    public static String getCityName(String cityname) {
-        try {
-            return DB.getFirstRow("SELECT `cityName` FROM `mp_cities` WHERE `cityName` = " + Database.sqlString(cityname) + ";").getString("cityName");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public static String getClaim(Location location) {
         try {
             if (DB.getResults("SELECT * FROM `mp_claims` WHERE `world` = '" + location.getChunk().getWorld() + "' AND `xPosition` = " + location.getChunk().getX() + " AND `zPosition` = " + location.getChunk().getZ() + ";").isEmpty()) return null;
@@ -171,14 +145,5 @@ public class CityDatabase {
             e.printStackTrace();
         }
         return false;
-    }
-
-    public static int getCityMemberCount(String cityName) {
-        try {
-            return DB.getResults("SELECT * FROM `mp_members` WHERE `cityName` = " + Database.sqlString(cityName) + ";").size();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
     }
 }
