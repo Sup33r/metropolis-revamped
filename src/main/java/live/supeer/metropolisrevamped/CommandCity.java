@@ -259,11 +259,11 @@ public class CommandCity extends BaseCommand {
                 assert cityRole != null;
                 if (cityRole.equals("assistant") || cityRole.equals("mayor") || cityRole.equals("vicemayor")) {
                     if (message.equals("-")) {
-                        CityDatabase.setCityMessage(city,"enterMessage",null);
+                        CityDatabase.setCityMessage(city,"exitMessage",null);
                         plugin.sendMessage(player,"messages.city.successful.set.exit.removed","%cityname%",city.getCityName());
                         return;
                     }
-                    CityDatabase.setCityMessage(city,"enterMessage",message);
+                    CityDatabase.setCityMessage(city,"exitMessage",message);
                     plugin.sendMessage(player,"messages.city.successful.set.exit.set","%cityname%",city.getCityName());
                 } else {
                     plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",city.getCityName());
@@ -288,11 +288,11 @@ public class CommandCity extends BaseCommand {
                 assert cityRole != null;
                 if (cityRole.equals("assistant") || cityRole.equals("mayor") || cityRole.equals("vicemayor")) {
                     if (message.equals("-")) {
-                        CityDatabase.setCityMessage(city,"enterMessage",null);
+                        CityDatabase.setCityMessage(city,"motdMessage",null);
                         plugin.sendMessage(player,"messages.city.successful.set.motd.removed","%cityname%",city.getCityName());
                         return;
                     }
-                    CityDatabase.setCityMessage(city,"enterMessage",message);
+                    CityDatabase.setCityMessage(city,"motdMessage",message);
                     plugin.sendMessage(player,"messages.city.successful.set.motd.set","%cityname%",city.getCityName());
                 } else {
                     plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",city.getCityName());

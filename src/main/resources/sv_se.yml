@@ -49,12 +49,12 @@ messages:
       claim: "§e%cityname% §7|§a Markbit övertagen för %amount% minemynt."
       set:
         enter:
-          removed: "§e%cityname% §7|§a Ankomstmeddelandet ändrades."
-          set: "§e%cityname% §7|§a Ankomstmeddelandet togs bort."
+          removed: "§e%cityname% §7|§a Meddelandet togs bort."
+          set: "§e%cityname% §7|§a Meddelandet ändrades."
         exit:
-          removed: "§e%cityname% §7|§a Avresemeddelandet ändrades."
-          set: "§e%cityname% §7|§a Avresemeddelandet togs bort."
+          removed: "§e%cityname% §7|§a Meddelandet togs bort."
+          set: "§e%cityname% §7|§a Meddelandet ändrades."
 
         motd:
-            removed: "§e%cityname% §7|§a Meddelandet ändrades."
-            set: "§e%cityname% §7|§a Meddelandet togs bort."
+            removed: "§e%cityname% §7|§a Meddelandet togs bort."
+            set: "§e%cityname% §7|§a Meddelandet ändrades."
