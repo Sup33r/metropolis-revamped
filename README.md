@@ -1,4 +1,4 @@
-### Metropolis Revamped
+# Metropolis Revamped
 
 ## Permissions
 - metropolis.city.claim
