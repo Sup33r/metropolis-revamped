@@ -66,6 +66,7 @@ public class CommandCity extends BaseCommand {
 
             economy.withdrawPlayer(player,inputBalance);
             CityDatabase.addCityBalance(city,inputBalance);
+            Database.addLogEntry(city,"{ \"type\": \"cityBank\", \"subtype\": \"deposit\", \"balance\": " + inputBalance + ", \"player\": " + player.getUniqueId().toString() + " }");
             plugin.sendMessage(player,"messages.city.successful.deposit","%amount%",Utilities.formattedMoney(inputBalance),"%cityname%",cityName);
             return;
         }
@@ -107,8 +108,8 @@ public class CommandCity extends BaseCommand {
             }
 
             CityDatabase.removeCityBalance(city,inputBalance);
+            Database.addLogEntry(city,"{ \"type\": \"cityBank\", \"subtype\": \"withdraw\", \"balance\": " + inputBalance + ", \"player\": " + player.getUniqueId().toString() + ", \"reason\": \"" + reason + "\" }");
             economy.depositPlayer(player,inputBalance);
-
             plugin.sendMessage(player,"messages.city.successful.withdraw","%amount%",inputBalanceFormatted,"%cityname%",city.getCityName());
             return;
         }

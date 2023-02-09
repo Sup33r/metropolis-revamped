@@ -2,6 +2,7 @@ package live.supeer.metropolisrevamped;
 
 import co.aikar.idb.BukkitDB;
 import co.aikar.idb.DB;
+import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 
 import java.sql.SQLException;
@@ -97,6 +98,14 @@ public class Database {
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
         } catch (SQLException exception) {
             exception.printStackTrace();
+        }
+    }
+    public static void addLogEntry (City city, String logEntry) {
+        try {
+            String cityName = city.getCityName();
+            DB.executeInsert("INSERT INTO `mp_citylogs` (`cityName`, `dateTime`, `jsonLog`) VALUES (" + Database.sqlString(cityName) + ", " + Utilities.getTimestamp() + ", " + Database.sqlString(logEntry) + ");");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
