@@ -16,6 +16,7 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MetropolisListener implements Listener {
     static MetropolisRevamped plugin;
@@ -23,7 +24,7 @@ public class MetropolisListener implements Listener {
     private static List<Player> savedPlayers = new ArrayList<>();
 
     @EventHandler
-    public static void onPlayerJoin(PlayerJoinEvent event) {
+    public static void playerJoinScoreboard(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         FastBoard board = new FastBoard(player);
 
@@ -46,6 +47,22 @@ public class MetropolisListener implements Listener {
             board.updateLine(0,plugin.getMessage("messages.city.scoreboard.pvp_on"));
         }
     }
+
+    @EventHandler
+    public static void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        String[] list = CityDatabase.memberCityList(player.getUniqueId().toString());
+        for (int i = 0; i < Objects.requireNonNull(list).length; i++) {
+            if (CityDatabase.getCity(list[i]).isPresent()) {
+                City city = CityDatabase.getCity(list[i]).get();
+                String cityMotd = city.getMotdMessage();
+                if (cityMotd != null) {
+                    plugin.sendMessage(player,"messages.city.motd","%cityname%",city.getCityName(),"%motd%",cityMotd);
+                }
+            }
+        }
+    }
+
     @EventHandler
     public static void onPlayerMove(PlayerMoveEvent event) {
         if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) return;

@@ -43,7 +43,7 @@ public class Utilities {
             for (int z = centerZ - 12 / 2; z <= centerZ + 12 / 2; z++) {
                 Location chunkLocation = new Location(location.getWorld(), x * 16, 0, z * 16);
                 if (CityDatabase.hasClaim(x, z, location.getWorld())) {
-                    if (!Objects.equals(CityDatabase.getClaim(chunkLocation), HCDatabase.getHomeCity(player.getUniqueId().toString()))) {
+                    if (!Objects.equals(CityDatabase.getClaim(chunkLocation), HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()))) {
                         return true;
                     }
                 }

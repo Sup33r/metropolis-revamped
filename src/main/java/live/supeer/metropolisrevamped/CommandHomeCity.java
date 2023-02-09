@@ -39,9 +39,8 @@ public class CommandHomeCity extends BaseCommand implements Listener {
                         plugin.sendMessage(player,"messages.error.missing.homeCity");
                         return;
                     }
-                    String realCityName = city.getCityName();
-                    HCDatabase.setHomeCity(player.getUniqueId().toString(),realCityName);
-                    plugin.sendMessage(player,"messages.save.membership","%cityname%",realCityName);
+                    HCDatabase.setHomeCity(player.getUniqueId().toString(),city);
+                    plugin.sendMessage(player,"messages.save.membership","%cityname%",city.getCityName());
                 } else {
                     plugin.sendMessage(player,"messages.error.missing.membership");
                 }
@@ -70,9 +69,13 @@ public class CommandHomeCity extends BaseCommand implements Listener {
             }
 
             String cityname = e.getCurrentItem().getItemMeta().getDisplayName().substring(4);
+            if (CityDatabase.getCity(cityname).isEmpty()) {
+                return;
+            }
+            City city = CityDatabase.getCity(cityname).get();
             Player player = (Player) e.getWhoClicked();
 
-            HCDatabase.setHomeCity(player.getUniqueId().toString(),cityname);
+            HCDatabase.setHomeCity(player.getUniqueId().toString(),city);
             plugin.sendMessage(player,"messages.save.membership","%cityname%",cityname);
             player.closeInventory();
         }

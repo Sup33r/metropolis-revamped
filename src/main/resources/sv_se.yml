@@ -1,6 +1,14 @@
 messages:
   syntax:
     city:
+      set:
+        spawn: "§7Syntax: /city set spawn"
+        tax: "§7Syntax: /city set tax §nprocent"
+        enter: "§7Syntax: /city set enter §nmeddelande"
+        exit: "§7Syntax: /city set exit §nmeddelande"
+        maxplotspermember: "§7Syntax: /city set maxplotspermember §nantal"
+        motd: "§7Syntax: /city set motd §nmeddelande"
+        name: "§7Syntax: /city set name §nstadsnamn"
       bank:
         deposit: "§7Syntax: /city bank +§nbelopp§r§7 §nstad"
         withdraw: "§7Syntax: /city bank -§nbelopp§r§7 §nanledning"
@@ -27,6 +35,7 @@ messages:
   save:
     membership: "§aDin hemstad är nu %cityname%."
   city:
+    motd: "§e%cityname% §7|§e %motd%"
     balance: "§e%cityname% §7|§a Stadskassa: %balance% minemynt."
     scoreboard:
       plots: "§2§lAntal tomter:"
@@ -38,3 +47,14 @@ messages:
       deposit: "§e%cityname% §7|§a Du satte in %amount% minemynt i stadskassan."
       creation: "§b%playername% skapade staden %cityname%."
       claim: "§e%cityname% §7|§a Markbit övertagen för %amount% minemynt."
+      set:
+        enter:
+          removed: "§e%cityname% §7|§a Ankomstmeddelandet ändrades."
+          set: "§e%cityname% §7|§a Ankomstmeddelandet togs bort."
+        exit:
+          removed: "§e%cityname% §7|§a Avresemeddelandet ändrades."
+          set: "§e%cityname% §7|§a Avresemeddelandet togs bort."
+
+        motd:
+            removed: "§e%cityname% §7|§a Meddelandet ändrades."
+            set: "§e%cityname% §7|§a Meddelandet togs bort."

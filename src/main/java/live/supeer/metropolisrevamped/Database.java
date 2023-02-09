@@ -51,6 +51,9 @@ public class Database {
                       `cityBalance` int(25) NOT NULL,
                      `citySpawn` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                      `createDate` bigint(30) DEFAULT NULL,
+                     `enterMessage` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                     `exitMessage` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                     `motdMessage` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                       `isRemoved` tinyint(1) NOT NULL,
                       PRIMARY KEY (`cityID`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;""");

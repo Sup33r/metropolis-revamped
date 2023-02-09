@@ -73,7 +73,7 @@ public class CityDatabase {
             String cityName = city.getCityName();
             DB.executeUpdate("INSERT INTO `mp_members` (`playerName`, `playerUUID`, `cityID`, `cityName`, `cityRole`, `joinDate`) VALUES (" + Database.sqlString(player.getDisplayName()) + ", " + Database.sqlString(player.getUniqueId().toString()) + ", " + city.getCityID() + ", " + Database.sqlString(cityName) + ", " + "'mayor'" + ", " + Utilities.getTimestamp() + ");");
             city.addCityMember(new Member(DB.getFirstRow("SELECT * FROM `mp_members` WHERE `cityName` = " + Database.sqlString(cityName) + " AND `playerUUID` = " + Database.sqlString(player.getUniqueId().toString()) + ";")));
-            HCDatabase.setHomeCity(player.getUniqueId().toString(), city.getCityName());
+            HCDatabase.setHomeCity(player.getUniqueId().toString(), city);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -145,5 +145,24 @@ public class CityDatabase {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static String getCityMessage(City city, String messageType) {
+        if (messageType.equals("enterMessage")) return city.getEnterMessage();
+        if (messageType.equals("exitMessage")) return city.getExitMessage();
+        if (messageType.equals("motdMessage")) return city.getMotdMessage();
+        return null;
+    }
+
+    public static void setCityMessage(City city, String messageType, String message) {
+        if (message == null) {
+            if (messageType.equals("enterMessage")) city.setEnterMessage(null);
+            if (messageType.equals("exitMessage")) city.setExitMessage(null);
+            if (messageType.equals("motdMessage")) city.setMotdMessage(null);
+            return;
+        }
+        if (messageType.equals("enterMessage")) city.setEnterMessage(message);
+        if (messageType.equals("exitMessage")) city.setExitMessage(message);
+        if (messageType.equals("motdMessage")) city.setMotdMessage(message);
     }
 }

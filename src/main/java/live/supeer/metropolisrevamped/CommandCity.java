@@ -29,11 +29,11 @@ public class CommandCity extends BaseCommand {
         }
         Economy economy = MetropolisRevamped.getEconomy();
         if (args.length == 0) {
-            if (HCDatabase.getHomeCity(player.getUniqueId().toString()) == null) {
+            if (HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
                 plugin.sendMessage(player,"messages.error.missing.homeCity");
                 return;
             }
-            String homeCity = HCDatabase.getHomeCity(player.getUniqueId().toString());
+            String homeCity = HCDatabase.getHomeCityToCityname(player.getUniqueId().toString());
             if (CityDatabase.getCity(homeCity).isEmpty()) {
                 plugin.sendMessage(player,"messages.error.missing.city");
                 return;
@@ -51,7 +51,7 @@ public class CommandCity extends BaseCommand {
 
             int inputBalance = Integer.parseInt(args[0].replaceAll("[^0-9]",""));
             String cityName = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-            String playerCity = HCDatabase.getHomeCity(player.getUniqueId().toString());
+            String playerCity = HCDatabase.getHomeCityToCityname(player.getUniqueId().toString());
 
             if (CityDatabase.getCity(cityName).isEmpty()) {
                 plugin.sendMessage(player,"messages.error.missing.city");
@@ -76,18 +76,19 @@ public class CommandCity extends BaseCommand {
                 return;
             }
 
-            if (HCDatabase.getHomeCity(player.getUniqueId().toString()) == null) {
+            if (HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
                 plugin.sendMessage(player,"messages.error.missing.homeCity");
                 return;
             }
             int inputBalance = Integer.parseInt(args[0].replaceAll("[^0-9]",""));
-            if (CityDatabase.getCity(HCDatabase.getHomeCity(player.getUniqueId().toString())).isEmpty()) {
+            if (CityDatabase.getCity(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString())).isEmpty()) {
                 plugin.sendMessage(player,"messages.error.missing.city");
                 return;
             }
-            City city = CityDatabase.getCity(HCDatabase.getHomeCity(player.getUniqueId().toString())).get();
+            City city = HCDatabase.getHomeCityToCity(player.getUniqueId().toString());
             String inputBalanceFormatted = Utilities.formattedMoney(inputBalance);
             String reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+            assert city != null;
             int cityBalance = city.getCityBalance();
             String cityRole = CityDatabase.getCityRole(city,player.getUniqueId().toString());
 
@@ -169,7 +170,7 @@ public class CommandCity extends BaseCommand {
             plugin.sendMessage(player,"messages.error.missing.homeCity");
             return;
         }
-        String cityName = HCDatabase.getHomeCity(player.getUniqueId().toString());
+        String cityName = HCDatabase.getHomeCityToCityname(player.getUniqueId().toString());
         if (CityDatabase.getClaim(player.getLocation()) != null) {
             plugin.sendMessage(player,"messages.error.city.claimExists");
             return;
@@ -190,5 +191,113 @@ public class CommandCity extends BaseCommand {
         CityDatabase.createClaim(city,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
         CityDatabase.removeCityBalance(city,MetropolisRevamped.configuration.getCityClaimCost());
         plugin.sendMessage(player,"messages.city.successful.claim","%cityname%",cityName, "%amount%", Utilities.formattedMoney(MetropolisRevamped.configuration.getCityClaimCost()));
+    }
+
+    @Subcommand("set")
+    public static void onSet(Player player, @Optional String[] args) {
+        if (!player.hasPermission("metropolis.city.set")) {
+            plugin.sendMessage(player,"messages.error.permissionDenied");
+            return;
+        }
+        if (args.length == 0) {
+            plugin.sendMessage(player,"messages.syntax.city.set.enter");
+            plugin.sendMessage(player,"messages.syntax.city.set.exit");
+            plugin.sendMessage(player,"messages.syntax.city.set.maxplotspermember");
+            plugin.sendMessage(player,"messages.syntax.city.set.motd");
+            plugin.sendMessage(player,"messages.syntax.city.set.name");
+            plugin.sendMessage(player,"messages.syntax.city.set.spawn");
+            plugin.sendMessage(player,"messages.syntax.city.set.tax");
+            return;
+        }
+
+        if (args.length >= 2) {
+            if (args[0].equals("enter")) {
+                if (!player.hasPermission("metropolis.city.set.enter")) {
+                    plugin.sendMessage(player,"messages.error.permissionDenied");
+                    return;
+                }
+                if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
+                    plugin.sendMessage(player,"messages.error.missing.homeCity");
+                    return;
+                }
+                if (CityDatabase.getCity(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString())).isEmpty()) {
+                    plugin.sendMessage(player,"messages.error.missing.city");
+                    return;
+                }
+                City city = CityDatabase.getCity(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString())).get();
+                String cityRole = CityDatabase.getCityRole(city,player.getUniqueId().toString());
+                String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+                assert cityRole != null;
+                if (cityRole.equals("assistant") || cityRole.equals("mayor") || cityRole.equals("vicemayor")) {
+                    if (message.equals("-")) {
+                        CityDatabase.setCityMessage(city,"enterMessage",null);
+                        plugin.sendMessage(player,"messages.city.successful.set.enter.removed","%cityname%",city.getCityName());
+                        return;
+                    }
+                    CityDatabase.setCityMessage(city,"enterMessage",message);
+                    plugin.sendMessage(player,"messages.city.successful.set.enter.set","%cityname%",city.getCityName());
+                } else {
+                    plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",city.getCityName());
+                }
+            }
+            if (args[0].equals("exit")) {
+                if (!player.hasPermission("metropolis.city.set.exit")) {
+                    plugin.sendMessage(player,"messages.error.permissionDenied");
+                    return;
+                }
+                if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
+                    plugin.sendMessage(player,"messages.error.missing.homeCity");
+                    return;
+                }
+                if (CityDatabase.getCity(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString())).isEmpty()) {
+                    plugin.sendMessage(player,"messages.error.missing.city");
+                    return;
+                }
+                City city = CityDatabase.getCity(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString())).get();
+                String cityRole = CityDatabase.getCityRole(city,player.getUniqueId().toString());
+                String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+                assert cityRole != null;
+                if (cityRole.equals("assistant") || cityRole.equals("mayor") || cityRole.equals("vicemayor")) {
+                    if (message.equals("-")) {
+                        CityDatabase.setCityMessage(city,"enterMessage",null);
+                        plugin.sendMessage(player,"messages.city.successful.set.exit.removed","%cityname%",city.getCityName());
+                        return;
+                    }
+                    CityDatabase.setCityMessage(city,"enterMessage",message);
+                    plugin.sendMessage(player,"messages.city.successful.set.exit.set","%cityname%",city.getCityName());
+                } else {
+                    plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",city.getCityName());
+                }
+            }
+            if (args[0].equals("motd")) {
+                if (!player.hasPermission("metropolis.city.set.motd")) {
+                    plugin.sendMessage(player,"messages.error.permissionDenied");
+                    return;
+                }
+                if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
+                    plugin.sendMessage(player,"messages.error.missing.homeCity");
+                    return;
+                }
+                if (CityDatabase.getCity(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString())).isEmpty()) {
+                    plugin.sendMessage(player,"messages.error.missing.city");
+                    return;
+                }
+                City city = CityDatabase.getCity(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString())).get();
+                String cityRole = CityDatabase.getCityRole(city,player.getUniqueId().toString());
+                String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+                assert cityRole != null;
+                if (cityRole.equals("assistant") || cityRole.equals("mayor") || cityRole.equals("vicemayor")) {
+                    if (message.equals("-")) {
+                        CityDatabase.setCityMessage(city,"enterMessage",null);
+                        plugin.sendMessage(player,"messages.city.successful.set.motd.removed","%cityname%",city.getCityName());
+                        return;
+                    }
+                    CityDatabase.setCityMessage(city,"enterMessage",message);
+                    plugin.sendMessage(player,"messages.city.successful.set.motd.set","%cityname%",city.getCityName());
+                } else {
+                    plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",city.getCityName());
+                }
+            }
+        }
     }
 }

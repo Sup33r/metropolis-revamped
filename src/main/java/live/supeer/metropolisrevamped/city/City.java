@@ -8,7 +8,6 @@ import live.supeer.metropolisrevamped.Utilities;
 import lombok.Getter;
 import org.bukkit.Location;
 
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +25,9 @@ public class City {
     private int cityBalance;
     private Location citySpawn;
     private final long cityCreationDate;
+    private String enterMessage;
+    private String exitMessage;
+    private String motdMessage;
     private boolean isRemoved;
 
     public City(DbRow data) {
@@ -36,6 +38,9 @@ public class City {
         this.cityBalance = data.getInt("cityBalance");
         this.citySpawn = Utilities.stringToLocation(data.getString("citySpawn"));
         this.cityCreationDate = data.getInt("createDate");
+        this.enterMessage = data.getString("enterMessage");
+        this.exitMessage = data.getString("exitMessage");
+        this.motdMessage = data.getString("motdMessage");
         this.isRemoved = data.get("isRemoved");
     }
 
@@ -61,6 +66,21 @@ public class City {
     public void setCityStatus(boolean isRemoved) {
         this.isRemoved = isRemoved;
         DB.executeUpdateAsync("UPDATE `mp_cities` SET `isRemoved` = " + (isRemoved ? 1 : 0) + " WHERE `cityID` = " + cityID + ";");
+    }
+
+    public void setEnterMessage(String enterMessage) {
+        this.enterMessage = enterMessage;
+        DB.executeUpdateAsync("UPDATE `mp_cities` SET `enterMessage` = " + Database.sqlString(enterMessage) + " WHERE `cityID` = " + cityID + ";");
+    }
+
+    public void setExitMessage(String exitMessage) {
+        this.exitMessage = exitMessage;
+        DB.executeUpdateAsync("UPDATE `mp_cities` SET `exitMessage` = " + Database.sqlString(exitMessage) + " WHERE `cityID` = " + cityID + ";");
+    }
+
+    public void setMotdMessage(String motdMessage) {
+        this.motdMessage = motdMessage;
+        DB.executeUpdateAsync("UPDATE `mp_cities` SET `motdMessage` = " + Database.sqlString(motdMessage) + " WHERE `cityID` = " + cityID + ";");
     }
 
     public void addCityMember(Member member) {
