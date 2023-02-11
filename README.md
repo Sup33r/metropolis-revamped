@@ -1,5 +1,7 @@
 # Metropolis Revamped
 
+## A plugin for city management, with striking similarities to towny
+
 ## Permissions
 - metropolis.city.claim
 - metropolis.city.new
