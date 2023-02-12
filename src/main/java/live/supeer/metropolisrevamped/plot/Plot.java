@@ -13,6 +13,8 @@ public class Plot {
     private final String plotName;
     private final String plotOwner;
     private final String plotOwnerUUID;
+    private final int plotYMin;
+    private final int plotYMax;
     private final String plotType;
     private final boolean kMarked;
     private final boolean isForSale;
@@ -30,6 +32,8 @@ public class Plot {
         this.plotName = data.getString("plotName");
         this.plotOwner = data.getString("plotOwner");
         this.plotOwnerUUID = data.getString("plotOwnerUUID");
+        this.plotYMin = data.getInt("plotYMin");
+        this.plotYMax = data.getInt("plotYMax");
         this.plotType = data.getString("plotType");
         this.kMarked = data.get("plotKMarked");
         this.isForSale = data.get("plotIsForSale");

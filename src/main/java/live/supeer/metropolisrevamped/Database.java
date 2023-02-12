@@ -109,6 +109,8 @@ public class Database {
                       `plotOwner` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `plotOwnerUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `plotPoints` text COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `plotYMin` int(11) NOT NULL,
+                      `plotYMax` int(11) NOT NULL,
                       `plotType` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `plotIsForSale` tinyint(1) DEFAULT 0,
                       `plotKMarked` tinyint(1) DEFAULT 0,
