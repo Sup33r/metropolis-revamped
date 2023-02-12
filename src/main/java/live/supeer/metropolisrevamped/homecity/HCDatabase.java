@@ -8,7 +8,6 @@ import live.supeer.metropolisrevamped.city.CityDatabase;
 import org.bukkit.Bukkit;
 
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.UUID;
 
 public class HCDatabase {

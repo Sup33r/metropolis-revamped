@@ -8,7 +8,9 @@ import live.supeer.metropolisrevamped.Utilities;
 import lombok.Getter;
 import org.bukkit.Location;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -21,7 +23,7 @@ public class City {
     private final String originalMayorName;
     private final String originalMayorUUID;
     private Map<Member, City> cityMembers = new HashMap<>();
-    private Map<Claim, City> cityClaims = new HashMap<>();
+    private List<Claim> cityClaims = new ArrayList<>();
     private int cityBalance;
     private Location citySpawn;
     private final long cityCreationDate;
@@ -88,7 +90,7 @@ public class City {
     }
 
     public void addCityClaim(Claim claim) {
-        cityClaims.put(claim, this);
+        cityClaims.add(claim);
     }
 
 }

@@ -93,6 +93,15 @@ public class CityDatabase {
         }
         return Optional.empty();
     }
+    public static Claim getClaim(Location location) {
+        for (City city : cities) {
+            for (Claim claim : city.getCityClaims()) {
+                if (claim.getClaimWorld().equals(location.getChunk().getWorld().getName()) && claim.getXPosition() == location.getChunk().getX() && claim.getZPosition() == location.getChunk().getZ()) return claim;
+            }
+        }
+        return null;
+    }
+
 
     public static String getCityRole(City city, String playerUUID) {
         try {
@@ -129,15 +138,6 @@ public class CityDatabase {
         }
         return null;
     }
-    public static String getClaim(Location location) {
-        try {
-            if (DB.getResults("SELECT * FROM `mp_claims` WHERE `world` = '" + location.getChunk().getWorld() + "' AND `xPosition` = " + location.getChunk().getX() + " AND `zPosition` = " + location.getChunk().getZ() + ";").isEmpty()) return null;
-            return DB.getFirstRow("SELECT * FROM `mp_claims` WHERE `world` = '" + location.getChunk().getWorld() + "' AND `xPosition` = " + location.getChunk().getX() + " AND `zPosition` = " + location.getChunk().getZ() + ";").getString("cityName");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
     public static boolean hasClaim(int x, int z, World world) {
         try {
             return !DB.getResults("SELECT * FROM `mp_claims` WHERE `world` = '" + world + "' AND `xPosition` = " + x + " AND `zPosition` = " + z + ";").isEmpty();
@@ -146,14 +146,6 @@ public class CityDatabase {
         }
         return false;
     }
-
-    public static String getCityMessage(City city, String messageType) {
-        if (messageType.equals("enterMessage")) return city.getEnterMessage();
-        if (messageType.equals("exitMessage")) return city.getExitMessage();
-        if (messageType.equals("motdMessage")) return city.getMotdMessage();
-        return null;
-    }
-
     public static void setCityMessage(City city, String messageType, String message) {
         if (message == null) {
             if (messageType.equals("enterMessage")) city.setEnterMessage(null);

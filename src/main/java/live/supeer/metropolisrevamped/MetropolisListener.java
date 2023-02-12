@@ -3,6 +3,8 @@ package live.supeer.metropolisrevamped;
 import fr.mrmicky.fastboard.FastBoard;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
+import live.supeer.metropolisrevamped.city.Claim;
+import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,16 +14,18 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 
 public class MetropolisListener implements Listener {
     static MetropolisRevamped plugin;
-    private static List<Vector> positions = new ArrayList<>();
+    private static List<Location> savedLocations = new ArrayList<>();
     private static List<Player> savedPlayers = new ArrayList<>();
+
+    private static HashMap<UUID, List<Location>> savedLocs = new HashMap<>();
+
 
     @EventHandler
     public static void playerJoinScoreboard(PlayerJoinEvent event) {
@@ -29,7 +33,7 @@ public class MetropolisListener implements Listener {
         FastBoard board = new FastBoard(player);
 
         if (CityDatabase.getClaim(player.getLocation()) != null) {
-            String cityUn = CityDatabase.getClaim(player.getLocation());
+            String cityUn = Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName();
             if (CityDatabase.getCity(cityUn).isEmpty()) {
                 return;
             }
@@ -70,10 +74,10 @@ public class MetropolisListener implements Listener {
         Player player = event.getPlayer();
         FastBoard board = new FastBoard(player);
         if (CityDatabase.getClaim(player.getLocation()) != null) {
-            if (CityDatabase.getCity(CityDatabase.getClaim(player.getLocation())).isEmpty()) {
+            if (CityDatabase.getCity(CityDatabase.getClaim(player.getLocation()).getCityName()).isEmpty()) {
                 return;
             }
-            City city = CityDatabase.getCity(CityDatabase.getClaim(player.getLocation())).get();
+            City city = CityDatabase.getCity(CityDatabase.getClaim(player.getLocation()).getCityName()).get();
             board.updateTitle("§a§l" + city.getCityName());
             board.updateLine(5,"§a" + city.getCityClaims().size());
             board.updateLine(4,plugin.getMessage("messages.city.scoreboard.plots"));
@@ -93,40 +97,69 @@ public class MetropolisListener implements Listener {
         if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
             if (event.getMaterial() == Material.STICK) {
                 event.setCancelled(true);
-                positions.clear();
                 savedPlayers.remove(player);
-                positions.add(event.getClickedBlock().getLocation().toVector());
-                player.sendMessage("§a§lMetropolis §8» §7You have started a new polygon.");
+                savedLocations.clear();
+                savedLocations.add(event.getClickedBlock().getLocation());
+                plugin.sendMessage(player,"messages.city.markings.new", "%world%", event.getClickedBlock().getWorld().getName(), "%x%", String.valueOf(event.getClickedBlock().getX()), "%y%", String.valueOf(event.getClickedBlock().getY()), "%z%", String.valueOf(event.getClickedBlock().getZ()));
             }
         }
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (event.getMaterial() == Material.STICK) {
                 event.setCancelled(true);
                 if (savedPlayers.contains(player)) {
-                    player.sendMessage("§a§lMetropolis §8» §7You have already saved a polygon.");
+                    player.sendMessage("§cDu har redan en markering igång.");
                     return;
                 }
-                positions.add(event.getClickedBlock().getLocation().toVector());
-                player.sendMessage("§a§lMetropolis §8» §7You have added a new point to the polygon.");
-                if (positions.size() > 2 && positions.get(0).equals(positions.get(positions.size() - 1))) {
-                    player.sendMessage("§a§lMetropolis §8» §7You have finished the polygon.");
-                    savePolygon(positions,player);
+                if (savedLocations.get(savedLocations.size()-1) == event.getClickedBlock().getLocation()) {
+                    player.sendMessage("§cDu kan inte markera samma block två gånger.");
+                    return;
+                }
+                if (savedLocations.get(savedLocations.size()-1).getWorld() != event.getClickedBlock().getWorld()) {
+                    player.sendMessage("§cDu kan inte markera block i olika världar.");
+                    return;
+                }
+                if (savedLocations.get(savedLocations.size()-1).distance(event.getClickedBlock().getLocation()) > 1) {
+                    player.sendMessage("§cDu måste markera blocken i en rät linje.");
+                    return;
+                }
+                savedLocations.add(event.getClickedBlock().getLocation());
+                plugin.sendMessage(player,"messages.city.markings.add", "%world%", event.getClickedBlock().getWorld().getName(), "%x%", String.valueOf(event.getClickedBlock().getX()), "%y%", String.valueOf(event.getClickedBlock().getY()), "%z%", String.valueOf(event.getClickedBlock().getZ()), "%number%", String.valueOf(savedLocations.size()));
+                if (savedLocations.size() > 2 && savedLocations.get(0).equals(savedLocations.get(savedLocations.size() - 1))) {
+                    Polygon polygon = new Polygon();
+                    for (Location location : savedLocations) {
+                        polygon.addPoint(location.getBlockX(), location.getBlockZ());
+                    }
+                    double minX = polygon.getBounds().getMinX();
+                    double maxX = polygon.getBounds().getMaxX();
+                    double minY = polygon.getBounds().getMinY();
+                    double maxY = polygon.getBounds().getMaxY();
 
+                    player.sendMessage("§aMinX: " + minX + " MaxX: " + maxX + " MinY: " + minY + " MaxY: " + maxY);
+                    int chunkSize = 16;
+                    int startX = (int) Math.floor(minX / chunkSize) * chunkSize;
+                    int endX = (int) Math.floor(maxX / chunkSize) * chunkSize + chunkSize;
+                    int startY = (int) Math.floor(minY / chunkSize) * chunkSize;
+                    int endY = (int) Math.floor(maxY / chunkSize) * chunkSize + chunkSize;
+
+                    Rectangle chunkBounds = new Rectangle();
+                    for (int x = startX; x < endX; x += chunkSize) {
+                        for (int z = startY; z < endY; z += chunkSize) {
+                            chunkBounds.setBounds(x, z, chunkSize, chunkSize);
+                            if (polygon.intersects(chunkBounds)) {
+                                if (CityDatabase.getClaim(new Location(player.getWorld(),x,0,z)) == null || !Objects.equals(CityDatabase.getClaim(new Location(player.getWorld(), x, 0, z)).getCityName(), HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()))) {
+                                    player.sendMessage("§cEn markbit inom din markering är inte i din stad.");
+                                    return;
+                                }
+                                player.sendMessage("§aX: " + x + " Z: " + z);
+                            }
+                        }
+                    }
+
+                    plugin.sendMessage(player,"messages.city.markings.finish");
+                    savedPlayers.add(player);
                 }
             }
         }
     }
-    public static void savePolygon(List<Vector> positions, Player player) {
-        savedPlayers.add(player);
-        for (int i = 0; i < positions.size() - 1; i++) {
-            Vector pos1 = positions.get(i);
-            Vector pos2 = positions.get(i + 1);
-            for (int x = Math.min(pos1.getBlockX(), pos2.getBlockX()); x <= Math.max(pos1.getBlockX(), pos2.getBlockX()); x++) {
-                for (int z = Math.min(pos1.getBlockZ(), pos2.getBlockZ()); z <= Math.max(pos1.getBlockZ(), pos2.getBlockZ()); z++) {
-                    Location loc = new Location(player.getWorld(), x, 0, z);
-                    loc.getBlock().setType(Material.DIAMOND_BLOCK);
-                }
-            }
-        }
-    }
+
 }

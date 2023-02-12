@@ -30,4 +30,8 @@ public class Claim {
         this.outpost = data.get("outpost");
     }
 
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
 }

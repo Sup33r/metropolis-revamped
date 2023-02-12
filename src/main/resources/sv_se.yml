@@ -37,6 +37,10 @@ messages:
   city:
     motd: "§e%cityname% §7|§e %motd%"
     balance: "§e%cityname% §7|§a Stadskassa: %balance% minemynt."
+    markings:
+      new: "§aEn ny markering har påbörjats på punkten ([%world%]%x%, %y%, %z%)."
+      add: "§aPunkt %number% med koodinaterna ([%world%]%x%, %y%, %z%) har lagts till."
+      finish: "§aDu har gjort en markering. Använd \n§a/plot new [§2namn§a]\n§a för att skapa en ny tomt, eller \n §a/city buy district §2namn\n§a för att skapa ett område."
     scoreboard:
       plots: "§2§lAntal tomter:"
       members: "§2§lAntal medlemmar:"
