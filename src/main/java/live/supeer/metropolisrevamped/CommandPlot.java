@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.Subcommand;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
+import live.supeer.metropolisrevamped.plot.PlotDatabase;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -41,6 +42,7 @@ public class CommandPlot extends BaseCommand  {
             return;
         }
         Polygon regionPolygon = MetropolisListener.playerPolygons.get(player.getUniqueId());
+        Location[] locations = MetropolisListener.savedLocs.get(player.getUniqueId()).toArray(new Location[0]);
         double minX = regionPolygon.getBounds().getMinX();
         double maxX = regionPolygon.getBounds().getMaxX();
         double minY = regionPolygon.getBounds().getMinY();
@@ -67,16 +69,59 @@ public class CommandPlot extends BaseCommand  {
                 chunkBounds.setBounds(x, z, chunkSize, chunkSize);
                 if (regionPolygon.intersects(chunkBounds)) {
                     if (CityDatabase.getClaim(new Location(player.getWorld(),x,0,z)) == null || !Objects.equals(Objects.requireNonNull(CityDatabase.getClaim(new Location(player.getWorld(), x, 0, z))).getCityName(), HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()))) {
-                        player.sendMessage("§cEn markbit inom din markering är inte i din stad.");
+                        plugin.sendMessage(player,"messages.error.plot.intersectsExistingClaim");
                         return;
                     }
-                    //check if the claim intersects with another claim
-
-
+                    if (PlotDatabase.intersectsExistingPlot(regionPolygon,city)) {
+                        plugin.sendMessage(player,"messages.error.plot.intersectsExistingPlot");
+                        return;
+                    }
+                    PlotDatabase.createPlot(player,locations,null,city,0,0);
                 }
             }
         }
 
+    }
+
+    @Subcommand("expand")
+    public static void onExpand(Player player, String[] args) {
+        if (!player.hasPermission("metropolis.plot.expand")) {
+            plugin.sendMessage(player,"messages.error.permissionDenied");
+            return;
+        }
+        if (!MetropolisListener.playerPolygons.containsKey(player.getUniqueId())) {
+            plugin.sendMessage(player,"messages.error.missing.plot");
+            return;
+        }
+
+        if (args.length == 0) {
+            MetropolisListener.playerYMin.put(player.getUniqueId(),-64);
+            MetropolisListener.playerYMax.put(player.getUniqueId(),319);
+            return;
+        }
+        if (args.length == 1 || args.length > 2) {
+            plugin.sendMessage(player,"messages.syntax.plot.expand");
+            return;
+        }
+        if (args[0].matches("[0-9]")) {
+            if (args[1].equals("up")) {
+                if (MetropolisListener.playerYMax.get(player.getUniqueId()) + Integer.parseInt(args[0]) > 319) {
+                    plugin.sendMessage(player,"messages.error.plot.tooLowExpand");
+                    return;
+                }
+                MetropolisListener.playerYMax.put(player.getUniqueId(),MetropolisListener.playerYMax.get(player.getUniqueId()) + Integer.parseInt(args[0]));
+            } else if (args[1].equals("down")) {
+                if (MetropolisListener.playerYMin.get(player.getUniqueId()) - Integer.parseInt(args[0]) < -64) {
+                    plugin.sendMessage(player,"messages.error.plot.tooHighExpand");
+                    return;
+                }
+                MetropolisListener.playerYMin.put(player.getUniqueId(),MetropolisListener.playerYMin.get(player.getUniqueId()) - Integer.parseInt(args[0]));
+            } else {
+                plugin.sendMessage(player,"messages.syntax.plot.expand");
+            }
+        } else {
+            plugin.sendMessage(player,"messages.syntax.plot.expand");
+        }
     }
 
     @Subcommand("delete")

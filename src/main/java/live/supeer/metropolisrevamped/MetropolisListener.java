@@ -21,7 +21,7 @@ public class MetropolisListener implements Listener {
     static MetropolisRevamped plugin;
     private static final List<Player> savedPlayers = new ArrayList<>();
 
-    private static final HashMap<UUID, List<Location>> savedLocs = new HashMap<>();
+    public static HashMap<UUID, List<Location>> savedLocs = new HashMap<>();
 
 
     @EventHandler

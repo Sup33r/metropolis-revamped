@@ -166,7 +166,7 @@ public class CommandCity extends BaseCommand {
             plugin.sendMessage(player,"messages.error.permissionDenied");
             return;
         }
-        if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
+        if (HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
             plugin.sendMessage(player,"messages.error.missing.homeCity");
             return;
         }
@@ -216,7 +216,7 @@ public class CommandCity extends BaseCommand {
                     plugin.sendMessage(player,"messages.error.permissionDenied");
                     return;
                 }
-                if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
+                if (HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
                     plugin.sendMessage(player,"messages.error.missing.homeCity");
                     return;
                 }
@@ -245,7 +245,7 @@ public class CommandCity extends BaseCommand {
                     plugin.sendMessage(player,"messages.error.permissionDenied");
                     return;
                 }
-                if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
+                if (HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
                     plugin.sendMessage(player,"messages.error.missing.homeCity");
                     return;
                 }
@@ -274,7 +274,7 @@ public class CommandCity extends BaseCommand {
                     plugin.sendMessage(player,"messages.error.permissionDenied");
                     return;
                 }
-                if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
+                if (HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
                     plugin.sendMessage(player,"messages.error.missing.homeCity");
                     return;
                 }

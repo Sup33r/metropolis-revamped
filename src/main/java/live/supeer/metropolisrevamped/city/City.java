@@ -7,7 +7,6 @@ import live.supeer.metropolisrevamped.MetropolisRevamped;
 import live.supeer.metropolisrevamped.Utilities;
 import live.supeer.metropolisrevamped.plot.Plot;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
@@ -24,9 +23,9 @@ public class City {
     private String cityName;
     private final String originalMayorName;
     private final String originalMayorUUID;
-    private Map<Member, City> cityMembers = new HashMap<>();
-    private List<Claim> cityClaims = new ArrayList<>();
-    private List<Plot> cityPlots = new ArrayList<>();
+    private final Map<Member, City> cityMembers = new HashMap<>();
+    private final List<Claim> cityClaims = new ArrayList<>();
+    private final List<Plot> cityPlots = new ArrayList<>();
     private int cityBalance;
     private Location citySpawn;
     private final long cityCreationDate;

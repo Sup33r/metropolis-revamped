@@ -15,7 +15,7 @@ public class HCDatabase {
 
     public static void setHomeCity(String uuid, City city) {
         try {
-            if (!hasHomeCity(uuid)) {
+            if (hasHomeCity(uuid)) {
                 DB.executeInsert("INSERT INTO mp_homecities (playerUUID, playerName, cityName) VALUES (" + Database.sqlString(uuid) + ", " + Database.sqlString(Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName()) + ", " + Database.sqlString(city.getCityName()) + ");");
                 return;
             }
@@ -47,11 +47,11 @@ public class HCDatabase {
     }
     public static boolean hasHomeCity(String uuid) {
         try {
-            return !DB.getResults("SELECT * FROM `mp_homecities` WHERE `playerUUID` = " + Database.sqlString(uuid)).isEmpty();
+            return DB.getResults("SELECT * FROM `mp_homecities` WHERE `playerUUID` = " + Database.sqlString(uuid)).isEmpty();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return true;
     }
 
 }

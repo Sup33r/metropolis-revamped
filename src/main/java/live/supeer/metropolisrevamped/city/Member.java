@@ -8,11 +8,11 @@ import lombok.Getter;
 public class Member {
     public static MetropolisRevamped plugin;
 
-    private String playerName;
+    private final String playerName;
     private final String playerUUID;
     private final int cityID;
-    private String cityName;
-    private String cityRole;
+    private final String cityName;
+    private final String cityRole;
     private final long joinDate;
 
     public Member (DbRow data) {
