@@ -25,6 +25,9 @@ messages:
         balance:
           cityCost: "§cDu har inte råd med 500 000 minemynt som en stad kostar."
     permissionDenied: "§cÅtkomst nekad."
+    plot:
+      tooSmall: "§cDin markering är för liten."
+      tooLowY: "§cDin markering är för låg. Använd /plot expand för att öka höjden."
     missing:
       balance: "§e%cityname% §7| §cStaden måste ha minst 100 000 minemynt i stadskassan."
       playerBalance: "§e%cityname% §7| §cDu har inte nog med minemynt i din plånbok."

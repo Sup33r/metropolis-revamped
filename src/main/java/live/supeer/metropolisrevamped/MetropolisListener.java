@@ -85,6 +85,8 @@ public class MetropolisListener implements Listener {
         }
     }
     public static HashMap<UUID, Polygon> playerPolygons = new HashMap<>();
+    public static HashMap<UUID, Integer> playerYMin = new HashMap<>();
+    public static HashMap<UUID, Integer> playerYMax = new HashMap<>();
 
 
     @EventHandler
@@ -122,6 +124,12 @@ public class MetropolisListener implements Listener {
                     Polygon regionPolygon = new Polygon();
                     for (Location location : savedLocs.get(player.getUniqueId())) {
                         regionPolygon.addPoint(location.getBlockX(), location.getBlockZ());
+                        if (playerYMax.get(player.getUniqueId()) == null || location.getBlockY() > playerYMax.get(player.getUniqueId())) {
+                            playerYMax.put(player.getUniqueId(), location.getBlockY());
+                        }
+                        if (playerYMin.get(player.getUniqueId()) == null || location.getBlockY() < playerYMin.get(player.getUniqueId())) {
+                            playerYMin.put(player.getUniqueId(), location.getBlockY());
+                        }
                     }
                     playerPolygons.put(player.getUniqueId(), regionPolygon);
                     plugin.sendMessage(player,"messages.city.markings.finish");

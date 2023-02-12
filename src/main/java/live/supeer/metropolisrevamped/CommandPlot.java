@@ -46,6 +46,15 @@ public class CommandPlot extends BaseCommand  {
         double minY = regionPolygon.getBounds().getMinY();
         double maxY = regionPolygon.getBounds().getMaxY();
 
+        if (maxX - minX < 3 || maxY - minY < 3) {
+            plugin.sendMessage(player,"messages.error.plot.tooSmall");
+            return;
+        }
+        if (MetropolisListener.playerYMax.get(player.getUniqueId()) - MetropolisListener.playerYMin.get(player.getUniqueId()) < 3) {
+            plugin.sendMessage(player,"messages.error.plot.tooLowY");
+            return;
+        }
+
         int chunkSize = 16;
         int startX = (int) Math.floor(minX / chunkSize) * chunkSize;
         int endX = (int) Math.floor(maxX / chunkSize) * chunkSize + chunkSize;
@@ -61,6 +70,8 @@ public class CommandPlot extends BaseCommand  {
                         player.sendMessage("§cEn markbit inom din markering är inte i din stad.");
                         return;
                     }
+                    //check if the claim intersects with another claim
+
 
                 }
             }
