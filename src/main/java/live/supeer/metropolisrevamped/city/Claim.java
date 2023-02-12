@@ -22,7 +22,7 @@ public class Claim {
         this.claimId = data.getInt("claimId");
         this.claimerUUID = data.getString("claimerUUID");
         this.claimerName = data.getString("claimerName");
-        this.claimWorld = data.getString("claimWorld");
+        this.claimWorld = data.getString("world");
         this.xPosition = data.getInt("xPosition");
         this.zPosition = data.getInt("zPosition");
         this.cityName = data.getString("cityName");

@@ -74,9 +74,6 @@ public class MetropolisListener implements Listener {
         Player player = event.getPlayer();
         FastBoard board = new FastBoard(player);
         if (CityDatabase.getClaim(player.getLocation()) != null) {
-            if (CityDatabase.getCity(CityDatabase.getClaim(player.getLocation()).getCityName()).isEmpty()) {
-                return;
-            }
             City city = CityDatabase.getCity(CityDatabase.getClaim(player.getLocation()).getCityName()).get();
             board.updateTitle("§a§l" + city.getCityName());
             board.updateLine(5,"§a" + city.getCityClaims().size());
@@ -118,10 +115,6 @@ public class MetropolisListener implements Listener {
                     player.sendMessage("§cDu kan inte markera block i olika världar.");
                     return;
                 }
-                if (savedLocations.get(savedLocations.size()-1).distance(event.getClickedBlock().getLocation()) > 1) {
-                    player.sendMessage("§cDu måste markera blocken i en rät linje.");
-                    return;
-                }
                 savedLocations.add(event.getClickedBlock().getLocation());
                 plugin.sendMessage(player,"messages.city.markings.add", "%world%", event.getClickedBlock().getWorld().getName(), "%x%", String.valueOf(event.getClickedBlock().getX()), "%y%", String.valueOf(event.getClickedBlock().getY()), "%z%", String.valueOf(event.getClickedBlock().getZ()), "%number%", String.valueOf(savedLocations.size()));
                 if (savedLocations.size() > 2 && savedLocations.get(0).equals(savedLocations.get(savedLocations.size() - 1))) {
@@ -146,11 +139,11 @@ public class MetropolisListener implements Listener {
                         for (int z = startY; z < endY; z += chunkSize) {
                             chunkBounds.setBounds(x, z, chunkSize, chunkSize);
                             if (polygon.intersects(chunkBounds)) {
-                                if (CityDatabase.getClaim(new Location(player.getWorld(),x,0,z)) == null || !Objects.equals(CityDatabase.getClaim(new Location(player.getWorld(), x, 0, z)).getCityName(), HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()))) {
+                                if (CityDatabase.getClaim(new Location(player.getWorld(),x,0,z)) == null || !Objects.equals(Objects.requireNonNull(CityDatabase.getClaim(new Location(player.getWorld(), x, 0, z))).getCityName(), HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()))) {
                                     player.sendMessage("§cEn markbit inom din markering är inte i din stad.");
                                     return;
                                 }
-                                player.sendMessage("§aX: " + x + " Z: " + z);
+
                             }
                         }
                     }

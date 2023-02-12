@@ -6,6 +6,7 @@ import live.supeer.metropolisrevamped.Database;
 import live.supeer.metropolisrevamped.MetropolisRevamped;
 import live.supeer.metropolisrevamped.Utilities;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
@@ -91,6 +92,15 @@ public class City {
 
     public void addCityClaim(Claim claim) {
         cityClaims.add(claim);
+    }
+
+    public Claim getCityClaim(Location location) {
+        for (Claim claim : cityClaims) {
+            if (claim.getClaimWorld().equals(location.getWorld().toString()) && claim.getXPosition() == location.getChunk().getX() && claim.getZPosition() == location.getChunk().getZ()) {
+                return claim;
+            }
+        }
+        return null;
     }
 
 }

@@ -49,7 +49,9 @@ public class CityDatabase {
         Bukkit.broadcastMessage(cityName);
         var claims = DB.getResults("SELECT * FROM `mp_claims` WHERE `cityName` = '" + cityName + "';");
         for (DbRow claim : claims) {
-            rCity.addCityClaim(new Claim(claim));
+            Claim claim1 = new Claim(claim);
+            rCity.addCityClaim(claim1);
+            plugin.getLogger().info("Loaded claim " + claim1.getXPosition() + " | " + claim1.getZPosition() + "  |  " + claim1.getClaimWorld() + " for city " + cityName);
         }
     }
 
@@ -95,8 +97,8 @@ public class CityDatabase {
     }
     public static Claim getClaim(Location location) {
         for (City city : cities) {
-            for (Claim claim : city.getCityClaims()) {
-                if (claim.getClaimWorld().equals(location.getChunk().getWorld().getName()) && claim.getXPosition() == location.getChunk().getX() && claim.getZPosition() == location.getChunk().getZ()) return claim;
+            if (city.getCityClaim(location) != null) {
+                return city.getCityClaim(location);
             }
         }
         return null;
