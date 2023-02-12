@@ -21,7 +21,6 @@ import java.util.List;
 
 public class MetropolisListener implements Listener {
     static MetropolisRevamped plugin;
-    private static List<Location> savedLocations = new ArrayList<>();
     private static List<Player> savedPlayers = new ArrayList<>();
 
     private static HashMap<UUID, List<Location>> savedLocs = new HashMap<>();
@@ -87,6 +86,8 @@ public class MetropolisListener implements Listener {
             board.updateLine(0,plugin.getMessage("messages.city.scoreboard.pvp_on"));
         }
     }
+    public static HashMap<UUID, Polygon> playerPolygons = new HashMap<>();
+
 
     @EventHandler
     public static void onPlayerInteract(PlayerInteractEvent event) {
@@ -95,8 +96,9 @@ public class MetropolisListener implements Listener {
             if (event.getMaterial() == Material.STICK) {
                 event.setCancelled(true);
                 savedPlayers.remove(player);
-                savedLocations.clear();
-                savedLocations.add(event.getClickedBlock().getLocation());
+                savedLocs.remove(player.getUniqueId());
+                savedLocs.put(player.getUniqueId(), new ArrayList<>());
+                savedLocs.get(player.getUniqueId()).add(event.getClickedBlock().getLocation());
                 plugin.sendMessage(player,"messages.city.markings.new", "%world%", event.getClickedBlock().getWorld().getName(), "%x%", String.valueOf(event.getClickedBlock().getX()), "%y%", String.valueOf(event.getClickedBlock().getY()), "%z%", String.valueOf(event.getClickedBlock().getZ()));
             }
         }
@@ -107,27 +109,29 @@ public class MetropolisListener implements Listener {
                     player.sendMessage("§cDu har redan en markering igång.");
                     return;
                 }
-                if (savedLocations.get(savedLocations.size()-1) == event.getClickedBlock().getLocation()) {
+                if (savedLocs.get(player.getUniqueId()).size() > 0 && savedLocs.get(player.getUniqueId()).get(savedLocs.get(player.getUniqueId()).size()-1).equals(event.getClickedBlock().getLocation())) {
                     player.sendMessage("§cDu kan inte markera samma block två gånger.");
                     return;
                 }
-                if (savedLocations.get(savedLocations.size()-1).getWorld() != event.getClickedBlock().getWorld()) {
+                if (savedLocs.get(player.getUniqueId()).size() > 0 && !savedLocs.get(player.getUniqueId()).get(0).getWorld().equals(event.getClickedBlock().getWorld())) {
                     player.sendMessage("§cDu kan inte markera block i olika världar.");
                     return;
                 }
-                savedLocations.add(event.getClickedBlock().getLocation());
-                plugin.sendMessage(player,"messages.city.markings.add", "%world%", event.getClickedBlock().getWorld().getName(), "%x%", String.valueOf(event.getClickedBlock().getX()), "%y%", String.valueOf(event.getClickedBlock().getY()), "%z%", String.valueOf(event.getClickedBlock().getZ()), "%number%", String.valueOf(savedLocations.size()));
-                if (savedLocations.size() > 2 && savedLocations.get(0).equals(savedLocations.get(savedLocations.size() - 1))) {
-                    Polygon polygon = new Polygon();
-                    for (Location location : savedLocations) {
-                        polygon.addPoint(location.getBlockX(), location.getBlockZ());
-                    }
-                    double minX = polygon.getBounds().getMinX();
-                    double maxX = polygon.getBounds().getMaxX();
-                    double minY = polygon.getBounds().getMinY();
-                    double maxY = polygon.getBounds().getMaxY();
 
-                    player.sendMessage("§aMinX: " + minX + " MaxX: " + maxX + " MinY: " + minY + " MaxY: " + maxY);
+                // add location to list
+                savedLocs.get(player.getUniqueId()).add(event.getClickedBlock().getLocation());
+                plugin.sendMessage(player,"messages.city.markings.add", "%world%", event.getClickedBlock().getWorld().getName(), "%x%", String.valueOf(event.getClickedBlock().getX()), "%y%", String.valueOf(event.getClickedBlock().getY()), "%z%", String.valueOf(event.getClickedBlock().getZ()), "%number%", String.valueOf(savedLocs.get(player.getUniqueId()).size()));
+                if (savedLocs.get(player.getUniqueId()).size() > 2 && savedLocs.get(player.getUniqueId()).get(0).equals(event.getClickedBlock().getLocation())) {
+                    Polygon regionPolygon = new Polygon();
+                    for (Location location : savedLocs.get(player.getUniqueId())) {
+                        regionPolygon.addPoint(location.getBlockX(), location.getBlockZ());
+                    }
+                    playerPolygons.put(player.getUniqueId(), regionPolygon);
+                    double minX = regionPolygon.getBounds().getMinX();
+                    double maxX = regionPolygon.getBounds().getMaxX();
+                    double minY = regionPolygon.getBounds().getMinY();
+                    double maxY = regionPolygon.getBounds().getMaxY();
+
                     int chunkSize = 16;
                     int startX = (int) Math.floor(minX / chunkSize) * chunkSize;
                     int endX = (int) Math.floor(maxX / chunkSize) * chunkSize + chunkSize;
@@ -138,9 +142,10 @@ public class MetropolisListener implements Listener {
                     for (int x = startX; x < endX; x += chunkSize) {
                         for (int z = startY; z < endY; z += chunkSize) {
                             chunkBounds.setBounds(x, z, chunkSize, chunkSize);
-                            if (polygon.intersects(chunkBounds)) {
+                            if (regionPolygon.intersects(chunkBounds)) {
                                 if (CityDatabase.getClaim(new Location(player.getWorld(),x,0,z)) == null || !Objects.equals(Objects.requireNonNull(CityDatabase.getClaim(new Location(player.getWorld(), x, 0, z))).getCityName(), HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()))) {
                                     player.sendMessage("§cEn markbit inom din markering är inte i din stad.");
+                                    savedPlayers.add(player);
                                     return;
                                 }
 
