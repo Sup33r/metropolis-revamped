@@ -5,6 +5,7 @@ import co.aikar.idb.DbRow;
 import live.supeer.metropolisrevamped.Database;
 import live.supeer.metropolisrevamped.MetropolisRevamped;
 import live.supeer.metropolisrevamped.Utilities;
+import live.supeer.metropolisrevamped.plot.Plot;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -25,6 +26,7 @@ public class City {
     private final String originalMayorUUID;
     private Map<Member, City> cityMembers = new HashMap<>();
     private List<Claim> cityClaims = new ArrayList<>();
+    private List<Plot> cityPlots = new ArrayList<>();
     private int cityBalance;
     private Location citySpawn;
     private final long cityCreationDate;
@@ -101,6 +103,10 @@ public class City {
             }
         }
         return null;
+    }
+
+    public void addCityPlot(Plot plot) {
+        cityPlots.add(plot);
     }
 
 }

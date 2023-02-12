@@ -99,6 +99,27 @@ public class Database {
                       `jsonLog` json NOT NULL,
                       PRIMARY KEY (logId)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
+
+            DB.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS `mp_plots` (
+                      `plotId` int(11) NOT NULL AUTO_INCREMENT,
+                      ``cityId` int(11) NOT NULL,
+                      `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `plotName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `plotOwner` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `plotOwnerUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `plotPoints` text COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `plotType` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `plotIsForSale` tinyint(1) DEFAULT 0,
+                      `plotKMarked` tinyint(1) DEFAULT 0,
+                      `plotPrice` int(25) DEFAULT NULL,
+                      `plotPermsMembers` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `plotPermsOutsiders` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `plotCenter` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `plotFlags` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                      `plotCreationDate` bigint(30) DEFAULT NULL,
+                      PRIMARY KEY (logId)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
         } catch (SQLException exception) {
             exception.printStackTrace();
         }

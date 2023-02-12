@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -51,6 +52,89 @@ public class Utilities {
         }
         return false;
     }
+
+    public static String parseFlagChange(char[] flagsOriginal, String change) {
+        String flagsRaw = new String(flagsOriginal);
+        change = change.replace("*", "abcefghjrstv");
+
+        boolean isAdding = true;
+
+        for (int i = 0; i < change.length(); i++) {
+            char currentChar = change.charAt(i);
+
+            // the first character must be either a + or a -
+            if (i == 0 && currentChar != '+' && currentChar != '-') {
+                return null;
+            }
+
+            if (currentChar == '+') {
+                isAdding = true;
+                continue;
+            } else if (currentChar == '-') {
+                isAdding = false;
+                continue;
+            }
+
+            if (!isValidFlag(currentChar)) {
+                return null;
+            }
+
+            flagsRaw = isAdding ? flagsRaw + currentChar : flagsRaw.replace(String.valueOf(currentChar), "");
+        }
+
+        StringBuilder flagsNew = new StringBuilder();
+
+        for (char flag : flagsRaw.toCharArray()) {
+            boolean exists = false;
+
+            for (int j = 0; j < flagsNew.length(); j++) {
+                if (flagsNew.charAt(j) == flag) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (!exists) {
+                flagsNew.append(flag);
+            }
+        }
+
+        char[] flagsNewArray = flagsNew.toString().toCharArray();
+
+        Arrays.sort(flagsOriginal);
+        Arrays.sort(flagsNewArray);
+
+        flagsNew = new StringBuilder(new String(flagsNewArray));
+
+        // don't change if there's nothing to change
+        if (flagsNew.toString().equals(new String(flagsOriginal))) {
+            return null;
+        }
+
+        return flagsNew.toString();
+    }
+
+    private static boolean isValidFlag(char currentChar){
+        return currentChar == 'a' || currentChar == 'b' || currentChar == 'c' || currentChar == 'e' || currentChar == 'f' || currentChar == 'g' || currentChar == 'h' || currentChar == 'j' || currentChar == 'r' || currentChar == 's' || currentChar == 't' || currentChar == 'v';
+    }
+
+    public static String polygonToString(Location[] polygon) {
+        StringBuilder string = new StringBuilder();
+        for (Location location : polygon) {
+            string.append(locationToString(location)).append(" ");
+        }
+        return string.toString();
+    }
+
+    public static Location[] stringToPolygon(String string) {
+        String[] split = string.split(" ");
+        Location[] polygon = new Location[split.length / 6];
+        for (int i = 0; i < split.length; i += 6) {
+            polygon[i / 6] = stringToLocation(split[i] + " " + split[i + 1] + " " + split[i + 2] + " " + split[i + 3] + " " + split[i + 4] + " " + split[i + 5]);
+        }
+        return polygon;
+    }
+
     public static ItemStack letterBanner(String letter,String lore) {
         String letterLower = letter.toLowerCase();
         ItemStack banner = new ItemStack(org.bukkit.Material.WHITE_BANNER);

@@ -6,6 +6,7 @@ import live.supeer.metropolisrevamped.Database;
 import live.supeer.metropolisrevamped.MetropolisRevamped;
 import live.supeer.metropolisrevamped.Utilities;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
+import live.supeer.metropolisrevamped.plot.Plot;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -33,6 +34,7 @@ public class CityDatabase {
             plugin.getLogger().info("Loaded city " + city.getCityName());
             loadMembers(city);
             loadClaims(city);
+            loadPlots(city);
         }
     }
 
@@ -52,6 +54,16 @@ public class CityDatabase {
             Claim claim1 = new Claim(claim);
             rCity.addCityClaim(claim1);
             plugin.getLogger().info("Loaded claim " + claim1.getXPosition() + " | " + claim1.getZPosition() + "  |  " + claim1.getClaimWorld() + " for city " + cityName);
+        }
+    }
+
+    private static void loadPlots(City rCity) throws SQLException {
+        String cityName = rCity.getCityName();
+        Bukkit.broadcastMessage(cityName);
+        var plots = DB.getResults("SELECT * FROM `mp_plots` WHERE `cityName` = '" + cityName + "';");
+        for (DbRow plot : plots) {
+            Plot plot1 = new Plot(plot);
+            rCity.addCityPlot(plot1);
         }
     }
 

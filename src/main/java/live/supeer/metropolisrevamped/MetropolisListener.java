@@ -3,8 +3,6 @@ package live.supeer.metropolisrevamped;
 import fr.mrmicky.fastboard.FastBoard;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
-import live.supeer.metropolisrevamped.city.Claim;
-import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -21,9 +19,9 @@ import java.util.List;
 
 public class MetropolisListener implements Listener {
     static MetropolisRevamped plugin;
-    private static List<Player> savedPlayers = new ArrayList<>();
+    private static final List<Player> savedPlayers = new ArrayList<>();
 
-    private static HashMap<UUID, List<Location>> savedLocs = new HashMap<>();
+    private static final HashMap<UUID, List<Location>> savedLocs = new HashMap<>();
 
 
     @EventHandler
@@ -69,11 +67,11 @@ public class MetropolisListener implements Listener {
     @EventHandler
     public static void onPlayerMove(PlayerMoveEvent event) {
         if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) return;
-        //Lägga in en if-sats som kollar om spelaren är i en stad eller inte, och därefter endast kolla efter tomter om de är i en stad.
         Player player = event.getPlayer();
         FastBoard board = new FastBoard(player);
         if (CityDatabase.getClaim(player.getLocation()) != null) {
-            City city = CityDatabase.getCity(CityDatabase.getClaim(player.getLocation()).getCityName()).get();
+            if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) return;
+            City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).get();
             board.updateTitle("§a§l" + city.getCityName());
             board.updateLine(5,"§a" + city.getCityClaims().size());
             board.updateLine(4,plugin.getMessage("messages.city.scoreboard.plots"));
@@ -106,19 +104,18 @@ public class MetropolisListener implements Listener {
             if (event.getMaterial() == Material.STICK) {
                 event.setCancelled(true);
                 if (savedPlayers.contains(player)) {
-                    player.sendMessage("§cDu har redan en markering igång.");
+                    plugin.sendMessage(player,"messages.city.markings.finished");
                     return;
                 }
                 if (savedLocs.get(player.getUniqueId()).size() > 0 && savedLocs.get(player.getUniqueId()).get(savedLocs.get(player.getUniqueId()).size()-1).equals(event.getClickedBlock().getLocation())) {
-                    player.sendMessage("§cDu kan inte markera samma block två gånger.");
+                    plugin.sendMessage(player,"messages.city.markings.sameBlock");
                     return;
                 }
                 if (savedLocs.get(player.getUniqueId()).size() > 0 && !savedLocs.get(player.getUniqueId()).get(0).getWorld().equals(event.getClickedBlock().getWorld())) {
-                    player.sendMessage("§cDu kan inte markera block i olika världar.");
+                    plugin.sendMessage(player,"messages.city.markings.differentWorlds");
                     return;
                 }
 
-                // add location to list
                 savedLocs.get(player.getUniqueId()).add(event.getClickedBlock().getLocation());
                 plugin.sendMessage(player,"messages.city.markings.add", "%world%", event.getClickedBlock().getWorld().getName(), "%x%", String.valueOf(event.getClickedBlock().getX()), "%y%", String.valueOf(event.getClickedBlock().getY()), "%z%", String.valueOf(event.getClickedBlock().getZ()), "%number%", String.valueOf(savedLocs.get(player.getUniqueId()).size()));
                 if (savedLocs.get(player.getUniqueId()).size() > 2 && savedLocs.get(player.getUniqueId()).get(0).equals(event.getClickedBlock().getLocation())) {
@@ -127,32 +124,6 @@ public class MetropolisListener implements Listener {
                         regionPolygon.addPoint(location.getBlockX(), location.getBlockZ());
                     }
                     playerPolygons.put(player.getUniqueId(), regionPolygon);
-                    double minX = regionPolygon.getBounds().getMinX();
-                    double maxX = regionPolygon.getBounds().getMaxX();
-                    double minY = regionPolygon.getBounds().getMinY();
-                    double maxY = regionPolygon.getBounds().getMaxY();
-
-                    int chunkSize = 16;
-                    int startX = (int) Math.floor(minX / chunkSize) * chunkSize;
-                    int endX = (int) Math.floor(maxX / chunkSize) * chunkSize + chunkSize;
-                    int startY = (int) Math.floor(minY / chunkSize) * chunkSize;
-                    int endY = (int) Math.floor(maxY / chunkSize) * chunkSize + chunkSize;
-
-                    Rectangle chunkBounds = new Rectangle();
-                    for (int x = startX; x < endX; x += chunkSize) {
-                        for (int z = startY; z < endY; z += chunkSize) {
-                            chunkBounds.setBounds(x, z, chunkSize, chunkSize);
-                            if (regionPolygon.intersects(chunkBounds)) {
-                                if (CityDatabase.getClaim(new Location(player.getWorld(),x,0,z)) == null || !Objects.equals(Objects.requireNonNull(CityDatabase.getClaim(new Location(player.getWorld(), x, 0, z))).getCityName(), HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()))) {
-                                    player.sendMessage("§cEn markbit inom din markering är inte i din stad.");
-                                    savedPlayers.add(player);
-                                    return;
-                                }
-
-                            }
-                        }
-                    }
-
                     plugin.sendMessage(player,"messages.city.markings.finish");
                     savedPlayers.add(player);
                 }
