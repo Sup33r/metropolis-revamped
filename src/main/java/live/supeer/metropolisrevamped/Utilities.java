@@ -1,17 +1,23 @@
 package live.supeer.metropolisrevamped;
+import fr.mrmicky.fastboard.FastBoard;
+import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
+import live.supeer.metropolisrevamped.plot.Plot;
 import org.bukkit.*;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
+
+import java.awt.*;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
 public class Utilities {
+    static MetropolisRevamped plugin;
     public static String formattedMoney(Integer money) {
         NumberFormat formatter = NumberFormat.getInstance(Locale.US);
         formatter.setGroupingUsed(true);
@@ -133,6 +139,71 @@ public class Utilities {
             polygon[i / 6] = stringToLocation(split[i] + " " + split[i + 1] + " " + split[i + 2] + " " + split[i + 3] + " " + split[i + 4] + " " + split[i + 5]);
         }
         return polygon;
+    }
+
+    public static void sendCityScoreboard(Player player, City city) {
+        FastBoard board = new FastBoard(player);
+        int i = 0;
+        if (CityDatabase.getClaim(player.getLocation()) != null) {
+            board.updateTitle("§a             §l" + city.getCityName() + "§r             ");
+            board.updateLine(i, " ");
+            i = i + 1;
+            for (Plot plot : city.getCityPlots()) {
+                Polygon polygon = new Polygon();
+                for (Location loc : plot.getPlotPoints()) {
+                    polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
+                }
+                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (plot.isKMarked()) {
+                        board.updateLine(i, plugin.getMessage("messages.city.scoreboard.placeK"));
+                    } else {
+                        board.updateLine(i, plugin.getMessage("messages.city.scoreboard.place"));
+                    }
+                    board.updateLine(i+1,"§a" + plot.getPlotName());
+                    i = i + 2;
+                    board.updateLine(i, " ");
+                    i = i + 1;
+                    if (plot.getPlotType() != null) {
+                        board.updateLine(i, plugin.getMessage("messages.city.scoreboard.type"));
+                        board.updateLine(i+1,"§a" + plot.getPlotType());
+                        board.updateLine(i+2," ");
+                        i = i + 3;
+                    }
+                    if (plot.getPlotOwner() != null) {
+                        board.updateLine(i, plugin.getMessage("messages.city.scoreboard.owner"));
+                        board.updateLine(i+1,"§a" + plot.getPlotOwner());
+                        board.updateLine(i+2," ");
+                        i = i + 3;
+                    }
+                    if (plot.isForSale()) {
+                        board.updateLine(i, plugin.getMessage("messages.city.scoreboard.price"));
+                        board.updateLine(i+1,"§a" + plot.getPlotPrice());
+                    }
+                    return;
+                }
+            }
+
+
+            board.updateLine(i, plugin.getMessage("messages.city.scoreboard.members"));
+            i = i + 1;
+            board.updateLine(i, "§a" + city.getCityMembers().size());
+            i = i + 1;
+            board.updateLine(i, " ");
+            i = i + 1;
+            board.updateLine(i, plugin.getMessage("messages.city.scoreboard.plots"));
+            i = i + 1;
+            board.updateLine(i, "§a" + city.getCityPlots().size());
+
+        } else {
+            board.updateTitle(plugin.getMessage("messages.city.scoreboard.nature"));
+            board.updateLine(0,plugin.getMessage("messages.city.scoreboard.pvp_on"));
+        }
+    }
+
+    public static void sendNatureScoreboard(Player player) {
+        FastBoard board = new FastBoard(player);
+        board.updateTitle(plugin.getMessage("messages.city.scoreboard.nature"));
+        board.updateLine(0,plugin.getMessage("messages.city.scoreboard.pvp_on"));
     }
 
     public static ItemStack letterBanner(String letter,String lore) {

@@ -36,6 +36,7 @@ public final class MetropolisRevamped extends JavaPlugin {
         CityDatabase.plugin = this;
         City.plugin = this;
         Member.plugin = this;
+        Utilities.plugin = this;
         MetropolisListener.plugin = this;
         this.languageManager = new LanguageManager(this, "sv_se");
         if (!setupEconomy() ) {

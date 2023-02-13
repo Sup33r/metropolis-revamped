@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.Subcommand;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
+import live.supeer.metropolisrevamped.plot.Plot;
 import live.supeer.metropolisrevamped.plot.PlotDatabase;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -76,7 +77,9 @@ public class CommandPlot extends BaseCommand  {
                         plugin.sendMessage(player,"messages.error.plot.intersectsExistingPlot");
                         return;
                     }
-                    PlotDatabase.createPlot(player,locations,null,city,MetropolisListener.playerYMin.get(player.getUniqueId()),MetropolisListener.playerYMin.get(player.getUniqueId()));
+                    Plot plot = PlotDatabase.createPlot(player,locations,null,city,MetropolisListener.playerYMin.get(player.getUniqueId()),MetropolisListener.playerYMin.get(player.getUniqueId()));
+                    assert plot != null;
+                    plugin.sendMessage(player,"messages.city.successful.set.plot.new","%cityname%",city.getCityName(),"%plotname%",plot.getPlotName());
                 }
             }
         }
@@ -97,29 +100,33 @@ public class CommandPlot extends BaseCommand  {
         if (args.length == 0) {
             MetropolisListener.playerYMin.put(player.getUniqueId(),-64);
             MetropolisListener.playerYMax.put(player.getUniqueId(),319);
+            plugin.sendMessage(player,"messages.city.successful.set.plot.expand.max");
             return;
         }
-        if (args.length == 1 || args.length > 2) {
+        if (args.length == 2 || args.length > 3) {
+            player.sendMessage("arg length");
             plugin.sendMessage(player,"messages.syntax.plot.expand");
             return;
         }
-        if (args[0].matches("[0-9]")) {
-            if (args[1].equals("up")) {
-                if (MetropolisListener.playerYMax.get(player.getUniqueId()) + Integer.parseInt(args[0]) > 319) {
+        if (args[1].matches("[0-9]")) {
+            if (args[2].equals("up")) {
+                if (MetropolisListener.playerYMax.get(player.getUniqueId()) + Integer.parseInt(args[1]) > 319) {
                     plugin.sendMessage(player,"messages.error.plot.tooLowExpand");
                     return;
                 }
-                MetropolisListener.playerYMax.put(player.getUniqueId(),MetropolisListener.playerYMax.get(player.getUniqueId()) + Integer.parseInt(args[0]));
-            } else if (args[1].equals("down")) {
-                if (MetropolisListener.playerYMin.get(player.getUniqueId()) - Integer.parseInt(args[0]) < -64) {
+                MetropolisListener.playerYMax.put(player.getUniqueId(),MetropolisListener.playerYMax.get(player.getUniqueId()) + Integer.parseInt(args[1]));
+            } else if (args[2].equals("down")) {
+                if (MetropolisListener.playerYMin.get(player.getUniqueId()) - Integer.parseInt(args[1]) < -64) {
                     plugin.sendMessage(player,"messages.error.plot.tooHighExpand");
                     return;
                 }
-                MetropolisListener.playerYMin.put(player.getUniqueId(),MetropolisListener.playerYMin.get(player.getUniqueId()) - Integer.parseInt(args[0]));
+                MetropolisListener.playerYMin.put(player.getUniqueId(),MetropolisListener.playerYMin.get(player.getUniqueId()) - Integer.parseInt(args[1]));
             } else {
+                player.sendMessage("else first");
                 plugin.sendMessage(player,"messages.syntax.plot.expand");
             }
         } else {
+            player.sendMessage("Else last");
             plugin.sendMessage(player,"messages.syntax.plot.expand");
         }
     }

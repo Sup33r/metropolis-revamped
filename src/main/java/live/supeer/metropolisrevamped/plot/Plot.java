@@ -43,7 +43,7 @@ public class Plot {
         this.plotCenter = Utilities.stringToLocation(data.getString("plotCenter"));
         this.plotFlags = data.getString("plotFlags");
         this.plotCreationDate = data.getInt("plotCreationDate");
-        this.plotPoints = new Location[] {Utilities.stringToLocation(data.getString("plotPoints"))};
+        this.plotPoints = Utilities.stringToPolygon(data.getString("plotPoints"));
     }
 
 

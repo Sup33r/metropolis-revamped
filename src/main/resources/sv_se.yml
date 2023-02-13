@@ -41,7 +41,7 @@ messages:
       membership: "§cDu är inte medlem i staden."
       city: "§cStaden finns inte."
       reasonLength: "§e%cityname% §7| §cAnledningen är inte tillräckligt bra. Tydliggör, precisera!"
-      plot: "§cDu har inte markerat någon tomt."
+      plot: "§cVänligen gör en markering först."
   save:
     membership: "§aDin hemstad är nu %cityname%."
   city:
@@ -60,6 +60,7 @@ messages:
       nature: "§2§lIcke detaljplanerad mark"
       pvp_on: "§4§lPVP aktiverat"
       place: "§2§lPlats:"
+      placeK: "§2§lK-märkt plats:"
       type: "§2§lTyp:"
       owner: "§2§lÄgare:"
     successful:
@@ -78,3 +79,7 @@ messages:
         motd:
             removed: "§e%cityname% §7|§a Meddelandet togs bort."
             set: "§e%cityname% §7|§a Meddelandet ändrades."
+        plot:
+          new: "§e%cityname% §7|§a Du skapade en tomt med namnet %plotname%."
+          expand:
+            max: "§aMarkeringen har expanderats från berggrund till himmel."

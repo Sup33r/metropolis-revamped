@@ -1,9 +1,6 @@
 package live.supeer.metropolisrevamped;
-
-import fr.mrmicky.fastboard.FastBoard;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
-import live.supeer.metropolisrevamped.plot.Plot;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -28,26 +25,12 @@ public class MetropolisListener implements Listener {
     @EventHandler
     public static void playerJoinScoreboard(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        FastBoard board = new FastBoard(player);
-
         if (CityDatabase.getClaim(player.getLocation()) != null) {
-            String cityUn = Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName();
-            if (CityDatabase.getCity(cityUn).isEmpty()) {
-                return;
-            }
-            City city = CityDatabase.getCity(cityUn).get();
-            board.updateTitle("§a§l" + city.getCityName());
-            board.updateLines(
-                    "",
-                    plugin.getMessage("messages.city.scoreboard.members"),
-                    "§a" + city.getCityMembers().size(),
-                    "",
-                    plugin.getMessage("messages.city.scoreboard.plots"),
-                    "§a" + city.getCityClaims().size()
-            );
+            if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) {Utilities.sendNatureScoreboard(player);}
+            City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).get();
+            Utilities.sendCityScoreboard(player, city);
         } else {
-            board.updateTitle(plugin.getMessage("messages.city.scoreboard.nature"));
-            board.updateLine(0,plugin.getMessage("messages.city.scoreboard.pvp_on"));
+            Utilities.sendNatureScoreboard(player);
         }
     }
 
@@ -70,38 +53,12 @@ public class MetropolisListener implements Listener {
     public static void onPlayerMove(PlayerMoveEvent event) {
         if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) return;
         Player player = event.getPlayer();
-        FastBoard board = new FastBoard(player);
         if (CityDatabase.getClaim(player.getLocation()) != null) {
+            if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) {Utilities.sendNatureScoreboard(player);}
             City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).get();
-            for (Plot plot : city.getCityPlots()) {
-                Polygon polygon = new Polygon();
-                for (Location loc : plot.getPlotPoints()) {
-                    polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
-                }
-                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
-                    board.updateTitle("§a§l" + city.getCityName());
-                    board.updateLines(
-                            "",
-                            plugin.getMessage("messages.city.scoreboard.place"),
-                            "§a" + plot.getPlotName(),
-                            "",
-                            plugin.getMessage("messages.city.scoreboard.owner"),
-                            "§a" + plot.getPlotOwner()
-                    );
-                    return;
-                }
-            }
-            if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) return;
-            board.updateTitle("§a§l" + city.getCityName());
-            board.updateLine(5,"§a" + city.getCityClaims().size());
-            board.updateLine(4,plugin.getMessage("messages.city.scoreboard.plots"));
-            board.updateLine(3," ");
-            board.updateLine(2,"§a" + city.getCityMembers().size());
-            board.updateLine(1,plugin.getMessage("messages.city.scoreboard.members"));
-            board.updateLine(0," ");
+            Utilities.sendCityScoreboard(player, city);
         } else {
-            board.updateTitle(plugin.getMessage("messages.city.scoreboard.nature"));
-            board.updateLine(0,plugin.getMessage("messages.city.scoreboard.pvp_on"));
+            Utilities.sendNatureScoreboard(player);
         }
     }
     public static HashMap<UUID, Polygon> playerPolygons = new HashMap<>();
