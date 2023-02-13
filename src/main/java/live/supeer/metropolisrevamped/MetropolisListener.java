@@ -3,6 +3,7 @@ package live.supeer.metropolisrevamped;
 import fr.mrmicky.fastboard.FastBoard;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
+import live.supeer.metropolisrevamped.plot.Plot;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -70,8 +71,26 @@ public class MetropolisListener implements Listener {
         Player player = event.getPlayer();
         FastBoard board = new FastBoard(player);
         if (CityDatabase.getClaim(player.getLocation()) != null) {
-            if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) return;
             City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).get();
+            for (Plot plot : city.getCityPlots()) {
+                Polygon polygon = new Polygon();
+                for (Location loc : plot.getPlotPoints()) {
+                    polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
+                }
+                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    board.updateTitle("§a§l" + city.getCityName());
+                    board.updateLines(
+                            "",
+                            plugin.getMessage("messages.city.scoreboard.place"),
+                            "§a" + plot.getPlotName(),
+                            "",
+                            plugin.getMessage("messages.city.scoreboard.owner"),
+                            "§a" + plot.getPlotOwner()
+                    );
+                    return;
+                }
+            }
+            if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) return;
             board.updateTitle("§a§l" + city.getCityName());
             board.updateLine(5,"§a" + city.getCityClaims().size());
             board.updateLine(4,plugin.getMessage("messages.city.scoreboard.plots"));

@@ -59,6 +59,9 @@ messages:
       members: "§2§lAntal medlemmar:"
       nature: "§2§lIcke detaljplanerad mark"
       pvp_on: "§4§lPVP aktiverat"
+      place: "§2§lPlats:"
+      type: "§2§lTyp:"
+      owner: "§2§lÄgare:"
     successful:
       withdraw: "§e%cityname% §7|§a Du tog ut %amount% minemynt från stadskassan."
       deposit: "§e%cityname% §7|§a Du satte in %amount% minemynt i stadskassan."
