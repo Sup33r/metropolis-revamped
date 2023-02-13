@@ -36,6 +36,7 @@ public class MetropolisListener implements Listener {
                 return;
             }
             City city = CityDatabase.getCity(cityUn).get();
+            board.updateTitle("§a§l" + city.getCityName());
             board.updateLines(
                     "",
                     plugin.getMessage("messages.city.scoreboard.members"),

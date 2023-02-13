@@ -103,7 +103,7 @@ public class Database {
             DB.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS `mp_plots` (
                       `plotId` int(11) NOT NULL AUTO_INCREMENT,
-                      ``cityId` int(11) NOT NULL,
+                      `cityId` int(11) NOT NULL,
                       `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `plotName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `plotOwner` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -120,7 +120,7 @@ public class Database {
                       `plotCenter` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `plotFlags` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                       `plotCreationDate` bigint(30) DEFAULT NULL,
-                      PRIMARY KEY (logId)
+                      PRIMARY KEY (`plotId`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
         } catch (SQLException exception) {
             exception.printStackTrace();
