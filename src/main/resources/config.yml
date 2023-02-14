@@ -10,3 +10,6 @@ settings:
     creationcost: 500000
     startingbalance: 100000
     claimcost: 500
+    bonuscost: 800
+    citygocost: 10000
+    outpostcost: 15000

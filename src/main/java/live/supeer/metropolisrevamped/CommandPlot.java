@@ -103,30 +103,43 @@ public class CommandPlot extends BaseCommand  {
             plugin.sendMessage(player,"messages.city.successful.set.plot.expand.max");
             return;
         }
-        if (args.length == 2 || args.length > 3) {
-            player.sendMessage("arg length");
+        if (args.length > 2) {
             plugin.sendMessage(player,"messages.syntax.plot.expand");
             return;
         }
-        if (args[1].matches("[0-9]")) {
-            if (args[2].equals("up")) {
-                if (MetropolisListener.playerYMax.get(player.getUniqueId()) + Integer.parseInt(args[1]) > 319) {
+        if (args.length == 1) {
+            if (args[0].equals("up")) {
+                MetropolisListener.playerYMax.put(player.getUniqueId(),319);
+                plugin.sendMessage(player,"messages.city.successful.set.plot.expand.up.max");
+                return;
+            } else if (args[0].equals("down")) {
+                MetropolisListener.playerYMin.put(player.getUniqueId(),-64);
+                plugin.sendMessage(player,"messages.city.successful.set.plot.expand.down.max");
+                return;
+            } else {
+                plugin.sendMessage(player,"messages.syntax.plot.expand");
+                return;
+            }
+        }
+        if (args[0].matches("[0-9]")) {
+            if (args[1].equals("up")) {
+                if (MetropolisListener.playerYMax.get(player.getUniqueId()) + Integer.parseInt(args[0]) > 319) {
                     plugin.sendMessage(player,"messages.error.plot.tooLowExpand");
                     return;
                 }
-                MetropolisListener.playerYMax.put(player.getUniqueId(),MetropolisListener.playerYMax.get(player.getUniqueId()) + Integer.parseInt(args[1]));
-            } else if (args[2].equals("down")) {
-                if (MetropolisListener.playerYMin.get(player.getUniqueId()) - Integer.parseInt(args[1]) < -64) {
+                MetropolisListener.playerYMax.put(player.getUniqueId(),MetropolisListener.playerYMax.get(player.getUniqueId()) + Integer.parseInt(args[0]));
+                plugin.sendMessage(player,"messages.city.successful.set.plot.expand.up","%y%",args[0]);
+            } else if (args[1].equals("down")) {
+                if (MetropolisListener.playerYMin.get(player.getUniqueId()) - Integer.parseInt(args[0]) < -64) {
                     plugin.sendMessage(player,"messages.error.plot.tooHighExpand");
                     return;
                 }
-                MetropolisListener.playerYMin.put(player.getUniqueId(),MetropolisListener.playerYMin.get(player.getUniqueId()) - Integer.parseInt(args[1]));
+                MetropolisListener.playerYMin.put(player.getUniqueId(),MetropolisListener.playerYMin.get(player.getUniqueId()) - Integer.parseInt(args[0]));
+                plugin.sendMessage(player,"messages.city.successful.set.plot.expand.down","%y%",args[0]);
             } else {
-                player.sendMessage("else first");
                 plugin.sendMessage(player,"messages.syntax.plot.expand");
             }
         } else {
-            player.sendMessage("Else last");
             plugin.sendMessage(player,"messages.syntax.plot.expand");
         }
     }

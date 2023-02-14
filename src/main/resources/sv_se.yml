@@ -47,6 +47,7 @@ messages:
   city:
     motd: "§e%cityname% §7|§e %motd%"
     balance: "§e%cityname% §7|§a Stadskassa: %balance% minemynt."
+    price: "§2--- §aPrislista städer §2--- \n§2Ny stad: §a%city% minemynt\n§2Överta markbit: §a%chunk% minemynt\n§2Bonusmarkbit: §2%bonus% minemynt\n§2Stadsteleporteringspunkt: §a%go% minemynt\n§2Utpost: §a%outpost% minemynt"
     markings:
       new: "§aEn ny markering har påbörjats på punkten ([%world%]%x%, %y%, %z%)."
       add: "§aPunkt %number% med koodinaterna ([%world%]%x%, %y%, %z%) har lagts till."
@@ -83,3 +84,9 @@ messages:
           new: "§e%cityname% §7|§a Du skapade en tomt med namnet %plotname%."
           expand:
             max: "§aMarkeringen har expanderats från berggrund till himmel."
+            down:
+              set: "§aMarkeringens nedre y har sänkts till %y%."
+              max: "§aMarkeringens nedre y har satts till -64."
+            up:
+              set: "§aMarkeringens övre y har höjts till %y%."
+              max: "§aMarkeringens övre y har satts till 319."

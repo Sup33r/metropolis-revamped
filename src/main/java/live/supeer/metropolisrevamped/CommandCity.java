@@ -300,4 +300,13 @@ public class CommandCity extends BaseCommand {
             }
         }
     }
+
+    @Subcommand("price")
+    public static void onPrice(Player player) {
+        if (player.hasPermission("metropolis.city.price")) {
+            plugin.sendMessage(player,"messages.city.price","%city%",Utilities.formattedMoney(plugin.getConfig().getInt("settings.city.creationCost")),"%chunk%",Utilities.formattedMoney(plugin.getConfig().getInt("settings.city.claimcost")),"%bonus%",Utilities.formattedMoney(plugin.getConfig().getInt("settings.city.bonuscost")),"%go%",Utilities.formattedMoney(plugin.getConfig().getInt("settings.city.citygocost")),"%outpost%",Utilities.formattedMoney(plugin.getConfig().getInt("settings.city.outpostcost")));
+        } else {
+            plugin.sendMessage(player,"messages.error.permissionDenied");
+        }
+    }
 }
