@@ -169,6 +169,10 @@ public class CommandPlot extends BaseCommand  {
         City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).get();
         if (CityDatabase.getClaim(player.getLocation()) != null) {
             for (Plot plot : city.getCityPlots()) {
+                if (plot.getPlotOwnerUUID() == null) {
+                    plugin.sendMessage(player, "messages.error.plot.notOwner");
+                    return;
+                }
                 Polygon polygon = new Polygon();
                 for (Location location : plot.getPlotPoints()) {
                     polygon.addPoint(location.getBlockX(), location.getBlockZ());
@@ -209,7 +213,7 @@ public class CommandPlot extends BaseCommand  {
                     polygon.addPoint(location.getBlockX(), location.getBlockZ());
                 }
                 if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
-                    if (plot.getPlotOwnerUUID().equals(player.getUniqueId().toString()) || Objects.equals(role, "inviter") || Objects.equals(role, "assistant") || Objects.equals(role, "vicemayor") || Objects.equals(role, "mayor")) {
+                    if (Objects.equals(plot.getPlotOwnerUUID(), player.getUniqueId().toString()) || Objects.equals(role, "inviter") || Objects.equals(role, "assistant") || Objects.equals(role, "vicemayor") || Objects.equals(role, "mayor")) {
                         if (arg.equals("-")) {
                             plot.setForSale(false);
                             plugin.sendMessage(player,"messages.city.successful.set.plot.market.remove","%cityname%",city.getCityName(),"%plotname%",plot.getPlotName());
@@ -225,11 +229,10 @@ public class CommandPlot extends BaseCommand  {
                     } else {
                         plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",city.getCityName());
                     }
-                } else {
-                    plugin.sendMessage(player,"messages.error.plot.notInPlot");
+                    return;
                 }
-                return;
             }
+            plugin.sendMessage(player,"messages.error.plot.notInPlot");
         } else {
             plugin.sendMessage(player,"messages.error.plot.notInPlot");
         }
