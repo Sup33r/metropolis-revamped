@@ -80,7 +80,7 @@ public class CommandPlot extends BaseCommand  {
                         plugin.sendMessage(player,"messages.error.plot.intersectsExistingPlot");
                         return;
                     }
-                    Plot plot = PlotDatabase.createPlot(player,locations,null,city,MetropolisListener.playerYMin.get(player.getUniqueId()),MetropolisListener.playerYMin.get(player.getUniqueId()));
+                    Plot plot = PlotDatabase.createPlot(player,locations,null,city,MetropolisListener.playerYMin.get(player.getUniqueId()),MetropolisListener.playerYMax.get(player.getUniqueId()));
                     assert plot != null;
                     plugin.sendMessage(player,"messages.city.successful.set.plot.new","%cityname%",city.getCityName(),"%plotname%",plot.getPlotName());
                 }
