@@ -218,7 +218,7 @@ public class CommandPlot extends BaseCommand  {
                         if (arg.matches("[0-9]")) {
                             plot.setForSale(true);
                             plot.setPlotPrice(Integer.parseInt(arg));
-                            plugin.sendMessage(player,"messages.city.successful.set.plot.market.set","%cityname%",city.getCityName(),"%plotname%",plot.getPlotName(),"%price%",arg);
+                            plugin.sendMessage(player,"messages.city.successful.set.plot.market.set","%cityname%",city.getCityName(),"%plotname%",plot.getPlotName(),"%amount%",arg);
                             return;
                         }
                         plugin.sendMessage(player,"messages.syntax.plot.market");

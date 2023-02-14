@@ -89,6 +89,7 @@ messages:
       placeK: "§2§lK-märkt plats:"
       type: "§2§lTyp:"
       owner: "§2§lÄgare:"
+      price: "§2§lTill salu:"
     successful:
       withdraw: "§e%cityname% §7|§a Du tog ut %amount% minemynt från stadskassan."
       deposit: "§e%cityname% §7|§a Du satte in %amount% minemynt i stadskassan."

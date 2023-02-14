@@ -177,7 +177,7 @@ public class Utilities {
                     }
                     if (plot.isForSale()) {
                         board.updateLine(i, plugin.getMessage("messages.city.scoreboard.price"));
-                        board.updateLine(i+1,"§a" + plot.getPlotPrice());
+                        board.updateLine(i+1,"§a" + Utilities.formattedMoney(plot.getPlotPrice()) + " minemynt");
                     }
                     return;
                 }
