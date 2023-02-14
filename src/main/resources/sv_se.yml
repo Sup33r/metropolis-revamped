@@ -16,7 +16,11 @@ messages:
     plot:
       expand: "§7Syntax: /plot expand §nantal§r§7 §nup/down"
       tp: "§7Syntax: /plot tp §nID"
+      market: "§7Syntax: /plot market §npris\n§7Syntax: /plot market §n-"
   error:
+    player:
+      notFound: "§cSpelaren hittades inte."
+      notInCity: "§cSpelaren är inte medlem i någon stad."
     city:
       permissionDenied: "§e%cityname% §7| §cÅtkomst nekad."
       cityExists: "§cDen specifierade staden finns redan."
@@ -36,6 +40,7 @@ messages:
       tooHighExpand: "§cDet angivna värdet är för högt."
       tooLowExpand: "§cDet angivna värdet är för lågt."
       notFound: "§cTomten hittades inte."
+      notInPlot: "§cDu befinner dig inte på en tomt."
     missing:
       balance: "§e%cityname% §7| §cStaden måste ha minst 100 000 minemynt i stadskassan."
       playerBalance: "§e%cityname% §7| §cDu har inte nog med minemynt i din plånbok."
@@ -47,6 +52,8 @@ messages:
   save:
     membership: "§aDin hemstad är nu %cityname%."
   plot:
+    player:
+      header: ""
     list:
       header: "§2--- §aTomt: %plot% §2---"
       id: "§2ID: §a#%id%"
@@ -99,6 +106,10 @@ messages:
             removed: "§e%cityname% §7|§a Meddelandet togs bort."
             set: "§e%cityname% §7|§a Meddelandet ändrades."
         plot:
+          market:
+            remove: "§e%cityname% §7|§a Tomten: §2%plotname%§a drogs tillbaka från marknaden."
+            set: "§e%cityname% §7|§a Tomten: §2%plotname%§a lades ut på marknaden för %amount% minemynt."
+          leave: "§e%cityname% §7|§a Du lämnade tomt %plotname%."
           tp: "§e%cityname% §7|§a Du teleporterades till tomten %plotname%."
           new: "§e%cityname% §7|§a Du skapade en tomt med namnet %plotname%."
           expand:

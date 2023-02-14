@@ -62,6 +62,15 @@ public class PlotDatabase {
         return null;
     }
 
+    public static Plot[] getPlayerPlots(Player player) {
+        try {
+            return DB.getResults("SELECT * FROM `mp_plots` WHERE `plotOwnerUUID` = " + Database.sqlString(player.getUniqueId().toString()) + ";").stream().map(Plot::new).toArray(Plot[]::new);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static boolean plotExists(int id) {
         try {
             return DB.getFirstRow("SELECT * FROM `mp_plots` WHERE `plotId` = " + id + ";") != null;

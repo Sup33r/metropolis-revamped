@@ -152,6 +152,89 @@ public class CommandPlot extends BaseCommand  {
 
     }
 
+    @Subcommand("leave")
+    public static void onLeave(Player player) {
+        if (!player.hasPermission("metropolis.plot.leave")) {
+            plugin.sendMessage(player, "messages.error.permissionDenied");
+            return;
+        }
+        if (CityDatabase.getClaim(player.getLocation()) == null) {
+            plugin.sendMessage(player, "messages.error.plot.notInPlot");
+            return;
+        }
+        if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) {
+            plugin.sendMessage(player, "messages.error.plot.notInPlot");
+            return;
+        }
+        City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).get();
+        if (CityDatabase.getClaim(player.getLocation()) != null) {
+            for (Plot plot : city.getCityPlots()) {
+                Polygon polygon = new Polygon();
+                for (Location location : plot.getPlotPoints()) {
+                    polygon.addPoint(location.getBlockX(), location.getBlockZ());
+                }
+                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (plot.getPlotOwnerUUID().equals(player.getUniqueId().toString())) {
+                        plot.removePlotOwner();
+                        plugin.sendMessage(player, "messages.city.successful.set.plot.leave", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName());
+                    } else {
+                        plugin.sendMessage(player, "messages.error.plot.notOwner");
+                    }
+                    return;
+                }
+            }
+        }
+    }
+
+    @Subcommand("market")
+    public static void onMarket(Player player, String arg) {
+        if (!player.hasPermission("metropolis.plot.market")) {
+            plugin.sendMessage(player,"messages.error.permissionDenied");
+            return;
+        }
+        if (CityDatabase.getClaim(player.getLocation()) == null) {
+            plugin.sendMessage(player,"messages.error.plot.notInPlot");
+            return;
+        }
+        if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) {
+            plugin.sendMessage(player,"messages.error.plot.notInPlot");
+            return;
+        }
+        City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).get();
+        if (CityDatabase.getClaim(player.getLocation()) != null) {
+            String role = CityDatabase.getCityRole(city,player.getUniqueId().toString());
+            for (Plot plot : city.getCityPlots()) {
+                Polygon polygon = new Polygon();
+                for (Location location : plot.getPlotPoints()) {
+                    polygon.addPoint(location.getBlockX(), location.getBlockZ());
+                }
+                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (plot.getPlotOwnerUUID().equals(player.getUniqueId().toString()) || Objects.equals(role, "inviter") || Objects.equals(role, "assistant") || Objects.equals(role, "vicemayor") || Objects.equals(role, "mayor")) {
+                        if (arg.equals("-")) {
+                            plot.setForSale(false);
+                            plugin.sendMessage(player,"messages.city.successful.set.plot.market.remove","%cityname%",city.getCityName(),"%plotname%",plot.getPlotName());
+                            return;
+                        }
+                        if (arg.matches("[0-9]")) {
+                            plot.setForSale(true);
+                            plot.setPlotPrice(Integer.parseInt(arg));
+                            plugin.sendMessage(player,"messages.city.successful.set.plot.market.set","%cityname%",city.getCityName(),"%plotname%",plot.getPlotName(),"%price%",arg);
+                            return;
+                        }
+                        plugin.sendMessage(player,"messages.syntax.plot.market");
+                    } else {
+                        plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",city.getCityName());
+                    }
+                } else {
+                    plugin.sendMessage(player,"messages.error.plot.notInPlot");
+                }
+                return;
+            }
+        } else {
+            plugin.sendMessage(player,"messages.error.plot.notInPlot");
+        }
+    }
+
     @Subcommand("info")
     public static void onInfo(Player player) {
         if (!player.hasPermission("metropolis.plot.info")) {
@@ -226,8 +309,35 @@ public class CommandPlot extends BaseCommand  {
     }
 
     @Subcommand("player")
-    public static void onPlayer(Player player) {
-
+    public static void onPlayer(Player player, String playerName) {
+        if (!player.hasPermission("metropolis.plot.player")) {
+            plugin.sendMessage(player,"messages.error.permissionDenied");
+            return;
+        }
+        @Deprecated
+        Player p = Bukkit.getOfflinePlayer(playerName).getPlayer();
+        if (p == null) {
+            plugin.sendMessage(player,"messages.error.player.notFound");
+            return;
+        }
+        if (CityDatabase.memberCityList(p.getUniqueId().toString()) == null || Objects.requireNonNull(CityDatabase.memberCityList(p.getUniqueId().toString())).length == 0) {
+            plugin.sendMessage(player,"messages.error.city.notInCity");
+            return;
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String c : Objects.requireNonNull(CityDatabase.memberCityList(p.getUniqueId().toString()))) {
+            if (CityDatabase.getCity(c).isEmpty()) {return;}
+            City city = CityDatabase.getCity(c).get();
+            for (Plot plot : city.getCityPlots()) {
+                if (plot.getPlotOwner().equals(p.getName())) {
+                    stringBuilder.append("§a").append(plot.getPlotName()).append("§2,§a ");
+                }
+            }
+            if (stringBuilder.toString().length() == 0) {
+                return;
+            }
+            player.sendMessage("§a§l" + city.getCityName() + "§2: §a" + stringBuilder.substring(0, stringBuilder.toString().length()));
+        }
     }
 
     @Subcommand("tp")

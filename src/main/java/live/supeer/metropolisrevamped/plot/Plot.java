@@ -1,6 +1,8 @@
 package live.supeer.metropolisrevamped.plot;
 
+import co.aikar.idb.DB;
 import co.aikar.idb.DbRow;
+import live.supeer.metropolisrevamped.Database;
 import live.supeer.metropolisrevamped.Utilities;
 import lombok.Getter;
 import org.bukkit.Location;
@@ -11,14 +13,14 @@ public class Plot {
     private final int plotID;
     private final int cityID;
     private final String plotName;
-    private final String plotOwner;
-    private final String plotOwnerUUID;
+    private String plotOwner;
+    private String plotOwnerUUID;
     private final int plotYMin;
     private final int plotYMax;
     private final String plotType;
     private final boolean kMarked;
-    private final boolean isForSale;
-    private final int plotPrice;
+    private boolean isForSale;
+    private int plotPrice;
     private final String permsMembers;
     private final String permsOutsiders;
     private final Location plotCenter;
@@ -45,6 +47,34 @@ public class Plot {
         this.plotCreationDate = data.getInt("plotCreationDate");
         this.plotPoints = Utilities.stringToPolygon(data.getString("plotPoints"));
     }
+
+    public void setPlotOwner(String plotOwner) {
+        this.plotOwner = plotOwner;
+        DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotOwner` = " + Database.sqlString(plotOwner) + " WHERE `plotID` = " + plotID + ";");
+    }
+
+    public void setPlotOwnerUUID(String plotOwnerUUID) {
+        this.plotOwnerUUID = plotOwnerUUID;
+        DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotOwnerUUID` = " + Database.sqlString(plotOwnerUUID) + " WHERE `plotID` = " + plotID + ";");
+    }
+
+    public void setForSale(boolean isForSale) {
+        this.isForSale = isForSale;
+        DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotIsForSale` = " + isForSale + " WHERE `plotID` = " + plotID + ";");
+    }
+
+    public void setPlotPrice(int plotPrice) {
+        this.plotPrice = plotPrice;
+        DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotPrice` = " + plotPrice + " WHERE `plotID` = " + plotID + ";");
+    }
+
+    public void removePlotOwner() {
+        this.plotOwner = null;
+        this.plotOwnerUUID = null;
+        DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotOwner` = NULL, `plotOwnerUUID` = NULL WHERE `plotID` = " + plotID + ";");
+    }
+
+
 
 
 }
