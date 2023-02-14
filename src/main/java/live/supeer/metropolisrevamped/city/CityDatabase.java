@@ -107,6 +107,12 @@ public class CityDatabase {
         }
         return Optional.empty();
     }
+    public static Optional<City> getCity(int id) {
+        for (City city : cities) {
+            if (city.getCityID() == id) return Optional.of(city);
+        }
+        return Optional.empty();
+    }
     public static Claim getClaim(Location location) {
         for (City city : cities) {
             if (city.getCityClaim(location) != null) {

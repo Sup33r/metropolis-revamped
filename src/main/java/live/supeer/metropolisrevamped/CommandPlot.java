@@ -159,5 +159,34 @@ public class CommandPlot extends BaseCommand  {
 
     }
 
+    @Subcommand("tp")
+    public static void onTp(Player player, String[] args) {
+        if (!player.hasPermission("metropolis.plot.tp")) {
+            plugin.sendMessage(player,"messages.error.permissionDenied");
+            return;
+        }
+        if (args.length != 1) {
+            plugin.sendMessage(player,"messages.syntax.plot.tp");
+            return;
+        }
+        if (!args[0].matches("[0-9]")) {
+            plugin.sendMessage(player,"messages.syntax.plot.tp");
+            return;
+        }
+        if (!PlotDatabase.plotExists(Integer.parseInt(args[0]))) {
+            plugin.sendMessage(player,"messages.error.plot.notFound");
+            return;
+        }
+        Plot plot = PlotDatabase.getPlot(Integer.parseInt(args[0]));
+        assert plot != null;
+        if (CityDatabase.getCity(plot.getCityID()).isEmpty()) {
+            plugin.sendMessage(player,"messages.error.city.missing.city");
+            return;
+        }
+        City city = CityDatabase.getCity(plot.getCityID()).get();
+        plugin.sendMessage(player,"messages.city.successful.set.plot.tp","%plotname%",plot.getPlotName(),"%cityname%",city.getCityName());
+        player.teleport(plot.getPlotCenter());
+    }
+
 
 }

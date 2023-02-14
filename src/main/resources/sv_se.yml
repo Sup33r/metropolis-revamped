@@ -15,6 +15,7 @@ messages:
         bank: "§7Syntax: /city bank"
     plot:
       expand: "§7Syntax: /plot expand §nantal§r§7 §nup/down"
+      tp: "§7Syntax: /plot tp §nID"
   error:
     city:
       permissionDenied: "§e%cityname% §7| §cÅtkomst nekad."
@@ -34,6 +35,7 @@ messages:
       intersectsExistingClaim: "§cDin markering är helt, eller delvis utanför din stad."
       tooHighExpand: "§cDet angivna värdet är för högt."
       tooLowExpand: "§cDet angivna värdet är för lågt."
+      notFound: "§cTomten hittades inte."
     missing:
       balance: "§e%cityname% §7| §cStaden måste ha minst 100 000 minemynt i stadskassan."
       playerBalance: "§e%cityname% §7| §cDu har inte nog med minemynt i din plånbok."
@@ -81,6 +83,7 @@ messages:
             removed: "§e%cityname% §7|§a Meddelandet togs bort."
             set: "§e%cityname% §7|§a Meddelandet ändrades."
         plot:
+          tp: "§e%cityname% §7|§a Du teleporterades till tomten %plotname%."
           new: "§e%cityname% §7|§a Du skapade en tomt med namnet %plotname%."
           expand:
             max: "§aMarkeringen har expanderats från berggrund till himmel."

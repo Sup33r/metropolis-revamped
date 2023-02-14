@@ -32,7 +32,7 @@ public class PlotDatabase {
         }
         int centerX = plotPolygon.getBounds().x + plotPolygon.getBounds().width / 2;
         int centerZ = plotPolygon.getBounds().y + plotPolygon.getBounds().height / 2;
-        Location plotCenter = new Location(plotPoints[0].getWorld(), centerX, player.getWorld().getHighestBlockYAt(centerX, centerZ), centerZ);
+        Location plotCenter = new Location(plotPoints[0].getWorld(), centerX, player.getWorld().getHighestBlockYAt(centerX, centerZ)+1, centerZ);
         try {
             DB.executeUpdate("INSERT INTO `mp_plots` (`cityId`, `cityName`, `plotName`, `plotOwner`, `plotOwnerUUID`, `plotPoints`, `plotYMin`, `plotYMax`, `plotPermsMembers`, `plotPermsOutsiders`, `plotCenter`, `plotCreationDate`) VALUES (" + city.getCityID() + ", " + Database.sqlString(city.getCityName()) + ", " + Database.sqlString(plotName) + ", " + Database.sqlString(player.getDisplayName()) + ", " + Database.sqlString(player.getUniqueId().toString()) + ", " + Database.sqlString(Utilities.polygonToString(plotPoints)) + ", " + minY + ", " + maxY + ", " + "'gt'" + ", " + "'gt'" + ", " + Database.sqlString(Utilities.locationToString(plotCenter)) + ", " + Utilities.getTimestamp() + ");");
             Plot plot = new Plot(DB.getFirstRow("SELECT * FROM `mp_plots` WHERE `plotName` = " + Database.sqlString(plotName) + " AND `cityName` = " + Database.sqlString(city.getCityName()) + ";"));
@@ -51,6 +51,24 @@ public class PlotDatabase {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public static Plot getPlot(int id) {
+        try {
+            return new Plot(DB.getFirstRow("SELECT * FROM `mp_plots` WHERE `plotId` = " + id + ";"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static boolean plotExists(int id) {
+        try {
+            return DB.getFirstRow("SELECT * FROM `mp_plots` WHERE `plotId` = " + id + ";") != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public static boolean intersectsExistingPlot(Polygon polygon, City city) {
