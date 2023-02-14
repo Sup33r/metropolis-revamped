@@ -9,10 +9,13 @@ import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import live.supeer.metropolisrevamped.plot.Plot;
 import live.supeer.metropolisrevamped.plot.PlotDatabase;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @CommandAlias("plot")
@@ -151,7 +154,75 @@ public class CommandPlot extends BaseCommand  {
 
     @Subcommand("info")
     public static void onInfo(Player player) {
-
+        if (!player.hasPermission("metropolis.plot.info")) {
+            plugin.sendMessage(player,"messages.error.permissionDenied");
+            return;
+        }
+        if (CityDatabase.getClaim(player.getLocation()) == null) {
+            plugin.sendMessage(player,"messages.error.plot.notFound");
+            return;
+        }
+        if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) {
+            player.sendMessage(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName());
+            plugin.sendMessage(player,"messages.error.plot.notFound");
+            return;
+        }
+        City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).get();
+        if (CityDatabase.getClaim(player.getLocation()) != null) {
+            for (Plot plot : city.getCityPlots()) {
+                Polygon polygon = new Polygon();
+                for (Location loc : plot.getPlotPoints()) {
+                    polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
+                }
+                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    List<Player> players = new ArrayList<>();
+                    plugin.sendMessage(player,"messages.plot.list.header","%plot%",plot.getPlotName());
+                    plugin.sendMessage(player,"messages.plot.list.id","%id%", String.valueOf(plot.getPlotID()));
+                    plugin.sendMessage(player,"messages.plot.list.city","%cityname%",city.getCityName());
+                    plugin.sendMessage(player,"messages.plot.list.owner","%owner%",plot.getPlotOwner());
+                    plugin.sendMessage(player,"messages.plot.list.pvp","%status%","placeholder");
+                    plugin.sendMessage(player,"messages.plot.list.animals","%status%","placeholder");
+                    plugin.sendMessage(player,"messages.plot.list.monsters","%status%","placeholder");
+                    plugin.sendMessage(player,"messages.plot.list.locked","%status%","placeholder");
+                    if (plot.isKMarked()) {
+                        plugin.sendMessage(player, "messages.plot.list.k-marked", "%status%", "§cJa");
+                    } else {
+                        plugin.sendMessage(player, "messages.plot.list.k-marked", "%status%", "§aNej");
+                    }
+                    plugin.sendMessage(player,"messages.plot.list.lose.items","%status%", "placeholder");
+                    plugin.sendMessage(player,"messages.plot.list.lose.xp","%status%", "placeholder");
+                    if (player.hasPermission("metropolis.plot.info.coordinates") || Objects.equals(CityDatabase.getCityRole(city, player.getUniqueId().toString()), "assistant") || Objects.equals(CityDatabase.getCityRole(city, player.getUniqueId().toString()), "vicemayor") || Objects.equals(CityDatabase.getCityRole(city, player.getUniqueId().toString()), "mayor")) {
+                        plugin.sendMessage(player,"messages.plot.list.middle","%world%",plot.getPlotCenter().getWorld().getName(),"%x%", String.valueOf(plot.getPlotCenter().getBlockX()),"%y%", String.valueOf(plot.getPlotCenter().getBlockY()),"%z%", String.valueOf(plot.getPlotCenter().getBlockZ()));
+                    }
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        for (Plot plot1 : city.getCityPlots()) {
+                            Polygon polygon1 = new Polygon();
+                            for (Location loc : plot1.getPlotPoints()) {
+                                polygon1.addPoint(loc.getBlockX(), loc.getBlockZ());
+                            }
+                            if (polygon1.contains(p.getLocation().getBlockX(), p.getLocation().getBlockZ())) {
+                                if (plot1.getPlotID() == plot.getPlotID()) {
+                                    players.add(p);
+                                }
+                            }
+                        }
+                    }
+                    if (players.size() > 0) {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (Player p : players) {
+                            //dont append last player
+                            if (players.indexOf(p) == players.size() - 1)
+                                stringBuilder.append(p.getName()).append("§2");
+                            else
+                                stringBuilder.append(p.getName()).append("§2,§a ");
+                        }
+                        plugin.sendMessage(player,"messages.plot.list.players","%players%",stringBuilder.substring(0, stringBuilder.toString().length() - 2));
+                    }
+                }
+            }
+        } else {
+            plugin.sendMessage(player,"messages.error.plot.notFound");
+        }
     }
 
     @Subcommand("player")

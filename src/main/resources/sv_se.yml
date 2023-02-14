@@ -46,6 +46,22 @@ messages:
       plot: "§cVänligen gör en markering först."
   save:
     membership: "§aDin hemstad är nu %cityname%."
+  plot:
+    list:
+      header: "§2--- §aTomt: %plot% §2---"
+      id: "§2ID: §a#%id%"
+      city: "§2Tillhör stad: §a%cityname%"
+      owner: "§2Ägare: §a%owner%"
+      pvp: "§2PVP: %status%"
+      animals: "§2Djur: %status%"
+      monsters: "§2Monster: %status%"
+      locked: "§2Låst: %status%"
+      k-marked: "§2K-märkt: %status%"
+      middle: "§2Mittpunkt: §a([%world%]%x%, %y%, %z%)"
+      players: "§2Spelare på tomten: §a%players%"
+      lose:
+        items: "§2Förlora föremål vid dödsfall: %status%"
+        xp: "§2Förlora XP vid dödsfall: %status%"
   city:
     motd: "§e%cityname% §7|§e %motd%"
     balance: "§e%cityname% §7|§a Stadskassa: %balance% minemynt."
