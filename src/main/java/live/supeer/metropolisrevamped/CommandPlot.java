@@ -1,20 +1,21 @@
 package live.supeer.metropolisrevamped;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.Subcommand;
+import co.aikar.commands.annotation.*;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import live.supeer.metropolisrevamped.plot.Plot;
 import live.supeer.metropolisrevamped.plot.PlotDatabase;
+import live.supeer.metropolisrevamped.plot.PlotPerms;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -312,6 +313,7 @@ public class CommandPlot extends BaseCommand  {
     }
 
     @Subcommand("player")
+    @Syntax("§7Syntax: /plot player §nplayername§r")
     public static void onPlayer(Player player, String playerName) {
         if (!player.hasPermission("metropolis.plot.player")) {
             plugin.sendMessage(player,"messages.error.permissionDenied");
@@ -372,5 +374,122 @@ public class CommandPlot extends BaseCommand  {
         player.teleport(plot.getPlotCenter());
     }
 
+    @Subcommand("perm")
+    @CommandCompletion("@plotPerm @plotPermArgs")
+    public static void onPerm(Player player, String[] args) {
+        if (!player.hasPermission("metropolis.plot.perm")) {
+            plugin.sendMessage(player, "messages.error.permissionDenied");
+            return;
+        }
+        if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) {
+            player.sendMessage(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName());
+            plugin.sendMessage(player, "messages.error.plot.notFound");
+            return;
+        }
+        City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).get();
+        if (args == null || args.length == 0) {
+            if (CityDatabase.getClaim(player.getLocation()) != null) {
+                for (Plot plot : city.getCityPlots()) {
+                    Polygon polygon = new Polygon();
+                    for (Location loc : plot.getPlotPoints()) {
+                        polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
+                    }
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                        StringBuilder stringBuilderOutsiders = new StringBuilder();
+                        for (char s : plot.getPermsOutsiders()) {
+                                stringBuilderOutsiders.append(s);
+                        }
+                        String permsOutsiders = stringBuilderOutsiders.substring(0, stringBuilderOutsiders.toString().length());
+                        if (stringBuilderOutsiders.substring(0, stringBuilderOutsiders.toString().length()).isEmpty()) {
+                            permsOutsiders = "§otomt";
+                        }
+                        StringBuilder stringBuilderMembers = new StringBuilder();
+                        for (char s : plot.getPermsMembers()) {
+                                stringBuilderMembers.append(s);
+                        }
+                        String permsMembers = stringBuilderMembers.substring(0, stringBuilderMembers.toString().length());
+                        if (stringBuilderMembers.substring(0, stringBuilderMembers.toString().length()).isEmpty()) {
+                            permsMembers = "§otomt";
+                        }
+                        plugin.sendMessage(player, "messages.plot.list.perm.header", "%plot%", plot.getPlotName());
+                        plugin.sendMessage(player, "messages.plot.list.perm.outsiders", "%perms%", permsOutsiders);
+                        plugin.sendMessage(player, "messages.plot.list.perm.members", "%perms%", permsMembers);
+                        for (PlotPerms plotPerms : plot.getPlayerPlots()) {
+                            String perms = Arrays.toString(plotPerms.getPerms());
+                            if (plotPerms.getPerms().length == 0) {
+                                perms = "§otomt";
+                            }
+                            plugin.sendMessage(player, "messages.plot.list.perm.player", "%player%", plotPerms.getPlayerName(), "%perms%", perms);
+                        }
+                        plugin.sendMessage(player, "messages.plot.list.perm.permsrow.1");
+                        plugin.sendMessage(player, "messages.plot.list.perm.permsrow.2");
+                        plugin.sendMessage(player, "messages.plot.list.perm.permsrow.3");
+                    }
+                }
+            }
+            return;
+        }
+        player.sendMessage(args);
+        player.sendMessage(args.length + "");
+        if (args.length > 2) {
+            plugin.sendMessage(player, "messages.syntax.plot.perm");
+            return;
+        }
+        if (!args[0].equals("members") && !args[0].equals("outsiders")) {
+            @Deprecated
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
+            if (offlinePlayer == null) {
+                plugin.sendMessage(player, "messages.error.player.notFound");
+                return;
+            }
+        }
+        if (CityDatabase.getClaim(player.getLocation()) == null) {
+            plugin.sendMessage(player, "messages.error.plot.notFound");
+            return;
+        }
+        String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
+        if (role == null) {
+            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+            return;
+        }
+        if (role.equals("mayor") || role.equals("assistant") || role.equals("vicemayor")) {
+            if (CityDatabase.getClaim(player.getLocation()) != null) {
+                for (Plot plot : city.getCityPlots()) {
+                    Polygon polygon = new Polygon();
+                    for (Location loc : plot.getPlotPoints()) {
+                        polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
+                    }
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                        if (plot.isKMarked() && !role.equals("mayor")) {
+                            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        if (args[0].equals("members")) {
+                            if (Utilities.parseFlagChange(plot.getPermsMembers(), args[1]) == null) {
+                                plugin.sendMessage(player, "messages.syntax.plot.perm");
+                                return;
+                            }
+                            @Deprecated
+                            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
+                            plot.setPlotPerms("members", Utilities.parseFlagChange(plot.getPermsMembers(), args[1]),offlinePlayer.getUniqueId().toString());
+                            plugin.sendMessage(player, "messages.city.successful.set.plot.perm");
+                            return;
+                        }
+                        if (args[0].equals("outsiders")) {
+                            if (Utilities.parseFlagChange(plot.getPermsOutsiders(), args[1]) == null) {
+                                plugin.sendMessage(player, "messages.syntax.plot.perm");
+                                return;
+                            }
+                            plot.setPlotPerms("outsiders", Utilities.parseFlagChange(plot.getPermsOutsiders(), args[1]),null);
+                            plugin.sendMessage(player, "messages.city.successful.set.plot.perm");
+                            return;
+                        }
+                    }
+                }
+            }
+        } else {
+            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+        }
+    }
 
 }

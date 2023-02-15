@@ -5,7 +5,10 @@ import co.aikar.idb.DbRow;
 import live.supeer.metropolisrevamped.Database;
 import live.supeer.metropolisrevamped.Utilities;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+
+import java.util.UUID;
 
 @Getter
 public class Plot {
@@ -21,8 +24,8 @@ public class Plot {
     private final boolean kMarked;
     private boolean isForSale;
     private int plotPrice;
-    private final String permsMembers;
-    private final String permsOutsiders;
+    private char[] permsMembers;
+    private char[] permsOutsiders;
     private final Location plotCenter;
     private final String plotFlags;
     private final long plotCreationDate;
@@ -40,8 +43,8 @@ public class Plot {
         this.kMarked = data.get("plotKMarked");
         this.isForSale = data.get("plotIsForSale");
         this.plotPrice = data.getInt("plotPrice");
-        this.permsMembers = data.getString("permsMembers");
-        this.permsOutsiders = data.getString("permsOutsiders");
+        this.permsMembers =  data.getString("plotPermsMembers") == null ? new char[0] : data.getString("plotPermsMembers").toCharArray();
+        this.permsOutsiders =  data.getString("plotPermsOutsiders") == null ? new char[0] : data.getString("plotPermsOutsiders").toCharArray();
         this.plotCenter = Utilities.stringToLocation(data.getString("plotCenter"));
         this.plotFlags = data.getString("plotFlags");
         this.plotCreationDate = data.getInt("plotCreationDate");
@@ -74,7 +77,26 @@ public class Plot {
         DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotOwner` = NULL, `plotOwnerUUID` = NULL WHERE `plotID` = " + plotID + ";");
     }
 
+    public void setPlotPerms(String type,String perms, String playerUUID) {
+        if(type.equalsIgnoreCase("members")) {
+            DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotPermsMembers` = " + Database.sqlString(perms) + " WHERE `plotID` = " + plotID + ";");
+            this.permsMembers = perms.toCharArray();
+            return;
+        } else if(type.equalsIgnoreCase("outsiders")) {
+            DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotPermsOutsiders` = " + Database.sqlString(perms) + " WHERE `plotID` = " + plotID + ";");
+            this.permsOutsiders = perms.toCharArray();
+            return;
+        }
+        DB.executeUpdateAsync("INSERT INTO `mp_plotperms` (`plotId`, `cityId`, `plotPerms`, `playerUUID`, `playerName`) VALUES (" + plotID + ", " + cityID + ", " + Database.sqlString(perms) + ", " + Database.sqlString(playerUUID) + ", " + Database.sqlString(Bukkit.getOfflinePlayer(UUID.fromString(playerUUID)).getName()) + ") ON DUPLICATE KEY UPDATE ´plotPerms´ = '" + Database.sqlString(perms) + "';");
+    }
 
-
+    public PlotPerms[] getPlayerPlots() {
+        try {
+            return DB.getResults("SELECT * FROM `mp_plotperms` WHERE `plotId` = " + plotID + ";").stream().map(PlotPerms::new).toArray(PlotPerms[]::new);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

@@ -17,6 +17,7 @@ messages:
       expand: "§7Syntax: /plot expand §nantal§r§7 §nup/down"
       tp: "§7Syntax: /plot tp §nID"
       market: "§7Syntax: /plot market §npris\n§7Syntax: /plot market §n-"
+      perm: "§7Syntax: /plot perm §nspelare§r§7 +/-§nändring\n§7Syntax: /plot perm members +/-§nändring\n§7Syntax: /plot perm outsiders +/-§nändring"
   error:
     player:
       notFound: "§cSpelaren hittades inte."
@@ -69,6 +70,15 @@ messages:
       lose:
         items: "§2Förlora föremål vid dödsfall: %status%"
         xp: "§2Förlora XP vid dödsfall: %status%"
+      perm:
+        header: "§2--- §aTomträttigheter: %plot% §2---"
+        outsiders: "§2Utomstående: §a+%perms%"
+        members: "§2Stadsmedlemmar: §a+%perms%"
+        players: "§2Spelare %player%: §a+%perms%"
+        permsrow:
+          1: "§7a = animal, b = block, c = container, e = enderpearl"
+          2: "§7f = frame, g = go, h = home, j = jukebox"
+          3: "§7r = repair (anvil), s = switch, t = teleport, v = villager"
   city:
     motd: "§e%cityname% §7|§e %motd%"
     balance: "§e%cityname% §7|§a Stadskassa: %balance% minemynt."
@@ -110,6 +120,15 @@ messages:
           market:
             remove: "§e%cityname% §7|§a Tomten drogs tillbaka från marknaden."
             set: "§e%cityname% §7|§a Tomten lades ut på marknaden för %amount% minemynt."
+          perm:
+            change:
+              members: "§e%cityname% §7|§a Rättigheter för medlemmar på tomten ändrades till %perms%."
+              outsiders: "§e%cityname% §7|§a Rättigheter för icke-medlemmar på tomten ändrades till %perms%."
+              player: "§e%cityname% §7|§a Rättigheter för %player% på tomten ändrades till %perms%."
+            remove:
+              members: "§e%cityname% §7|§a Rättigheterna för medlemmar på tomten drogs tillbaka."
+              outsiders: "§e%cityname% §7|§a Rättigheterna för icke-medlemmar på tomten drogs tillbaka."
+              player: "§e%cityname% §7|§a Rättigheterna för %player% på tomten drogs tillbaka."
           leave: "§e%cityname% §7|§a Du lämnade tomt %plotname%."
           tp: "§e%cityname% §7|§a Du teleporterades till tomten %plotname%."
           new: "§e%cityname% §7|§a Du skapade en tomt med namnet %plotname%."

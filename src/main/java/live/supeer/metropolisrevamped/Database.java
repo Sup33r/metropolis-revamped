@@ -86,7 +86,7 @@ public class Database {
                       `xPosition` mediumint(9) NOT NULL,
                       `zPosition` mediumint(9) NOT NULL,
                       `claimDate` bigint(30) DEFAULT NULL,
-                        `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `outpost` tinyint(1) DEFAULT '0',
                       PRIMARY KEY (`claimId`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
@@ -121,6 +121,24 @@ public class Database {
                       `plotFlags` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                       `plotCreationDate` bigint(30) DEFAULT NULL,
                       PRIMARY KEY (`plotId`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
+
+            DB.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS `mp_plotperms` (
+                      `plotId` int(11) NOT NULL,
+                      `cityId` int(11) NOT NULL,
+                      `plotPerms` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `playerUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `playerName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      PRIMARY KEY (plotId,playerUUID)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
+            DB.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS `mp_cityperms` (
+                      `cityId` int(11) NOT NULL,
+                      `cityPerms` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `playerUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `playerName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      PRIMARY KEY (cityId,playerUUID)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
         } catch (SQLException exception) {
             exception.printStackTrace();
