@@ -42,6 +42,9 @@ messages:
       tooLowExpand: "§cDet angivna värdet är för lågt."
       notFound: "§cTomten hittades inte."
       notInPlot: "§cDu befinner dig inte på en tomt."
+      perm:
+        notFound: "§cRättighetsflaggan hittades inte. Använd /plot perm för att se alla rättigheter."
+        noChange: "§cDet finns inga ändringar att göra."
     missing:
       balance: "§e%cityname% §7| §cStaden måste ha minst 100 000 minemynt i stadskassan."
       playerBalance: "§e%cityname% §7| §cDu har inte nog med minemynt i din plånbok."
@@ -72,9 +75,9 @@ messages:
         xp: "§2Förlora XP vid dödsfall: %status%"
       perm:
         header: "§2--- §aTomträttigheter: %plot% §2---"
-        outsiders: "§2Utomstående: §a+%perms%"
-        members: "§2Stadsmedlemmar: §a+%perms%"
-        players: "§2Spelare %player%: §a+%perms%"
+        outsiders: "§2Utomstående: §a%perms%"
+        members: "§2Stadsmedlemmar: §a%perms%"
+        players: "§2Spelare %player%: §a%perms%"
         permsrow:
           1: "§7a = animal, b = block, c = container, e = enderpearl"
           2: "§7f = frame, g = go, h = home, j = jukebox"

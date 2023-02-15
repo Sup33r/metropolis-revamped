@@ -8,6 +8,9 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -77,24 +80,43 @@ public class Plot {
         DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotOwner` = NULL, `plotOwnerUUID` = NULL WHERE `plotID` = " + plotID + ";");
     }
 
-    public void setPlotPerms(String type,String perms, String playerUUID) {
+    public void setPlotPerms(String type,String perms, String playerUUID) throws SQLException {
         if(type.equalsIgnoreCase("members")) {
-            DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotPermsMembers` = " + Database.sqlString(perms) + " WHERE `plotID` = " + plotID + ";");
+            DB.executeUpdate("UPDATE `mp_plots` SET `plotPermsMembers` = " + Database.sqlString(perms) + " WHERE `plotID` = " + plotID + ";");
             this.permsMembers = perms.toCharArray();
             return;
         } else if(type.equalsIgnoreCase("outsiders")) {
-            DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotPermsOutsiders` = " + Database.sqlString(perms) + " WHERE `plotID` = " + plotID + ";");
+            DB.executeUpdate("UPDATE `mp_plots` SET `plotPermsOutsiders` = " + Database.sqlString(perms) + " WHERE `plotID` = " + plotID + ";");
             this.permsOutsiders = perms.toCharArray();
             return;
         }
-        DB.executeUpdateAsync("INSERT INTO `mp_plotperms` (`plotId`, `cityId`, `plotPerms`, `playerUUID`, `playerName`) VALUES (" + plotID + ", " + cityID + ", " + Database.sqlString(perms) + ", " + Database.sqlString(playerUUID) + ", " + Database.sqlString(Bukkit.getOfflinePlayer(UUID.fromString(playerUUID)).getName()) + ") ON DUPLICATE KEY UPDATE ´plotPerms´ = '" + Database.sqlString(perms) + "';");
+        DB.executeUpdate("INSERT INTO `mp_plotperms` (`plotId`, `cityId`, `plotPerms`, `playerUUID`, `playerName`) VALUES (" + plotID + ", " + cityID + ", " + Database.sqlString(perms) + ", " + Database.sqlString(playerUUID) + ", " + Database.sqlString(Bukkit.getOfflinePlayer(UUID.fromString(playerUUID)).getName()) + ") ON DUPLICATE KEY UPDATE ´plotPerms´ = '" + Database.sqlString(perms) + "';");
     }
 
-    public PlotPerms[] getPlayerPlots() {
+    public List<PlotPerms> getPlayerPlotPerms() {
+        List<PlotPerms> plotPermsList = new ArrayList<>();
         try {
-            return DB.getResults("SELECT * FROM `mp_plotperms` WHERE `plotId` = " + plotID + ";").stream().map(PlotPerms::new).toArray(PlotPerms[]::new);
+            List<DbRow> rows = DB.getResults("SELECT * FROM `mp_plotperms` WHERE `plotId` = " + plotID + ";");
+            for (DbRow row : rows) {
+                plotPermsList.add(new PlotPerms(row));
+            }
+            return plotPermsList;
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        return null;
+    }
+
+    public PlotPerms getPlayerPlotPerm(String playerUUID) {
+        try {
+            if (DB.getFirstRow("SELECT * FROM `mp_plotperms` WHERE `plotId` = " + plotID + " AND `playerUUID` = " + Database.sqlString(playerUUID) + ";") == null) {
+                return null;
+            }
+            DbRow row = DB.getFirstRow("SELECT * FROM `mp_plotperms` WHERE `plotId` = " + plotID + " AND `playerUUID` = " + Database.sqlString(playerUUID) + ";");
+            return new PlotPerms(row);
+        } catch (Exception e) {
+            e.printStackTrace();
+
         }
         return null;
     }

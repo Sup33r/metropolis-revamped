@@ -14,8 +14,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.awt.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -374,9 +374,17 @@ public class CommandPlot extends BaseCommand  {
         player.teleport(plot.getPlotCenter());
     }
 
+
+
+
+
+
+
+
+
     @Subcommand("perm")
-    @CommandCompletion("@plotPerm @plotPermArgs")
-    public static void onPerm(Player player, String[] args) {
+    @CommandCompletion("")
+    public static void onPerm(Player player, String[] args) throws SQLException {
         if (!player.hasPermission("metropolis.plot.perm")) {
             plugin.sendMessage(player, "messages.error.permissionDenied");
             return;
@@ -386,40 +394,50 @@ public class CommandPlot extends BaseCommand  {
             plugin.sendMessage(player, "messages.error.plot.notFound");
             return;
         }
+
         City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).get();
+
         if (args == null || args.length == 0) {
             if (CityDatabase.getClaim(player.getLocation()) != null) {
+
                 for (Plot plot : city.getCityPlots()) {
                     Polygon polygon = new Polygon();
+
                     for (Location loc : plot.getPlotPoints()) {
                         polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                     }
+
                     if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
                         StringBuilder stringBuilderOutsiders = new StringBuilder();
                         for (char s : plot.getPermsOutsiders()) {
-                                stringBuilderOutsiders.append(s);
+                            stringBuilderOutsiders.append(s);
                         }
-                        String permsOutsiders = stringBuilderOutsiders.substring(0, stringBuilderOutsiders.toString().length());
+                        String permsOutsiders = "+" + stringBuilderOutsiders.substring(0, stringBuilderOutsiders.toString().length());
                         if (stringBuilderOutsiders.substring(0, stringBuilderOutsiders.toString().length()).isEmpty()) {
-                            permsOutsiders = "§otomt";
+                            permsOutsiders = "§onada";
                         }
                         StringBuilder stringBuilderMembers = new StringBuilder();
                         for (char s : plot.getPermsMembers()) {
-                                stringBuilderMembers.append(s);
+                            stringBuilderMembers.append(s);
                         }
-                        String permsMembers = stringBuilderMembers.substring(0, stringBuilderMembers.toString().length());
+                        String permsMembers = "+" + stringBuilderMembers.substring(0, stringBuilderMembers.toString().length());
                         if (stringBuilderMembers.substring(0, stringBuilderMembers.toString().length()).isEmpty()) {
-                            permsMembers = "§otomt";
+                            permsMembers = "§onada";
                         }
                         plugin.sendMessage(player, "messages.plot.list.perm.header", "%plot%", plot.getPlotName());
                         plugin.sendMessage(player, "messages.plot.list.perm.outsiders", "%perms%", permsOutsiders);
                         plugin.sendMessage(player, "messages.plot.list.perm.members", "%perms%", permsMembers);
-                        for (PlotPerms plotPerms : plot.getPlayerPlots()) {
-                            String perms = Arrays.toString(plotPerms.getPerms());
-                            if (plotPerms.getPerms().length == 0) {
-                                perms = "§otomt";
-                            }
-                            plugin.sendMessage(player, "messages.plot.list.perm.player", "%player%", plotPerms.getPlayerName(), "%perms%", perms);
+
+                            for (PlotPerms plotPerms : plot.getPlayerPlotPerms()) {
+                                StringBuilder stringBuilder = new StringBuilder();
+                                for (char s : plotPerms.getPerms()) {
+                                    stringBuilder.append(s);
+                                }
+                                String perms = "+" + stringBuilder.substring(0, stringBuilder.toString().length());
+                                if (plotPerms.getPerms().length == 0) {
+                                    perms = "§onada";
+                                }
+                                plugin.sendMessage(player, "messages.plot.list.perm.players", "%player%", plotPerms.getPlayerName(), "%perms%", perms);
                         }
                         plugin.sendMessage(player, "messages.plot.list.perm.permsrow.1");
                         plugin.sendMessage(player, "messages.plot.list.perm.permsrow.2");
@@ -429,9 +447,7 @@ public class CommandPlot extends BaseCommand  {
             }
             return;
         }
-        player.sendMessage(args);
-        player.sendMessage(args.length + "");
-        if (args.length > 2) {
+        if (args.length > 2 || args.length == 1) {
             plugin.sendMessage(player, "messages.syntax.plot.perm");
             return;
         }
@@ -464,26 +480,40 @@ public class CommandPlot extends BaseCommand  {
                             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                             return;
                         }
+
                         if (args[0].equals("members")) {
-                            if (Utilities.parseFlagChange(plot.getPermsMembers(), args[1]) == null) {
-                                plugin.sendMessage(player, "messages.syntax.plot.perm");
+                            if (Utilities.parseFlagChange(plot.getPermsMembers(), args[1],player,"plot") == null) {
+                                plugin.sendMessage(player, "messages.error.plot.perm.notFound");
                                 return;
                             }
-                            @Deprecated
-                            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
-                            plot.setPlotPerms("members", Utilities.parseFlagChange(plot.getPermsMembers(), args[1]),offlinePlayer.getUniqueId().toString());
-                            plugin.sendMessage(player, "messages.city.successful.set.plot.perm");
+
+                            plot.setPlotPerms("members", Utilities.parseFlagChange(plot.getPermsMembers(), args[1],player,"plot"),null);
+                            plugin.sendMessage(player, "messages.city.successful.set.plot.perm.change.members", "%perms%", args[1], "%cityname%", city.getCityName());
                             return;
                         }
+
                         if (args[0].equals("outsiders")) {
-                            if (Utilities.parseFlagChange(plot.getPermsOutsiders(), args[1]) == null) {
-                                plugin.sendMessage(player, "messages.syntax.plot.perm");
+                            if (Utilities.parseFlagChange(plot.getPermsOutsiders(), args[1],player,"plot") == null) {
+                                plugin.sendMessage(player, "messages.error.plot.perm.notFound");
                                 return;
                             }
-                            plot.setPlotPerms("outsiders", Utilities.parseFlagChange(plot.getPermsOutsiders(), args[1]),null);
-                            plugin.sendMessage(player, "messages.city.successful.set.plot.perm");
+                            plot.setPlotPerms("outsiders", Utilities.parseFlagChange(plot.getPermsOutsiders(), args[1],player,"plot"),null);
+                            plugin.sendMessage(player, "messages.city.successful.set.plot.perm.change.outsiders", "%perms%", args[1], "%cityname%", city.getCityName());
                             return;
                         }
+
+                        @SuppressWarnings("deprecation")
+                        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
+                        if (!offlinePlayer.hasPlayedBefore()) {
+                            plugin.sendMessage(player, "messages.error.player.notFound");
+                            return;
+                        }
+                        if (plot.getPlayerPlotPerm(offlinePlayer.getUniqueId().toString()) == null || plot.getPlayerPlotPerm(offlinePlayer.getUniqueId().toString()).getPerms() == null) {
+                            plot.setPlotPerms("players", Utilities.parseFlagChange(new char[0], args[1],player,"plot"),offlinePlayer.getUniqueId().toString());
+                        } else {
+                            plot.setPlotPerms("players", Utilities.parseFlagChange(plot.getPlayerPlotPerm(offlinePlayer.getUniqueId().toString()).getPerms(), args[1],player,"plot"),offlinePlayer.getUniqueId().toString());
+                        }
+                        plugin.sendMessage(player, "messages.successful.set.plot.perm.change.player", "%player%", offlinePlayer.getName(), "%perms%", args[1], "%cityname%", city.getCityName());
                     }
                 }
             }

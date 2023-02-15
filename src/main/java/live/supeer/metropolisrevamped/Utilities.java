@@ -59,7 +59,10 @@ public class Utilities {
         return false;
     }
 
-    public static String parseFlagChange(char[] flagsOriginal, String change) {
+    public static String parseFlagChange(char[] flagsOriginal, String change, Player player, String flagType) {
+        if (flagsOriginal == null) {
+            flagsOriginal = new char[0];
+        }
         String flagsRaw = new String(flagsOriginal);
         change = change.replace("*", "abcefghjrstv");
 
@@ -73,6 +76,10 @@ public class Utilities {
                 return null;
             }
 
+            if (flagsRaw.length() == 0 && currentChar == '-' || flagsRaw.length() == 0 && currentChar == '+') {
+                return null;
+            }
+
             if (currentChar == '+') {
                 isAdding = true;
                 continue;
@@ -82,6 +89,12 @@ public class Utilities {
             }
 
             if (!isValidFlag(currentChar)) {
+                if (flagType.equals("plot")) {
+                    plugin.sendMessage(player, "messages.error.plot.perm.notFound");
+                }
+                else {
+                    plugin.sendMessage(player, "messages.error.city.perm.notFound");
+                }
                 return null;
             }
 
@@ -114,6 +127,12 @@ public class Utilities {
 
         // don't change if there's nothing to change
         if (flagsNew.toString().equals(new String(flagsOriginal))) {
+            if (flagType.equals("plot")) {
+                plugin.sendMessage(player, "messages.error.plot.perm.noChange");
+            }
+            else {
+                plugin.sendMessage(player, "messages.error.city.perm.noChange");
+            }
             return null;
         }
 

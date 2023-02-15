@@ -14,7 +14,7 @@ public class PlotPerms {
     public PlotPerms(DbRow data) {
         this.plotID = data.getInt("plotId");
         this.cityID = data.getInt("cityId");
-        this.perms = data.getString("perms").toCharArray();
+        this.perms = data.getString("plotPerms") == null ? new char[0] : data.getString("plotPerms").toCharArray();
         this.playerName = data.getString("playerName");
         this.playerUUID = data.getString("playerUUID");
     }
