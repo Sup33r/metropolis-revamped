@@ -90,7 +90,7 @@ public class Plot {
             this.permsOutsiders = perms.toCharArray();
             return;
         }
-        DB.executeUpdate("INSERT INTO `mp_plotperms` (`plotId`, `cityId`, `plotPerms`, `playerUUID`, `playerName`) VALUES (" + plotID + ", " + cityID + ", " + Database.sqlString(perms) + ", " + Database.sqlString(playerUUID) + ", " + Database.sqlString(Bukkit.getOfflinePlayer(UUID.fromString(playerUUID)).getName()) + ") ON DUPLICATE KEY UPDATE ´plotPerms´ = '" + Database.sqlString(perms) + "';");
+        DB.executeUpdate("INSERT INTO `mp_plotperms` (`plotId`, `cityId`, `plotPerms`, `playerUUID`, `playerName`) VALUES (" + plotID + ", " + cityID + ", " + Database.sqlString(perms) + ", " + Database.sqlString(playerUUID) + ", " + Database.sqlString(Bukkit.getOfflinePlayer(UUID.fromString(playerUUID)).getName()) + ") ON DUPLICATE KEY UPDATE plotPerms = '" + perms + "';");
     }
 
     public List<PlotPerms> getPlayerPlotPerms() {
