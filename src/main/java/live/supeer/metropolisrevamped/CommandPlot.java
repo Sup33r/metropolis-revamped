@@ -594,6 +594,10 @@ public class CommandPlot extends BaseCommand  {
                         plot.setPlotOwnerUUID(offlinePlayer.getUniqueId().toString());
                         plugin.sendMessage(player, "messages.plot.set.owner.success", "%player%", offlinePlayer.getName(), "%cityname%", city.getCityName());
                     }
+                    if (city.getCityPlots().indexOf(plot) == city.getCityPlots().size() - 1) {
+                        plugin.sendMessage(player, "messages.error.plot.notFound");
+                        return;
+                    }
                 }
             }
         }
@@ -625,7 +629,6 @@ public class CommandPlot extends BaseCommand  {
                             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                             return;
                         }
-
                         if (type.equals("-")) {
                             if (!isAssistant) {
                                 plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
@@ -732,7 +735,13 @@ public class CommandPlot extends BaseCommand  {
                         plugin.sendMessage(player, "messages.error.plot.set.type.invalidType", "%cityname%", city.getCityName());
                         return;
                     }
+                    if (city.getCityPlots().indexOf(plot) == city.getCityPlots().size() - 1) {
+                        plugin.sendMessage(player, "messages.error.plot.notFound");
+                        return;
+                    }
                 }
+            } else {
+                plugin.sendMessage(player, "messages.error.plot.notFound");
             }
         }
 
