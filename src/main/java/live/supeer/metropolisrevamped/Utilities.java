@@ -59,7 +59,78 @@ public class Utilities {
         return false;
     }
 
-    public static String parseFlagChange(char[] flagsOriginal, String change, Player player, String flagType) {
+    public static String parseFlagChange(char[] flagsOriginal, String change) {
+        if (flagsOriginal == null) {
+            flagsOriginal = new char[0];
+        }
+        String flagsRaw = new String(flagsOriginal);
+
+        boolean isAdding = true;
+
+        for (int i = 0; i < change.length(); i++) {
+            char currentChar = change.charAt(i);
+
+            // the first character must be either a + or a -
+            if (i == 0 && currentChar != '+' && currentChar != '-') {
+                return null;
+            }
+
+            if (flagsRaw.length() == 0 && currentChar == '-' || flagsRaw.length() == 0 && currentChar == '+') {
+                return null;
+            }
+
+            if (currentChar == '+') {
+                isAdding = true;
+                continue;
+            } else if (currentChar == '-') {
+                isAdding = false;
+                continue;
+            }
+
+            if (isValidFlag(currentChar)) {
+                return null;
+            }
+
+            flagsRaw = isAdding ? flagsRaw + currentChar : flagsRaw.replace(String.valueOf(currentChar), "");
+        }
+
+        StringBuilder flagsNew = new StringBuilder();
+
+        for (char flag : flagsRaw.toCharArray()) {
+            boolean exists = false;
+
+            for (int j = 0; j < flagsNew.length(); j++) {
+                if (flagsNew.charAt(j) == flag) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (!exists) {
+                flagsNew.append(flag);
+            }
+        }
+
+        char[] flagsNewArray = flagsNew.toString().toCharArray();
+
+        Arrays.sort(flagsOriginal);
+        Arrays.sort(flagsNewArray);
+
+        flagsNew = new StringBuilder(new String(flagsNewArray));
+
+        // don't change if there's nothing to change
+        if (flagsNew.toString().equals(new String(flagsOriginal))) {
+            return null;
+        }
+
+        return flagsNew.toString();
+    }
+    private static boolean isValidFlag(char currentChar){
+        // a = animals, c = conference (meetings), i = items, l = locked, m = monsters, p = pvp, x = experience
+        return currentChar != 'a' && currentChar != 'c' && currentChar != 'i' && currentChar != 'l' && currentChar != 'm' && currentChar != 'p' && currentChar != 'x';
+    }
+
+    public static String parsePermChange(char[] flagsOriginal, String change, Player player, String flagType) {
         if (flagsOriginal == null) {
             flagsOriginal = new char[0];
         }
@@ -139,7 +210,7 @@ public class Utilities {
         return flagsNew.toString();
     }
 
-    public static String parseFlags(String flags, String flagType, Player player) {
+    public static String parsePerms(String flags, String flagType, Player player) {
         if (flags == null) {
             flags = "";
         }
@@ -149,7 +220,7 @@ public class Utilities {
         StringBuilder flagsNew = new StringBuilder();
 
         for (char flag : flags.toCharArray()) {
-            if (isValidFlag(flag)) {
+            if (isValidPerm(flag)) {
                 if (flagType.equals("plot")) {
                     plugin.sendMessage(player, "messages.error.plot.perm.notFound");
                 }
@@ -182,7 +253,7 @@ public class Utilities {
         return flagsNew.toString();
     }
 
-    private static boolean isValidFlag(char currentChar){
+    private static boolean isValidPerm(char currentChar){
         return currentChar != 'a' && currentChar != 'b' && currentChar != 'c' && currentChar != 'e' && currentChar != 'f' && currentChar != 'g' && currentChar != 'h' && currentChar != 'j' && currentChar != 'r' && currentChar != 's' && currentChar != 't' && currentChar != 'v';
     }
 

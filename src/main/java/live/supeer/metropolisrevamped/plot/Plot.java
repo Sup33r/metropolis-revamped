@@ -18,19 +18,19 @@ public class Plot {
 
     private final int plotID;
     private final int cityID;
-    private final String plotName;
+    private String plotName;
     private String plotOwner;
     private String plotOwnerUUID;
     private final int plotYMin;
     private final int plotYMax;
     private String plotType;
-    private final boolean kMarked;
+    private boolean kMarked;
     private boolean isForSale;
     private int plotPrice;
     private char[] permsMembers;
     private char[] permsOutsiders;
     private final Location plotCenter;
-    private final String plotFlags;
+    private char[] plotFlags;
     private final long plotCreationDate;
     private final Location[] plotPoints;
 
@@ -49,9 +49,14 @@ public class Plot {
         this.permsMembers =  data.getString("plotPermsMembers") == null ? new char[0] : data.getString("plotPermsMembers").toCharArray();
         this.permsOutsiders =  data.getString("plotPermsOutsiders") == null ? new char[0] : data.getString("plotPermsOutsiders").toCharArray();
         this.plotCenter = Utilities.stringToLocation(data.getString("plotCenter"));
-        this.plotFlags = data.getString("plotFlags");
+        this.plotFlags = data.getString("plotFlags") == null ? new char[0] : data.getString("plotFlags").toCharArray();
         this.plotCreationDate = data.getInt("plotCreationDate");
         this.plotPoints = Utilities.stringToPolygon(data.getString("plotPoints"));
+    }
+
+    public void setPlotName(String plotName) {
+        this.plotName = plotName;
+        DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotName` = " + Database.sqlString(plotName) + " WHERE `plotID` = " + plotID + ";");
     }
 
     public void setPlotType(String plotType) {
@@ -95,6 +100,29 @@ public class Plot {
             return;
         }
         DB.executeUpdate("INSERT INTO `mp_plotperms` (`plotId`, `cityId`, `plotPerms`, `playerUUID`, `playerName`) VALUES (" + plotID + ", " + cityID + ", " + Database.sqlString(perms) + ", " + Database.sqlString(playerUUID) + ", " + Database.sqlString(Bukkit.getOfflinePlayer(UUID.fromString(playerUUID)).getName()) + ") ON DUPLICATE KEY UPDATE plotPerms = '" + perms + "';");
+    }
+
+    public boolean hasFlag(char needle) {
+        if (this.plotFlags == null) {
+            return false;
+        }
+
+        for (char option : this.plotFlags) {
+            if (option == needle) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void setPlotFlags(String flags) {
+        this.plotFlags = flags.toCharArray();
+        DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotFlags` = " + Database.sqlString(flags) + " WHERE `plotID` = " + plotID + ";");
+    }
+
+    public void setKMarked(boolean kMarked) {
+        this.kMarked = kMarked;
+        DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotKMarked` = " + kMarked + " WHERE `plotID` = " + plotID + ";");
     }
 
     public List<PlotPerms> getPlayerPlotPerms() {
