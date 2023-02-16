@@ -15,6 +15,7 @@ messages:
         bank: "§7Syntax: /city bank"
     plot:
       set:
+        set: "§7Syntax: /plot set type §nchurch\n§7Syntax: /plot set type §nfarm\n§7Syntax: /plot set type §nshop\n§7Syntax: /plot set type §nvacation\n§7Syntax: /plot set type -\n§7Syntax: /plot set owner §nspelare\n§7Syntax: /plot set owner -\n§7Syntax: /plot set rent §ntomträttsavgäld\n§7Syntax: /plot set rent -\n§7Syntax: /plot set name §nnamn\n§7Syntax: /plot set name -"
         type: "§7Syntax: /plot set type §nchurch\n§7Syntax: /plot set type §nfarm\n§7Syntax: /plot set type §nshop\n§7Syntax: /plot set type §nvacation"
         typeAdmin: "§7Syntax: /plot set type §njail"
         owner: "§7Syntax: /plot set owner §nspelare\n§7Syntax: /plot set owner -"

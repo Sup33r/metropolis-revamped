@@ -56,7 +56,7 @@ public final class MetropolisRevamped extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new MetropolisListener(), this);
         Database.initialize();
         Database.synchronize();
-        manager.getCommandCompletions().registerCompletion("plotSet", c -> ImmutableList.of("owner", "type", "name", "rent"));
+        manager.getCommandCompletions().registerCompletion("plotType", c -> ImmutableList.of("church", "farm", "shop", "vacation"));
     }
 
     @Override
