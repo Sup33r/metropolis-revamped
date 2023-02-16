@@ -803,7 +803,42 @@ public class CommandPlot extends BaseCommand  {
 
         @Subcommand("rent")
         public static void onRent(Player player, String rent) {
+            if (CityDatabase.getClaim(player.getLocation()) == null) {
+                plugin.sendMessage(player, "messages.error.plot.notFound");
+                return;
+            }
+            City city = CityDatabase.getCityByClaim(player.getLocation());
+            assert city != null;
+            String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
+            if (role == null) {
+                plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                return;
+            }
+            boolean isViceMayor = role.equals("vicemayor") || role.equals("mayor");
+            boolean isMayor = role.equals("mayor");
+            if (CityDatabase.getClaim(player.getLocation()) != null) {
+                for (Plot plot : city.getCityPlots()) {
+                    Polygon polygon = new Polygon();
+                    for (Location loc : plot.getPlotPoints()) {
+                        polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
+                    }
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                        if (plot.isKMarked() && !isMayor) {
+                            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        if (!isViceMayor) {
+                            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                            return;
+                        }
 
+                    }
+                    if (city.getCityPlots().indexOf(plot) == city.getCityPlots().size() - 1) {
+                        plugin.sendMessage(player, "messages.error.plot.notFound");
+                        return;
+                    }
+                }
+            }
         }
     }
 

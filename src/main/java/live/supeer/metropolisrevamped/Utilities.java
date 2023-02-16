@@ -327,6 +327,9 @@ public class Utilities {
                     if (plot.isForSale()) {
                         board.updateLine(i, plugin.getMessage("messages.city.scoreboard.price"));
                         board.updateLine(i+1,"§a" + Utilities.formattedMoney(plot.getPlotPrice()) + " minemynt");
+                        if (plot.getPlotRent() != 0) {
+                            board.updateLine(i+2,"§aTR: " + plot.getPlotRent());
+                        }
                     }
                     return;
                 }

@@ -115,6 +115,7 @@ public class Database {
                       `plotIsForSale` tinyint(1) DEFAULT 0,
                       `plotKMarked` tinyint(1) DEFAULT 0,
                       `plotPrice` int(25) DEFAULT 0,
+                      `plotRent` int(25) DEFAULT 0,
                       `plotPermsMembers` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `plotPermsOutsiders` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `plotCenter` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,

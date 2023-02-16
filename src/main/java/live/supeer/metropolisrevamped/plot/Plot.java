@@ -27,6 +27,7 @@ public class Plot {
     private boolean kMarked;
     private boolean isForSale;
     private int plotPrice;
+    private final int plotRent;
     private char[] permsMembers;
     private char[] permsOutsiders;
     private final Location plotCenter;
@@ -46,6 +47,7 @@ public class Plot {
         this.kMarked = data.get("plotKMarked");
         this.isForSale = data.get("plotIsForSale");
         this.plotPrice = data.getInt("plotPrice");
+        this.plotRent = data.getInt("plotRent");
         this.permsMembers =  data.getString("plotPermsMembers") == null ? new char[0] : data.getString("plotPermsMembers").toCharArray();
         this.permsOutsiders =  data.getString("plotPermsOutsiders") == null ? new char[0] : data.getString("plotPermsOutsiders").toCharArray();
         this.plotCenter = Utilities.stringToLocation(data.getString("plotCenter"));
