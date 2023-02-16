@@ -508,12 +508,8 @@ public class CommandPlot extends BaseCommand  {
                             plugin.sendMessage(player, "messages.error.player.notFound");
                             return;
                         }
-                        String flags = args[1];
-                        if (flags.contains("*")) {
-                            flags = "abcefghjrstv";
-                        }
                         if (plot.getPlayerPlotPerm(offlinePlayer.getUniqueId().toString()) == null || plot.getPlayerPlotPerm(offlinePlayer.getUniqueId().toString()).getPerms() == null) {
-                            plot.setPlotPerms("players", flags,offlinePlayer.getUniqueId().toString());
+                            plot.setPlotPerms("players", Utilities.parseFlags(args[1],"plot",player),offlinePlayer.getUniqueId().toString());
                         } else {
                             plot.setPlotPerms("players", Utilities.parseFlagChange(plot.getPlayerPlotPerm(offlinePlayer.getUniqueId().toString()).getPerms(), args[1],player,"plot"),offlinePlayer.getUniqueId().toString());
                         }

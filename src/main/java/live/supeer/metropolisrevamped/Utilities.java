@@ -88,7 +88,7 @@ public class Utilities {
                 continue;
             }
 
-            if (!isValidFlag(currentChar)) {
+            if (isValidFlag(currentChar)) {
                 if (flagType.equals("plot")) {
                     plugin.sendMessage(player, "messages.error.plot.perm.notFound");
                 }
@@ -139,8 +139,51 @@ public class Utilities {
         return flagsNew.toString();
     }
 
+    public static String parseFlags(String flags, String flagType, Player player) {
+        if (flags == null) {
+            flags = "";
+        }
+
+        flags = flags.replace("*", "abcefghjrstv");
+
+        StringBuilder flagsNew = new StringBuilder();
+
+        for (char flag : flags.toCharArray()) {
+            if (isValidFlag(flag)) {
+                if (flagType.equals("plot")) {
+                    plugin.sendMessage(player, "messages.error.plot.perm.notFound");
+                }
+                else {
+                    plugin.sendMessage(player, "messages.error.city.perm.notFound");
+                }
+                return null;
+            }
+
+            boolean exists = false;
+
+            for (int j = 0; j < flagsNew.length(); j++) {
+                if (flagsNew.charAt(j) == flag) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (!exists) {
+                flagsNew.append(flag);
+            }
+        }
+
+        char[] flagsNewArray = flagsNew.toString().toCharArray();
+
+        Arrays.sort(flagsNewArray);
+
+        flagsNew = new StringBuilder(new String(flagsNewArray));
+
+        return flagsNew.toString();
+    }
+
     private static boolean isValidFlag(char currentChar){
-        return currentChar == 'a' || currentChar == 'b' || currentChar == 'c' || currentChar == 'e' || currentChar == 'f' || currentChar == 'g' || currentChar == 'h' || currentChar == 'j' || currentChar == 'r' || currentChar == 's' || currentChar == 't' || currentChar == 'v';
+        return currentChar != 'a' && currentChar != 'b' && currentChar != 'c' && currentChar != 'e' && currentChar != 'f' && currentChar != 'g' && currentChar != 'h' && currentChar != 'j' && currentChar != 'r' && currentChar != 's' && currentChar != 't' && currentChar != 'v';
     }
 
     public static String polygonToString(Location[] polygon) {
