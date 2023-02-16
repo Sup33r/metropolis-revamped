@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import java.awt.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -435,7 +436,7 @@ public class CommandPlot extends BaseCommand  {
                                 }
                                 String perms = "+" + stringBuilder.substring(0, stringBuilder.toString().length());
                                 if (plotPerms.getPerms().length == 0) {
-                                    perms = "§onada";
+                                    return;
                                 }
                                 plugin.sendMessage(player, "messages.plot.list.perm.players", "%player%", plotPerms.getPlayerName(), "%perms%", perms);
                         }
@@ -523,6 +524,86 @@ public class CommandPlot extends BaseCommand  {
     }
 
     @Subcommand("set")
+    public static class Set extends BaseCommand {
+
+
+        @Subcommand("owner")
+        public static void onOwner(Player player, String playerName) {
+            if (CityDatabase.getClaim(player.getLocation()) == null) {
+                plugin.sendMessage(player, "messages.error.plot.notFound");
+                return;
+            }
+            City city = CityDatabase.getCityByClaim(player.getLocation());
+            assert city != null;
+            String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
+            if (role == null) {
+                plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                return;
+            }
+            boolean isInviter = role.equals("inviter") || role.equals("assistant") || role.equals("vicemayor") || role.equals("mayor");
+            boolean isMayor = role.equals("mayor");
+            if (CityDatabase.getClaim(player.getLocation()) != null) {
+                for (Plot plot : city.getCityPlots()) {
+                    Polygon polygon = new Polygon();
+                    for (Location loc : plot.getPlotPoints()) {
+                        polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
+                    }
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                        if (plot.isKMarked() && isMayor) {
+                            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        if (!isInviter) {
+                            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        if (playerName.equals("-")) {
+                            if (plot.getPlotOwner() == null) {
+                                plugin.sendMessage(player, "messages.error.plot.set.owner.alreadyNoOwner", "%cityname%", city.getCityName());
+                                return;
+                            }
+                            plot.setPlotOwner(null);
+                            plugin.sendMessage(player, "messages.plot.set.owner.removed","%cityname%", city.getCityName());
+                            return;
+                        }
+                        @SuppressWarnings("deprecation")
+                        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+                        if (!offlinePlayer.hasPlayedBefore()) {
+                            plugin.sendMessage(player, "messages.error.player.notFound");
+                            return;
+                        }
+                        if (!Arrays.stream(Objects.requireNonNull(CityDatabase.memberCityList(offlinePlayer.getUniqueId().toString()))).toList().contains(city.getCityName())) {
+                            if (!plot.getPlotType().equals("vacation")) {
+                                plugin.sendMessage(player, "messages.error.plot.set.owner.notInCity", "%cityname%", city.getCityName());
+                                return;
+                            }
+                        }
+                        plot.setPlotOwner(offlinePlayer.getName());
+                        plot.setPlotOwnerUUID(offlinePlayer.getUniqueId().toString());
+                        plugin.sendMessage(player, "messages.plot.set.owner.success", "%player%", offlinePlayer.getName(), "%cityname%", city.getCityName());
+                    }
+                }
+            }
+        }
+
+        @Subcommand("type")
+        public static void onType(Player player, String type) {
+
+        }
+
+        @Subcommand("name")
+        public static void onName(Player player, String name) {
+
+        }
+
+        @Subcommand("rent")
+        public static void onRent(Player player, String rent) {
+
+        }
+    }
+
+    @Subcommand("set")
+    @CommandCompletion("@plotSet")
     public static void onSet(Player player, String[] args) {
         if (args.length == 0) {
             plugin.sendMessage(player, "messages.syntax.plot.set");
@@ -539,19 +620,170 @@ public class CommandPlot extends BaseCommand  {
             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
             return;
         }
-        if (role.equals("mayor") || role.equals("assistant") || role.equals("vicemayor")) {
-            if (CityDatabase.getClaim(player.getLocation()) != null) {
-                for (Plot plot : city.getCityPlots()) {
-                    Polygon polygon = new Polygon();
-                    for (Location loc : plot.getPlotPoints()) {
-                        polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
+        boolean isInviter = role.equals("inviter") || role.equals("assistant") || role.equals("vicemayor") || role.equals("mayor");
+        boolean isAssistant = role.equals("assistant") || role.equals("vicemayor") || role.equals("mayor");
+        boolean isMayor = role.equals("mayor");
+        if (CityDatabase.getClaim(player.getLocation()) != null) {
+            for (Plot plot : city.getCityPlots()) {
+                Polygon polygon = new Polygon();
+                for (Location loc : plot.getPlotPoints()) {
+                    polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
+                }
+                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (plot.isKMarked() && isMayor) {
+                        plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                        return;
                     }
-                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
-                        if (plot.isKMarked() && !role.equals("mayor")) {
+                    if (args[0].equals("owner")) {
+                        if (args.length > 2 || args.length == 1) {
+                            plugin.sendMessage(player, "messages.syntax.plot.set.owner");
+                            return;
+                        }
+                        @SuppressWarnings("deprecation")
+                        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
+                        if (!isInviter) {
                             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                             return;
                         }
+                        if (args[1].equals("-")) {
+                            if (plot.getPlotOwner() == null) {
+                                plugin.sendMessage(player, "messages.error.plot.set.owner.alreadyNoOwner", "%cityname%", city.getCityName());
+                                return;
+                            }
+                            plot.setPlotOwner(null);
+                            plugin.sendMessage(player, "messages.plot.set.owner.removed","%cityname%", city.getCityName());
+                            return;
+                        }
+                        if (!offlinePlayer.hasPlayedBefore()) {
+                            plugin.sendMessage(player, "messages.error.player.notFound");
+                            return;
+                        }
+                        if (!Arrays.stream(Objects.requireNonNull(CityDatabase.memberCityList(offlinePlayer.getUniqueId().toString()))).toList().contains(city.getCityName())) {
+                            if (!plot.getPlotType().equals("vacation")) {
+                                plugin.sendMessage(player, "messages.error.plot.set.owner.notInCity", "%cityname%", city.getCityName());
+                                return;
+                            }
+                        }
+                        plot.setPlotOwner(offlinePlayer.getName());
+                        plot.setPlotOwnerUUID(offlinePlayer.getUniqueId().toString());
+                        plugin.sendMessage(player, "messages.plot.set.owner.success", "%player%", offlinePlayer.getName(), "%cityname%", city.getCityName());
                     }
+                    if (args[0].equals("type")) {
+                        if (args.length > 2 || args.length == 1) {
+                            plugin.sendMessage(player, "messages.syntax.plot.set.type");
+                            if (player.hasPermission("metropolis.admin")) {
+                                plugin.sendMessage(player, "messages.syntax.plot.set.type.admin");
+                            }
+                            return;
+                        }
+                        if (args[1].equals("-")) {
+                            if (!isAssistant) {
+                                plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                                return;
+                            }
+                            if (plot.getPlotType() == null) {
+                                plugin.sendMessage(player, "messages.error.plot.set.type.alreadyNoType", "%cityname%", city.getCityName());
+                                return;
+                            }
+                            plot.setPlotType(null);
+                            plugin.sendMessage(player, "messages.plot.set.type.removed", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        if (args[1].equals("church")) {
+                            if (!isAssistant) {
+                                plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                                return;
+                            }
+                            if (plot.getPlotType() == null) {
+                                plot.setPlotType("church");
+                                plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Kyrka");
+                                return;
+                            }
+                            if (plot.getPlotType().equals("church")) {
+                                plugin.sendMessage(player, "messages.error.plot.set.type.alreadyType", "%cityname%", city.getCityName(), "%type%", "Kyrka");
+                                return;
+                            }
+                            plot.setPlotType("church");
+                            plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Kyrka");
+                            return;
+                        }
+                        if (args[1].equals("farm")) {
+                            if (!isAssistant) {
+                                plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                                return;
+                            }
+                            if (plot.getPlotType() == null) {
+                                plot.setPlotType("farm");
+                                plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Farm");
+                                return;
+                            }
+                            if (plot.getPlotType().equals("farm")) {
+                                plugin.sendMessage(player, "messages.error.plot.set.type.alreadyType", "%cityname%", city.getCityName(), "%type%", "Farm");
+                                return;
+                            }
+                            plot.setPlotType("farm");
+                            plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Farm");
+                            return;
+                        }
+                        if (args[1].equals("shop")) {
+                            if (!isAssistant) {
+                                plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                                return;
+                            }
+                            if (plot.getPlotType() == null) {
+                                plot.setPlotType("shop");
+                                plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Affär");
+                                return;
+                            }
+                            if (plot.getPlotType().equals("shop")) {
+                                plugin.sendMessage(player, "messages.error.plot.set.type.alreadyType", "%cityname%", city.getCityName(), "%type%", "Affär");
+                                return;
+                            }
+                            plot.setPlotType("shop");
+                            plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Affär");
+                            return;
+                        }
+                        if (args[1].equals("vacation")) {
+                            if (!isAssistant) {
+                                plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                                return;
+                            }
+                            if (plot.getPlotType() == null) {
+                                plot.setPlotType("vacation");
+                                plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Ferietomt");
+                                return;
+                            }
+                            if (plot.getPlotType().equals("vacation")) {
+                                plugin.sendMessage(player, "messages.error.plot.set.type.alreadyType", "%cityname%", city.getCityName(), "%type%", "Ferietomt");
+                                return;
+                            }
+                            plot.setPlotType("vacation");
+                            plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Ferietomt");
+                            return;
+                        }
+                        if (args[1].equals("jail")) {
+                            if (player.hasPermission("metropolis.admin")) {
+                                if (plot.getPlotType() == null) {
+                                    plot.setPlotType("jail");
+                                    plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Fängelse");
+                                    return;
+                                }
+                                if (plot.getPlotType().equals("jail")) {
+                                    plugin.sendMessage(player, "messages.error.plot.set.type.alreadyType", "%cityname%", city.getCityName(), "%type%", "Fängelse");
+                                    return;
+                                }
+                                plot.setPlotType("jail");
+                                plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Fängelse");
+                            } else {
+                                plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                            }
+                            return;
+                        }
+                        plugin.sendMessage(player, "messages.error.plot.set.type.invalidType", "%cityname%", city.getCityName());
+                        return;
+                    }
+                } else {
+                    plugin.sendMessage(player, "messages.error.plot.notInPlot");
                 }
             }
         }

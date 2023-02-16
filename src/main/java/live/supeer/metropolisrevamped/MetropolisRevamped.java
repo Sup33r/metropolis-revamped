@@ -2,6 +2,7 @@ package live.supeer.metropolisrevamped;
 
 import co.aikar.commands.PaperCommandManager;
 import co.aikar.idb.DB;
+import com.google.common.collect.ImmutableList;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.city.Member;
@@ -55,6 +56,7 @@ public final class MetropolisRevamped extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new MetropolisListener(), this);
         Database.initialize();
         Database.synchronize();
+        manager.getCommandCompletions().registerCompletion("plotSet", c -> ImmutableList.of("owner", "type", "name", "rent"));
     }
 
     @Override

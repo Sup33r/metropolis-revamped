@@ -227,7 +227,23 @@ public class Utilities {
                     i = i + 1;
                     if (plot.getPlotType() != null) {
                         board.updateLine(i, plugin.getMessage("messages.city.scoreboard.type"));
-                        board.updateLine(i+1,"§a" + plot.getPlotType());
+                        String type = plot.getPlotType();
+                        if (type.equals("church")) {
+                            type = "Kyrka";
+                        }
+                        if (type.equals("farm")) {
+                            type = "Farm";
+                        }
+                        if (type.equals("shop")) {
+                            type = "Affär";
+                        }
+                        if (type.equals("vacation")) {
+                            type = "Ferietomt";
+                        }
+                        if (type.equals("jail")) {
+                            type = "Fängelse";
+                        }
+                        board.updateLine(i+1,"§a" + type);
                         board.updateLine(i+2," ");
                         i = i + 3;
                     }

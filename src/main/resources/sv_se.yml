@@ -14,6 +14,10 @@ messages:
         withdraw: "§7Syntax: /city bank -§nbelopp§r§7 §nanledning"
         bank: "§7Syntax: /city bank"
     plot:
+      set:
+        type: "§7Syntax: /plot set type §nchurch\n§7Syntax: /plot set type §nfarm\n§7Syntax: /plot set type §nshop\n§7Syntax: /plot set type §nvacation"
+        typeAdmin: "§7Syntax: /plot set type §njail"
+        owner: "§7Syntax: /plot set owner §nspelare\n§7Syntax: /plot set owner -"
       expand: "§7Syntax: /plot expand §nantal§r§7 §nup/down"
       tp: "§7Syntax: /plot tp §nID"
       market: "§7Syntax: /plot market §npris\n§7Syntax: /plot market §n-"
@@ -34,6 +38,15 @@ messages:
           cityCost: "§cDu har inte råd med 500 000 minemynt som en stad kostar."
     permissionDenied: "§cÅtkomst nekad."
     plot:
+      set:
+        type:
+          alreadyType: "§e%cityname% §7| §cTomten är redan av typen §4%type%§c."
+          alreadyNoType: "§e%cityname% §7| §cTomten har redan ingen typ."
+          invalidType: "§e%cityname% §7| §cTomttypen hittades inte. Använd /plot set type för att se alla typer."
+        owner:
+          alreadyNoOwner: "§e%cityname% §7| §cTomten har redan ingen ägare."
+          alreadyOwner: "§e%cityname% §7| §cSpelaren är redan ägare till tomten."
+          notInCity: "§e%cityname% §7| §cSpelaren måste vara medlem i staden för att kunna äga tomten. Överväg att använda /plot set type vacation istället."
       tooSmall: "§cDin markering är för liten."
       tooLowY: "§cDin markering är för låg. Använd /plot expand för att öka höjden."
       intersectsExistingPlot: "§cDin markering korsar en existerande tomt."
@@ -56,6 +69,13 @@ messages:
   save:
     membership: "§aDin hemstad är nu %cityname%."
   plot:
+    set:
+      type:
+        success: "§e%cityname% §7| §aTomtens typ är nu §2%type%§a."
+        removed: "§e%cityname% §7| §aTomtens typ är nu borttagen."
+      owner:
+        success: "§e%cityname% §7| §aTomtens ägare är nu %player%."
+        removed: "§e%cityname% §7| §aTomtens ägare är nu borttagen."
     player:
       header: ""
     list:

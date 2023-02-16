@@ -23,7 +23,7 @@ public class Plot {
     private String plotOwnerUUID;
     private final int plotYMin;
     private final int plotYMax;
-    private final String plotType;
+    private String plotType;
     private final boolean kMarked;
     private boolean isForSale;
     private int plotPrice;
@@ -54,6 +54,10 @@ public class Plot {
         this.plotPoints = Utilities.stringToPolygon(data.getString("plotPoints"));
     }
 
+    public void setPlotType(String plotType) {
+        this.plotType = plotType;
+        DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotType` = " + Database.sqlString(plotType) + " WHERE `plotID` = " + plotID + ";");
+    }
     public void setPlotOwner(String plotOwner) {
         this.plotOwner = plotOwner;
         DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotOwner` = " + Database.sqlString(plotOwner) + " WHERE `plotID` = " + plotID + ";");
