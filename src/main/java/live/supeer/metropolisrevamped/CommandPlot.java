@@ -30,7 +30,7 @@ public class CommandPlot extends BaseCommand  {
     }
 
     @Subcommand("new")
-    public static void onNew(Player player, String[] args) {
+    public static void onNew(Player player,@Optional String plotname) {
         if (!player.hasPermission("metropolis.plot.new")) {
             plugin.sendMessage(player,"messages.error.permissionDenied");
             return;
@@ -80,9 +80,10 @@ public class CommandPlot extends BaseCommand  {
                     }
                     if (PlotDatabase.intersectsExistingPlot(regionPolygon,city)) {
                         plugin.sendMessage(player,"messages.error.plot.intersectsExistingPlot");
+                        player.sendMessage("HEJ!");
                         return;
                     }
-                    Plot plot = PlotDatabase.createPlot(player,locations,null,city,MetropolisListener.playerYMin.get(player.getUniqueId()),MetropolisListener.playerYMax.get(player.getUniqueId()));
+                    Plot plot = PlotDatabase.createPlot(player,locations,plotname,city,MetropolisListener.playerYMin.get(player.getUniqueId()),MetropolisListener.playerYMax.get(player.getUniqueId()));
                     assert plot != null;
                     plugin.sendMessage(player,"messages.city.successful.set.plot.new","%cityname%",city.getCityName(),"%plotname%",plot.getPlotName());
                 }
