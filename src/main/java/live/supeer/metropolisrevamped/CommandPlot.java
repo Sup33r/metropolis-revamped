@@ -522,4 +522,39 @@ public class CommandPlot extends BaseCommand  {
         }
     }
 
+    @Subcommand("set")
+    public static void onSet(Player player, String[] args) {
+        if (args.length == 0) {
+            plugin.sendMessage(player, "messages.syntax.plot.set");
+            return;
+        }
+        if (CityDatabase.getClaim(player.getLocation()) == null) {
+            plugin.sendMessage(player, "messages.error.plot.notFound");
+            return;
+        }
+        City city = CityDatabase.getCityByClaim(player.getLocation());
+        assert city != null;
+        String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
+        if (role == null) {
+            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+            return;
+        }
+        if (role.equals("mayor") || role.equals("assistant") || role.equals("vicemayor")) {
+            if (CityDatabase.getClaim(player.getLocation()) != null) {
+                for (Plot plot : city.getCityPlots()) {
+                    Polygon polygon = new Polygon();
+                    for (Location loc : plot.getPlotPoints()) {
+                        polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
+                    }
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                        if (plot.isKMarked() && !role.equals("mayor")) {
+                            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }

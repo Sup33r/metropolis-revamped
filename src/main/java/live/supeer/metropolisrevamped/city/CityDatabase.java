@@ -122,6 +122,15 @@ public class CityDatabase {
         return null;
     }
 
+    public static City getCityByClaim(Location location) {
+        for (City city : cities) {
+            if (city.getCityClaim(location) != null) {
+                return city;
+            }
+        }
+        return null;
+    }
+
 
     public static String getCityRole(City city, String playerUUID) {
         try {
