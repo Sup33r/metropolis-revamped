@@ -29,7 +29,7 @@ public class Plot {
     private boolean kMarked;
     private boolean isForSale;
     private int plotPrice;
-    private final int plotRent;
+    private int plotRent;
     private char[] permsMembers;
     private char[] permsOutsiders;
     private final Location plotCenter;
@@ -85,6 +85,10 @@ public class Plot {
     public void setPlotPrice(int plotPrice) {
         this.plotPrice = plotPrice;
         DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotPrice` = " + plotPrice + " WHERE `plotID` = " + plotID + ";");
+    }
+    public void setPlotRent(int plotRent) {
+        this.plotRent = plotRent;
+        DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotRent` = " + plotRent + " WHERE `plotID` = " + plotID + ";");
     }
 
     public void removePlotOwner() {

@@ -829,7 +829,22 @@ public class CommandPlot extends BaseCommand {
                             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                             return;
                         }
-
+                        if (rent.equals("-") || rent.equals("0")) {
+                            plot.setPlotRent(0);
+                            plugin.sendMessage(player, "messages.plot.set.rent.removed", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        if (!rent.matches("[0-9]")) {
+                            plugin.sendMessage(player, "messages.syntax.plot.set.rent");
+                            return;
+                        }
+                        int rentInt = Integer.parseInt(rent);
+                        if (rentInt > 100000) {
+                            plugin.sendMessage(player, "messages.error.plot.set.rent.tooHigh", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        plot.setPlotRent(rentInt);
+                        plugin.sendMessage(player, "messages.plot.set.rent.success", "%cityname%", city.getCityName(), "%rent%", rent);
                     }
                     if (city.getCityPlots().indexOf(plot) == city.getCityPlots().size() - 1) {
                         plugin.sendMessage(player, "messages.error.plot.notFound");

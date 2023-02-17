@@ -17,6 +17,7 @@ messages:
       toggle:
         toggle: "§7Syntax: /plot toggle §nanimals\n§7Syntax: /plot toggle §nmeeting\n§7Syntax: /plot toggle §nmobs\n§7Syntax: /plot toggle §nk"
       set:
+        rent: "§7Syntax: /plot set rent §ntomträttsavgäld\n§7Syntax: /plot set rent -"
         set: "§7Syntax: /plot set type §nchurch\n§7Syntax: /plot set type §nfarm\n§7Syntax: /plot set type §nshop\n§7Syntax: /plot set type §nvacation\n§7Syntax: /plot set type -\n§7Syntax: /plot set owner §nspelare\n§7Syntax: /plot set owner -\n§7Syntax: /plot set rent §ntomträttsavgäld\n§7Syntax: /plot set rent -\n§7Syntax: /plot set name §nnamn\n§7Syntax: /plot set name -"
         type: "§7Syntax: /plot set type §nchurch\n§7Syntax: /plot set type §nfarm\n§7Syntax: /plot set type §nshop\n§7Syntax: /plot set type §nvacation"
         typeAdmin: "§7Syntax: /plot set type §njail"
@@ -42,6 +43,8 @@ messages:
     permissionDenied: "§cÅtkomst nekad."
     plot:
       set:
+        rent:
+          tooHigh: "§e%cityname% §7| §cTomträttsavgälden får inte vara högre än 100 000 minemynt."
         name:
           alreadyName: "§e%cityname% §7| §cTomten har redan namnet §4%name%§c."
           tooLong: "§e%cityname% §7| §cTomtens namn får inte vara längre än 16 tecken."
@@ -93,6 +96,9 @@ messages:
       k-marked:
         success: "§e%cityname% §7| §aTomtens K-märkning %status%."
     set:
+      rent:
+        success: "§e%cityname% §7| §aTomtens hyra är nu §2%rent%§a."
+        removed: "§e%cityname% §7| §aTomtens hyra är nu borttagen."
       name:
         success: "§e%cityname% §7| §aTomtens namn är nu §2%name%§a."
       type:
