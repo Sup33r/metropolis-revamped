@@ -7,7 +7,9 @@ import live.supeer.metropolisrevamped.Utilities;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
+import java.awt.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,6 +91,30 @@ public class Plot {
         this.plotOwner = null;
         this.plotOwnerUUID = null;
         DB.executeUpdateAsync("UPDATE `mp_plots` SET `plotOwner` = NULL, `plotOwnerUUID` = NULL WHERE `plotID` = " + plotID + ";");
+    }
+    public void updatePlot(Player player, Location[] plotPoints, int minY, int maxY) {
+        Polygon plotPolygon = new Polygon();
+        for (Location plotPoint : plotPoints) {
+            plotPolygon.addPoint(plotPoint.getBlockX(), plotPoint.getBlockZ());
+        }
+        if (minY == 0 && maxY == 0) {
+            for (Location plotPoint : plotPoints) {
+                if (plotPoint.getBlockY() < minY) {
+                    minY = plotPoint.getBlockY();
+                }
+                if (plotPoint.getBlockY() > maxY) {
+                    maxY = plotPoint.getBlockY();
+                }
+            }
+        }
+        int centerX = plotPolygon.getBounds().x + plotPolygon.getBounds().width / 2;
+        int centerZ = plotPolygon.getBounds().y + plotPolygon.getBounds().height / 2;
+        Location plotCenter = new Location(plotPoints[0].getWorld(), centerX, player.getWorld().getHighestBlockYAt(centerX, centerZ)+1, centerZ);
+        try {
+            DB.executeUpdate("UPDATE `mp_plots` SET `plotPoints` = " + Database.sqlString(Utilities.polygonToString(plotPoints)) + ", `plotYMin` = " + minY + ", `plotYMax` = " + maxY + ", `plotCenter` = " + Database.sqlString(Utilities.locationToString(plotCenter)) + " WHERE `plotId` = " + plotID + ";");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void setPlotPerms(String type,String perms, String playerUUID) throws SQLException {
