@@ -155,7 +155,39 @@ public class CommandPlot extends BaseCommand {
 
     @Subcommand("delete")
     public static void onDelete(Player player) {
-
+        if (!player.hasPermission("metropolis.plot.delete")) {
+            plugin.sendMessage(player, "messages.error.permissionDenied");
+            return;
+        }
+        if (CityDatabase.getClaim(player.getLocation()) == null) {
+            plugin.sendMessage(player, "messages.error.plot.notInPlot");
+            return;
+        }
+        if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) {
+            plugin.sendMessage(player, "messages.error.plot.notInPlot");
+            return;
+        }
+        City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).get();
+        String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
+        assert role != null;
+        boolean isAssistant = role.equals("assistant") || role.equals("vicemayor") || role.equals("mayor");
+        if (CityDatabase.getClaim(player.getLocation()) != null) {
+            for (Plot plot : city.getCityPlots()) {
+                Polygon polygon = new Polygon();
+                for (Location location : plot.getPlotPoints()) {
+                    polygon.addPoint(location.getBlockX(), location.getBlockZ());
+                }
+                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (!isAssistant) {
+                        plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                        return;
+                    }
+                    PlotDatabase.deletePlot(plot);
+                    plugin.sendMessage(player, "messages.city.successful.set.delete.plot", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName());
+                    return;
+                }
+            }
+        }
     }
 
     @Subcommand("leave")
@@ -188,7 +220,7 @@ public class CommandPlot extends BaseCommand {
                         plot.removePlotOwner();
                         plugin.sendMessage(player, "messages.city.successful.set.plot.leave", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName());
                     } else {
-                        plugin.sendMessage(player, "messages.error.plot.notOwner");
+                        plugin.sendMessage(player, "messages.error.plot.set.owner.notOwner");
                     }
                     return;
                 }
@@ -843,8 +875,10 @@ public class CommandPlot extends BaseCommand {
                             plugin.sendMessage(player, "messages.error.plot.set.rent.tooHigh", "%cityname%", city.getCityName());
                             return;
                         }
+                        player.sendMessage(rent);
                         plot.setPlotRent(rentInt);
                         plugin.sendMessage(player, "messages.plot.set.rent.success", "%cityname%", city.getCityName(), "%rent%", rent);
+                        return;
                     }
                     if (city.getCityPlots().indexOf(plot) == city.getCityPlots().size() - 1) {
                         plugin.sendMessage(player, "messages.error.plot.notFound");

@@ -53,6 +53,13 @@ public class PlotDatabase {
         return 0;
     }
 
+    public static void deletePlot(Plot plot) {
+        try {
+            DB.executeUpdate("DELETE FROM `mp_plots` WHERE `plotId` = " + plot.getPlotID() + ";");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     public static Plot getPlot(int id) {
         try {
             return new Plot(DB.getFirstRow("SELECT * FROM `mp_plots` WHERE `plotId` = " + id + ";"));
