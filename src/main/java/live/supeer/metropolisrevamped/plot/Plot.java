@@ -134,6 +134,13 @@ public class Plot {
         DB.executeUpdate("INSERT INTO `mp_plotperms` (`plotId`, `cityId`, `plotPerms`, `playerUUID`, `playerName`) VALUES (" + plotID + ", " + cityID + ", " + Database.sqlString(perms) + ", " + Database.sqlString(playerUUID) + ", " + Database.sqlString(Bukkit.getOfflinePlayer(UUID.fromString(playerUUID)).getName()) + ") ON DUPLICATE KEY UPDATE plotPerms = '" + perms + "';");
     }
 
+    public void removePlotPerms() throws SQLException {
+        DB.executeUpdate("UPDATE `mp_plots` SET `plotPermsMembers` = NULL, `plotPermsOutsiders` = NULL WHERE `plotID` = " + plotID + ";");
+        DB.executeUpdate("DELETE FROM `mp_plotperms` WHERE `plotId` = " + plotID + ";");
+        this.permsMembers = null;
+        this.permsOutsiders = null;
+    }
+
     public boolean hasFlag(char needle) {
         if (this.plotFlags == null) {
             return false;

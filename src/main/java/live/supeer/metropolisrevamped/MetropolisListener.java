@@ -49,21 +49,43 @@ public class MetropolisListener implements Listener {
         }
     }
 
-    @EventHandler
-    public static void onPlayerMove(PlayerMoveEvent event) {
-        if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) return;
-        Player player = event.getPlayer();
-        if (CityDatabase.getClaim(player.getLocation()) != null) {
-            if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) {Utilities.sendNatureScoreboard(player);}
-            City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).get();
-            Utilities.sendCityScoreboard(player, city);
-        } else {
-            Utilities.sendNatureScoreboard(player);
-        }
-    }
     public static HashMap<UUID, Polygon> playerPolygons = new HashMap<>();
     public static HashMap<UUID, Integer> playerYMin = new HashMap<>();
     public static HashMap<UUID, Integer> playerYMax = new HashMap<>();
+    public static List<UUID> playerInCity = new ArrayList<>();
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent event) {
+        Location from = event.getFrom();
+        Location to = event.getTo();
+        if (playerInCity.contains(event.getPlayer().getUniqueId()) && CityDatabase.getClaim(to) == null) {
+            Utilities.sendNatureScoreboard(event.getPlayer());
+            playerInCity.remove(event.getPlayer().getUniqueId());
+        }
+        if (playerInCity.contains(event.getPlayer().getUniqueId())) {
+            if (CityDatabase.getClaim(to) != null) {
+                if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(to)).getCityName()).isEmpty()) {
+                    Utilities.sendNatureScoreboard(event.getPlayer());
+                    playerInCity.remove(event.getPlayer().getUniqueId());
+                    return;
+                }
+                City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(to)).getCityName()).get();
+                Utilities.sendCityScoreboard(event.getPlayer(), city);
+            }
+        }
+
+        if ((from.getBlockX() >> 4) != (to.getBlockX() >> 4) || (from.getBlockZ() >> 4) != (to.getBlockZ() >> 4)) {
+            if (CityDatabase.getClaim(to) != null) {
+                if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(to)).getCityName()).isEmpty()) {Utilities.sendNatureScoreboard(event.getPlayer());}
+                City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(to)).getCityName()).get();
+                Utilities.sendCityScoreboard(event.getPlayer(), city);
+                playerInCity.add(event.getPlayer().getUniqueId());
+            } else {
+                Utilities.sendNatureScoreboard(event.getPlayer());
+                playerInCity.remove(event.getPlayer().getUniqueId());
+            }
+        }
+    }
 
 
     @EventHandler

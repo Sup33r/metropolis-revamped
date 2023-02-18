@@ -182,6 +182,7 @@ messages:
               outsiders: "§e%cityname% §7|§a Rättigheter för icke-medlemmar på tomten ändrades till %perms%."
               player: "§e%cityname% §7|§a Rättigheter för %player% på tomten ändrades till %perms%."
             remove:
+              all: "§e%cityname% §7|§a Alla rättigheter på tomten återställdes."
               members: "§e%cityname% §7|§a Rättigheterna för medlemmar på tomten drogs tillbaka."
               outsiders: "§e%cityname% §7|§a Rättigheterna för icke-medlemmar på tomten drogs tillbaka."
               player: "§e%cityname% §7|§a Rättigheterna för %player% på tomten drogs tillbaka."

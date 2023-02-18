@@ -483,7 +483,7 @@ public class CommandPlot extends BaseCommand {
             plugin.sendMessage(player, "messages.syntax.plot.perm");
             return;
         }
-        if (!args[0].equals("members") && !args[0].equals("outsiders")) {
+        if (!args[0].equals("members") && !args[0].equals("outsiders") && !args[0].equals("-")) {
             @Deprecated
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
             if (offlinePlayer == null) {
@@ -512,7 +512,11 @@ public class CommandPlot extends BaseCommand {
                             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                             return;
                         }
-
+                        if (args[0].equals("-")) {
+                            plot.removePlotPerms();
+                            plugin.sendMessage(player, "messages.city.successful.set.plot.perm.remove.all","%cityname%", city.getCityName());
+                            return;
+                        }
                         if (args[0].equals("members")) {
                             if (Utilities.parsePermChange(plot.getPermsMembers(), args[1], player, "plot") == null) {
                                 plugin.sendMessage(player, "messages.error.plot.perm.notFound");

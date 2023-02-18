@@ -32,6 +32,7 @@ public class City {
     private String enterMessage;
     private String exitMessage;
     private String motdMessage;
+    private final boolean isOpen;
     private boolean isRemoved;
 
     public City(DbRow data) {
@@ -45,6 +46,7 @@ public class City {
         this.enterMessage = data.getString("enterMessage");
         this.exitMessage = data.getString("exitMessage");
         this.motdMessage = data.getString("motdMessage");
+        this.isOpen = data.get("isOpen");
         this.isRemoved = data.get("isRemoved");
     }
 
