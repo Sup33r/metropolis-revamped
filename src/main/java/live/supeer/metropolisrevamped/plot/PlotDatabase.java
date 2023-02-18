@@ -87,6 +87,15 @@ public class PlotDatabase {
         return false;
     }
 
+    public static boolean plotInClaimedChunk(Plot plot) {
+        try {
+            return DB.getFirstRow("SELECT * FROM `mp_chunks` WHERE `chunkX` = " + plot.getPlotCenter().getBlockX() + " AND `chunkZ` = " + plot.getPlotCenter().getBlockZ() + ";") != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static boolean intersectsExistingPlot(Polygon polygon, City city) {
         try {
             for (Plot plot : city.getCityPlots()) {
