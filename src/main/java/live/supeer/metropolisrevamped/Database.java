@@ -96,7 +96,7 @@ public class Database {
                       `logId` int(11) NOT NULL AUTO_INCREMENT,
                       `cityId` int(11) NOT NULL,
                       `dateTime` bigint(30) DEFAULT NULL,
-                      `jsonLog` json NOT NULL,
+                      `jsonLog` text NOT NULL,
                       PRIMARY KEY (logId)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
 

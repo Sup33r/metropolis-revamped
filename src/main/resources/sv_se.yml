@@ -53,6 +53,7 @@ messages:
           alreadyNoType: "§e%cityname% §7| §cTomten har redan ingen typ."
           invalidType: "§e%cityname% §7| §cTomttypen hittades inte. Använd /plot set type för att se alla typer."
         owner:
+          notOwner: "§e%cityname% §7| §cDu är inte ägare till tomten."
           alreadyNoOwner: "§e%cityname% §7| §cTomten har redan ingen ägare."
           alreadyOwner: "§e%cityname% §7| §cSpelaren är redan ägare till tomten."
           notInCity: "§e%cityname% §7| §cSpelaren måste vara medlem i staden för att kunna äga tomten. Överväg att använda /plot set type vacation istället."
@@ -171,6 +172,7 @@ messages:
             removed: "§e%cityname% §7|§a Meddelandet togs bort."
             set: "§e%cityname% §7|§a Meddelandet ändrades."
         plot:
+          delete: "§e%cityname% §7|§a Tomten %plot% togs bort."
           market:
             remove: "§e%cityname% §7|§a Tomten drogs tillbaka från marknaden."
             set: "§e%cityname% §7|§a Tomten lades ut på marknaden för %amount% minemynt."
