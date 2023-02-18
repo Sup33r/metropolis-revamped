@@ -18,6 +18,12 @@ import java.util.Objects;
 
 public class Utilities {
     static MetropolisRevamped plugin;
+    public static String formatLocation(Location location) {
+        return "([" + location.getWorld().getName() + "]" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + ")";
+    }
+    public static String formatChunk(String world, int x, int z) {
+        return "([" + world + "]" + x + ", " + z + ")";
+    }
     public static String formattedMoney(Integer money) {
         NumberFormat formatter = NumberFormat.getInstance(Locale.US);
         formatter.setGroupingUsed(true);
@@ -328,7 +334,7 @@ public class Utilities {
                         board.updateLine(i, plugin.getMessage("messages.city.scoreboard.price"));
                         board.updateLine(i+1,"§a" + Utilities.formattedMoney(plot.getPlotPrice()) + " minemynt");
                         if (plot.getPlotRent() != 0) {
-                            board.updateLine(i+2,"§aTR: " + plot.getPlotRent());
+                            board.updateLine(i+2,"§aTR: " + Utilities.formattedMoney(plot.getPlotRent()) + " minemynt");
                         }
                     }
                     return;

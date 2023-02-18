@@ -94,7 +94,7 @@ public class Database {
             DB.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS `mp_citylogs` (
                       `logId` int(11) NOT NULL AUTO_INCREMENT,
-                      `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `cityId` int(11) NOT NULL,
                       `dateTime` bigint(30) DEFAULT NULL,
                       `jsonLog` json NOT NULL,
                       PRIMARY KEY (logId)
@@ -147,8 +147,8 @@ public class Database {
     }
     public static void addLogEntry (City city, String logEntry) {
         try {
-            String cityName = city.getCityName();
-            DB.executeInsert("INSERT INTO `mp_citylogs` (`cityName`, `dateTime`, `jsonLog`) VALUES (" + Database.sqlString(cityName) + ", " + Utilities.getTimestamp() + ", " + Database.sqlString(logEntry) + ");");
+            int cityId = city.getCityID();
+            DB.executeInsert("INSERT INTO `mp_citylogs` (`cityId`, `dateTime`, `jsonLog`) VALUES (" + cityId + ", " + Utilities.getTimestamp() + ", " + Database.sqlString(logEntry) + ");");
         } catch (Exception e) {
             e.printStackTrace();
         }

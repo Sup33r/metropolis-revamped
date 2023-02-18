@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
+import live.supeer.metropolisrevamped.city.Claim;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -153,7 +154,12 @@ public class CommandCity extends BaseCommand {
 
         City city = CityDatabase.newCity(cityName,player);
         assert city != null;
-        CityDatabase.createClaim(city,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
+        Database.addLogEntry(city,"{ \"type\": \"create\", \"subtype\": \"city\", \"name\": " + city.getCityName() + ", \"tax\": " + MetropolisRevamped.configuration.getCityStartingTax() + ", \"spawn\": " + Utilities.formatLocation(city.getCitySpawn()) + ", \"balance\": " + MetropolisRevamped.configuration.getCityStartingBalance() + ", \"player\": " + player.getUniqueId().toString() + " }");
+        Database.addLogEntry(city,"{ \"type\": \"join\", \"subtype\": \"city\", \"player\": " + player.getUniqueId().toString() + " }");
+        Database.addLogEntry(city,"{ \"type\": \"rank\", \"subtype\": \"change\", \"from\": " + "member" + ", \"to\": " + "mayor" + ", \"player\": " + player.getUniqueId().toString() + " }");
+        Claim claim = CityDatabase.createClaim(city,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
+        assert claim != null;
+        Database.addLogEntry(city,"{ \"type\": \"buy\", \"subtype\": \"claim\", \"balance\": " + "0" + ", \"claimlocation\": " + Utilities.formatChunk(claim.getClaimWorld(),claim.getXPosition(),claim.getZPosition()) + ", \"player\": " + player.getUniqueId().toString() + " }");
         economy.withdrawPlayer(player,MetropolisRevamped.configuration.getCityCreationCost());
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             plugin.sendMessage(onlinePlayer,"messages.city.successful.creation","%playername%",player.getDisplayName(),"%cityname%",cityName);

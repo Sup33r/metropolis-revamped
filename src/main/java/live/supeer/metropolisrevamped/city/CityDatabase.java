@@ -92,14 +92,16 @@ public class CityDatabase {
             e.printStackTrace();
         }
     }
-    public static void createClaim(City city, Location location, boolean outpost, String playername, String playerUUID) {
+    public static Claim createClaim(City city, Location location, boolean outpost, String playername, String playerUUID) {
         try {
             String cityName = city.getCityName();
             DB.executeInsert("INSERT INTO `mp_claims` (`claimerName`, `claimerUUID`, `world`, `xPosition`, `zPosition`, `claimDate`, `cityName`, `outpost`) VALUES (" + Database.sqlString(playername) + ", " + Database.sqlString(playerUUID) + ", '" + location.getChunk().getWorld() + "', " + location.getChunk().getX() + ", " + location.getChunk().getZ() + ", " + Utilities.getTimestamp() + ", '" + cityName + "', " + outpost + ");");
             city.addCityClaim(new Claim(DB.getFirstRow("SELECT * FROM `mp_claims` WHERE `cityName` = " + Database.sqlString(cityName) + " AND `xPosition` = " + location.getChunk().getX() + " AND `zPosition` = " + location.getChunk().getZ() + ";")));
+            return city.getCityClaim(location);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return null;
     }
     public static Optional<City> getCity(String cityName) {
         for (City city : cities) {

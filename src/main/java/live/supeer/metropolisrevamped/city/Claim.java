@@ -14,7 +14,7 @@ public class Claim {
     private final String claimWorld;
     private final int xPosition;
     private final int zPosition;
-    private String cityName;
+    private final String cityName;
     private final long claimDate;
     private final boolean outpost;
 
@@ -28,10 +28,6 @@ public class Claim {
         this.cityName = data.getString("cityName");
         this.claimDate = data.getInt("claimDate");
         this.outpost = data.get("outpost");
-    }
-
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
     }
 
 }

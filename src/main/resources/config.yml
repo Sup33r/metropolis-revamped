@@ -8,7 +8,8 @@ sql:
 settings:
   city:
     creationcost: 500000
-    startingbalance: 100000
+    startingbalance: 200000
+    startingtax: 2
     claimcost: 500
     bonuscost: 800
     citygocost: 10000
