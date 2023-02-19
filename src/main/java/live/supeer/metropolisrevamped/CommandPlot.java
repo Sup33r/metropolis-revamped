@@ -530,6 +530,7 @@ public class CommandPlot extends BaseCommand {
                             return;
                         }
                         if (args[0].equals("-")) {
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"perm\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"type\": " + "all" + ", \"from\": " + "" + ", \"to\": " + "" + ", \"player\": " + player.getUniqueId().toString() + " }");
                             plot.removePlotPerms();
                             plugin.sendMessage(player, "messages.city.successful.set.plot.perm.remove.all","%cityname%", city.getCityName());
                             return;
@@ -539,7 +540,7 @@ public class CommandPlot extends BaseCommand {
                                 plugin.sendMessage(player, "messages.error.plot.perm.notFound");
                                 return;
                             }
-
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"perm\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"type\": " + "members" + ", \"from\": " + Arrays.toString(plot.getPermsMembers()) + ", \"to\": " + Utilities.parsePermChange(plot.getPermsMembers(), args[1], player, "plot") + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotPerms("members", Utilities.parsePermChange(plot.getPermsMembers(), args[1], player, "plot"), null);
                             plugin.sendMessage(player, "messages.city.successful.set.plot.perm.change.members", "%perms%", args[1], "%cityname%", city.getCityName());
                             return;
@@ -550,6 +551,7 @@ public class CommandPlot extends BaseCommand {
                                 plugin.sendMessage(player, "messages.error.plot.perm.notFound");
                                 return;
                             }
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"perm\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"type\": " + "outsiders" + ", \"from\": " + Arrays.toString(plot.getPermsOutsiders()) + ", \"to\": " + Utilities.parsePermChange(plot.getPermsOutsiders(), args[1], player, "plot") + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotPerms("outsiders", Utilities.parsePermChange(plot.getPermsOutsiders(), args[1], player, "plot"), null);
                             plugin.sendMessage(player, "messages.city.successful.set.plot.perm.change.outsiders", "%perms%", args[1], "%cityname%", city.getCityName());
                             return;
@@ -564,6 +566,7 @@ public class CommandPlot extends BaseCommand {
                         if (plot.getPlayerPlotPerm(offlinePlayer.getUniqueId().toString()) == null || plot.getPlayerPlotPerm(offlinePlayer.getUniqueId().toString()).getPerms() == null) {
                             plot.setPlotPerms("players", Utilities.parsePerms(args[1], "plot", player), offlinePlayer.getUniqueId().toString());
                         } else {
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"perm\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"type\": " + "player" + ", \"from\": " + Arrays.toString(plot.getPlayerPlotPerm(offlinePlayer.getUniqueId().toString()).getPerms()) + ", \"to\": " + Utilities.parsePermChange(plot.getPlayerPlotPerm(offlinePlayer.getUniqueId().toString()).getPerms(), args[1], player, "plot") + ", \"issuer\": " + player.getUniqueId().toString() + ", \"player\": " + offlinePlayer.getUniqueId().toString() + " }");
                             plot.setPlotPerms("players", Utilities.parsePermChange(plot.getPlayerPlotPerm(offlinePlayer.getUniqueId().toString()).getPerms(), args[1], player, "plot"), offlinePlayer.getUniqueId().toString());
                         }
                         plugin.sendMessage(player, "messages.successful.set.plot.perm.change.player", "%player%", offlinePlayer.getName(), "%perms%", args[1], "%cityname%", city.getCityName());
