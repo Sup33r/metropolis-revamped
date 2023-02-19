@@ -84,7 +84,7 @@ public class CommandPlot extends BaseCommand {
                     }
                     Plot plot = PlotDatabase.createPlot(player, locations, plotname, city, MetropolisListener.playerYMin.get(player.getUniqueId()), MetropolisListener.playerYMax.get(player.getUniqueId()));
                     assert plot != null;
-                        Database.addLogEntry(city,"{ \"type\": \"create\", \"subtype\": \"plot\", \"id\": " + plot.getPlotID() + ", \"name\": " + plotname + ", \"points\": " + Utilities.parsePoints(locations) + ", \"ymin\": " + MetropolisListener.playerYMin.get(player.getUniqueId()) + ", \"ymax\": " + MetropolisListener.playerYMax.get(player.getUniqueId()) + ", \"player\": " + player.getUniqueId().toString() + " }");
+                    Database.addLogEntry(city,"{ \"type\": \"create\", \"subtype\": \"plot\", \"id\": " + plot.getPlotID() + ", \"name\": " + plotname + ", \"points\": " + Utilities.parsePoints(locations) + ", \"ymin\": " + MetropolisListener.playerYMin.get(player.getUniqueId()) + ", \"ymax\": " + MetropolisListener.playerYMax.get(player.getUniqueId()) + ", \"player\": " + player.getUniqueId().toString() + " }");
                     MetropolisListener.savedLocs.remove(player.getUniqueId());
                     MetropolisListener.playerPolygons.remove(player.getUniqueId());
                     MetropolisListener.playerYMin.remove(player.getUniqueId());
@@ -899,6 +899,7 @@ public class CommandPlot extends BaseCommand {
                             return;
                         }
                         if (rent.equals("-") || rent.equals("0")) {
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"rent\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + plot.getPlotRent() + ", \"to\": " + 0 + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotRent(0);
                             plugin.sendMessage(player, "messages.plot.set.rent.removed", "%cityname%", city.getCityName());
                             return;
@@ -913,6 +914,7 @@ public class CommandPlot extends BaseCommand {
                             return;
                         }
                         player.sendMessage(rent);
+                        Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"rent\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + plot.getPlotRent() + ", \"to\": " + rentInt + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                         plot.setPlotRent(rentInt);
                         plugin.sendMessage(player, "messages.plot.set.rent.success", "%cityname%", city.getCityName(), "%rent%", rent);
                         return;
@@ -966,11 +968,13 @@ public class CommandPlot extends BaseCommand {
                     }
                     if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
                         if (plot.hasFlag('p')) {
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "pvp" + ", \"state\": " + false + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotFlags(Objects.requireNonNull(Utilities.parseFlagChange(plot.getPlotFlags(), "-p")));
                             plugin.sendMessage(player, "messages.plot.toggle.pvp.success", "%cityname%", city.getCityName(), "%status%", "inaktiverat");
                             return;
                         }
                         if (plot.getPlotFlags().length == 0) {
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "pvp" + ", \"state\": " + true + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotFlags("p");
                             plugin.sendMessage(player, "messages.plot.toggle.pvp.success", "%cityname%", city.getCityName(), "%status%", "aktiverat");
                             return;
@@ -1018,11 +1022,13 @@ public class CommandPlot extends BaseCommand {
                             return;
                         }
                         if (plot.hasFlag('a')) {
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "animals" + ", \"state\": " + false + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotFlags(Objects.requireNonNull(Utilities.parseFlagChange(plot.getPlotFlags(), "-a")));
                             plugin.sendMessage(player, "messages.plot.toggle.animals.success", "%cityname%", city.getCityName(), "%status%", "inaktiverat");
                             return;
                         }
                         if (plot.getPlotFlags().length == 0) {
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "animals" + ", \"state\": " + true + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotFlags("a");
                             plugin.sendMessage(player, "messages.plot.toggle.animals.success", "%cityname%", city.getCityName(), "%status%", "aktiverat");
                             return;
@@ -1070,11 +1076,13 @@ public class CommandPlot extends BaseCommand {
                             return;
                         }
                         if (plot.hasFlag('m')) {
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "monsters" + ", \"state\": " + false + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotFlags(Objects.requireNonNull(Utilities.parseFlagChange(plot.getPlotFlags(), "-m")));
                             plugin.sendMessage(player, "messages.plot.toggle.monsters.success", "%cityname%", city.getCityName(), "%status%", "inaktiverat");
                             return;
                         }
                         if (plot.getPlotFlags().length == 0) {
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "monsters" + ", \"state\": " + true + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotFlags("m");
                             plugin.sendMessage(player, "messages.plot.toggle.monsters.success", "%cityname%", city.getCityName(), "%status%", "aktiverat");
                             return;
@@ -1122,6 +1130,7 @@ public class CommandPlot extends BaseCommand {
                             return;
                         }
                         if (plot.hasFlag('c')) {
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "meeting" + ", \"state\": " + false + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotFlags(Objects.requireNonNull(Utilities.parseFlagChange(plot.getPlotFlags(), "-c")));
                             plugin.sendMessage(player, "messages.plot.toggle.meeting.success", "%cityname%", city.getCityName(), "%status%", "inaktiverat");
                             return;
@@ -1131,6 +1140,7 @@ public class CommandPlot extends BaseCommand {
                             plugin.sendMessage(player, "messages.plot.toggle.meeting.success", "%cityname%", city.getCityName(), "%status%", "aktiverat");
                             return;
                         }
+                        Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "meeting" + ", \"state\": " + true + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                         plot.setPlotFlags(Objects.requireNonNull(Utilities.parseFlagChange(plot.getPlotFlags(), "+c")));
                         plugin.sendMessage(player, "messages.plot.toggle.meeting.success", "%cityname%", city.getCityName(), "%status%", "aktiverat");
                         return;
@@ -1163,6 +1173,7 @@ public class CommandPlot extends BaseCommand {
                     }
                     if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
                         if (plot.hasFlag('x')) {
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "keepexp" + ", \"state\": " + false + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotFlags(Objects.requireNonNull(Utilities.parseFlagChange(plot.getPlotFlags(), "-x")));
                             plugin.sendMessage(player, "messages.plot.toggle.keepexp.success", "%cityname%", city.getCityName(), "%status%", "tappas");
                             return;
@@ -1172,6 +1183,7 @@ public class CommandPlot extends BaseCommand {
                             plugin.sendMessage(player, "messages.plot.toggle.keepexp.success", "%cityname%", city.getCityName(), "%status%", "behålls");
                             return;
                         }
+                        Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "keepexp" + ", \"state\": " + true + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                         plot.setPlotFlags(Objects.requireNonNull(Utilities.parseFlagChange(plot.getPlotFlags(), "+x")));
                         plugin.sendMessage(player, "messages.plot.toggle.keepexp.success", "%cityname%", city.getCityName(), "%status%", "behålls");
                         return;
@@ -1204,6 +1216,7 @@ public class CommandPlot extends BaseCommand {
                     }
                     if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
                         if (plot.hasFlag('i')) {
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "keepinv" + ", \"state\": " + false + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotFlags(Objects.requireNonNull(Utilities.parseFlagChange(plot.getPlotFlags(), "-i")));
                             plugin.sendMessage(player, "messages.plot.toggle.keepinv.success", "%cityname%", city.getCityName(), "%status%", "tappas");
                             return;
@@ -1213,6 +1226,7 @@ public class CommandPlot extends BaseCommand {
                             plugin.sendMessage(player, "messages.plot.toggle.keepinv.success", "%cityname%", city.getCityName(), "%status%", "behålls");
                             return;
                         }
+                        Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "keepinv" + ", \"state\": " + true + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                         plot.setPlotFlags(Objects.requireNonNull(Utilities.parseFlagChange(plot.getPlotFlags(), "+i")));
                         plugin.sendMessage(player, "messages.plot.toggle.keepinv.success", "%cityname%", city.getCityName(), "%status%", "behålls");
                         return;
@@ -1245,6 +1259,7 @@ public class CommandPlot extends BaseCommand {
                     }
                     if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
                         if (plot.hasFlag('l')) {
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "lock" + ", \"state\": " + false + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotFlags(Objects.requireNonNull(Utilities.parseFlagChange(plot.getPlotFlags(), "-l")));
                             plugin.sendMessage(player, "messages.plot.toggle.locked.success", "%cityname%", city.getCityName(), "%status%", "olåst");
                             return;
@@ -1254,6 +1269,7 @@ public class CommandPlot extends BaseCommand {
                             plugin.sendMessage(player, "messages.plot.toggle.locked.success", "%cityname%", city.getCityName(), "%status%", "låst");
                             return;
                         }
+                        Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "lock" + ", \"state\": " + true + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                         plot.setPlotFlags(Objects.requireNonNull(Utilities.parseFlagChange(plot.getPlotFlags(), "+l")));
                         plugin.sendMessage(player, "messages.plot.toggle.locked.success", "%cityname%", city.getCityName(), "%status%", "låst");
                         return;
@@ -1292,9 +1308,11 @@ public class CommandPlot extends BaseCommand {
                             return;
                         }
                         if (plot.isKMarked()) {
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "k" + ", \"state\": " + false + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setKMarked(false);
                             plugin.sendMessage(player, "messages.plot.toggle.k-marked.success", "%cityname%", city.getCityName(), "%status%", "stängdes av");
                         } else {
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "k" + ", \"state\": " + true + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setKMarked(true);
                             plugin.sendMessage(player, "messages.plot.toggle.k-marked.success", "%cityname%", city.getCityName(), "%status%", "sattes på");
                         }
@@ -1373,6 +1391,7 @@ public class CommandPlot extends BaseCommand {
                                     plugin.sendMessage(player, "messages.error.plot.intersectsExistingPlot");
                                     return;
                                 }
+                                Database.addLogEntry(city,"{ \"type\": \"update\", \"subtype\": \"plot\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"points\": " + Utilities.parsePoints(locations) + ", \"ymin\": " + MetropolisListener.playerYMin.get(player.getUniqueId()) + ", \"ymax\": " + MetropolisListener.playerYMax.get(player.getUniqueId()) + ", \"player\": " + player.getUniqueId().toString() + " }");
                                 plot.updatePlot(player, locations, MetropolisListener.playerYMin.get(player.getUniqueId()), MetropolisListener.playerYMax.get(player.getUniqueId()));
                                 MetropolisListener.savedLocs.remove(player.getUniqueId());
                                 MetropolisListener.playerPolygons.remove(player.getUniqueId());
