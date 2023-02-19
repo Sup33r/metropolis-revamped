@@ -693,6 +693,7 @@ public class CommandPlot extends BaseCommand {
                                 plugin.sendMessage(player, "messages.error.plot.set.type.alreadyNoType", "%cityname%", city.getCityName());
                                 return;
                             }
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"type\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + plot.getPlotType() + ", \"to\": " + null + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotType(null);
                             plugin.sendMessage(player, "messages.plot.set.type.removed", "%cityname%", city.getCityName());
                             return;
@@ -703,6 +704,7 @@ public class CommandPlot extends BaseCommand {
                                 return;
                             }
                             if (plot.getPlotType() == null) {
+                                Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"type\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + null + ", \"to\": " + "church" + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                                 plot.setPlotType("church");
                                 plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Kyrka");
                                 return;
@@ -711,6 +713,7 @@ public class CommandPlot extends BaseCommand {
                                 plugin.sendMessage(player, "messages.error.plot.set.type.alreadyType", "%cityname%", city.getCityName(), "%type%", "Kyrka");
                                 return;
                             }
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"type\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + plot.getPlotType() + ", \"to\": " + "church" + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotType("church");
                             plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Kyrka");
                             return;
@@ -721,6 +724,7 @@ public class CommandPlot extends BaseCommand {
                                 return;
                             }
                             if (plot.getPlotType() == null) {
+                                Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"type\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + null + ", \"to\": " + "farm" + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                                 plot.setPlotType("farm");
                                 plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Farm");
                                 return;
@@ -729,6 +733,7 @@ public class CommandPlot extends BaseCommand {
                                 plugin.sendMessage(player, "messages.error.plot.set.type.alreadyType", "%cityname%", city.getCityName(), "%type%", "Farm");
                                 return;
                             }
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"type\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + plot.getPlotType() + ", \"to\": " + "farm" + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotType("farm");
                             plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Farm");
                             return;
@@ -739,6 +744,7 @@ public class CommandPlot extends BaseCommand {
                                 return;
                             }
                             if (plot.getPlotType() == null) {
+                                Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"type\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + null + ", \"to\": " + "shop" + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                                 plot.setPlotType("shop");
                                 plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Affär");
                                 return;
@@ -747,6 +753,7 @@ public class CommandPlot extends BaseCommand {
                                 plugin.sendMessage(player, "messages.error.plot.set.type.alreadyType", "%cityname%", city.getCityName(), "%type%", "Affär");
                                 return;
                             }
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"type\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + plot.getPlotType() + ", \"to\": " + "shop" + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotType("shop");
                             plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Affär");
                             return;
@@ -757,6 +764,7 @@ public class CommandPlot extends BaseCommand {
                                 return;
                             }
                             if (plot.getPlotType() == null) {
+                                Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"type\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + null + ", \"to\": " + "vacation" + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                                 plot.setPlotType("vacation");
                                 plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Ferietomt");
                                 return;
@@ -765,6 +773,7 @@ public class CommandPlot extends BaseCommand {
                                 plugin.sendMessage(player, "messages.error.plot.set.type.alreadyType", "%cityname%", city.getCityName(), "%type%", "Ferietomt");
                                 return;
                             }
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"type\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + plot.getPlotType() + ", \"to\": " + "vacation" + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotType("vacation");
                             plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Ferietomt");
                             return;
@@ -772,6 +781,7 @@ public class CommandPlot extends BaseCommand {
                         if (type.equals("jail")) {
                             if (player.hasPermission("metropolis.admin")) {
                                 if (plot.getPlotType() == null) {
+                                    Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"type\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + null + ", \"to\": " + "jail" + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                                     plot.setPlotType("jail");
                                     plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Fängelse");
                                     return;
@@ -780,6 +790,7 @@ public class CommandPlot extends BaseCommand {
                                     plugin.sendMessage(player, "messages.error.plot.set.type.alreadyType", "%cityname%", city.getCityName(), "%type%", "Fängelse");
                                     return;
                                 }
+                                Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"type\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + plot.getPlotType() + ", \"to\": " + "jail" + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                                 plot.setPlotType("jail");
                                 plugin.sendMessage(player, "messages.plot.set.type.success", "%cityname%", city.getCityName(), "%type%", "Fängelse");
                             } else {
@@ -835,6 +846,7 @@ public class CommandPlot extends BaseCommand {
                             return;
                         }
                         if (name.equals("-")) {
+                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"name\", \"id\": " + plot.getPlotID() + ", \"from\": " + plot.getPlotName() + ", \"to\": " + "Tomt #" + plot.getPlotID() + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotName("Tomt #" + plot.getPlotID());
                             plugin.sendMessage(player, "messages.plot.set.name.success", "%cityname%", city.getCityName(), "%plotname%", name);
                             return;
@@ -843,6 +855,7 @@ public class CommandPlot extends BaseCommand {
                             plugin.sendMessage(player, "messages.error.plot.set.name.tooLong", "%cityname%", city.getCityName());
                             return;
                         }
+                        Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"name\", \"id\": " + plot.getPlotID() + ", \"from\": " + plot.getPlotName() + ", \"to\": " + name + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                         plot.setPlotName(name);
                         plugin.sendMessage(player, "messages.plot.set.name.success", "%cityname%", city.getCityName(), "%plotname%", name);
                         return;
