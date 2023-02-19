@@ -465,7 +465,7 @@ public class CommandPlot extends BaseCommand {
             plugin.sendMessage(player, "messages.error.permissionDenied");
             return;
         }
-        if (CityDatabase.hasClaim(player.getLocation().getChunk().getX(),player.getLocation().getChunk().getZ(),player.getLocation().getChunk().getWorld())) {
+        if (!CityDatabase.hasClaim(player.getLocation().getChunk().getX(),player.getLocation().getChunk().getZ(),player.getLocation().getChunk().getWorld())) {
             plugin.sendMessage(player, "messages.error.plot.notFound");
             return;
         }
