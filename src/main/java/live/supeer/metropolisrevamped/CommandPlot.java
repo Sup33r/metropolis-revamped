@@ -8,6 +8,7 @@ import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import live.supeer.metropolisrevamped.plot.Plot;
 import live.supeer.metropolisrevamped.plot.PlotDatabase;
 import live.supeer.metropolisrevamped.plot.PlotPerms;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -874,6 +875,7 @@ public class CommandPlot extends BaseCommand {
                 plugin.sendMessage(player, "messages.error.plot.notFound");
                 return;
             }
+            player.sendMessage(rent);
             City city = CityDatabase.getCityByClaim(player.getLocation());
             assert city != null;
             String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
@@ -913,7 +915,11 @@ public class CommandPlot extends BaseCommand {
                             plugin.sendMessage(player, "messages.error.plot.set.rent.tooHigh", "%cityname%", city.getCityName());
                             return;
                         }
-                        player.sendMessage(rent);
+                        if (!plot.isForSale()) {
+                            plot.setPlotPrice(0);
+                            Database.addLogEntry(city,"{ \"type\": \"plotMarket\", \"subtype\": \"add\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"to\": " + 0  + ", \"player\": " + player.getUniqueId().toString() + " }");
+                            plot.setForSale(true);
+                        }
                         Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"rent\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + plot.getPlotRent() + ", \"to\": " + rentInt + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                         plot.setPlotRent(rentInt);
                         plugin.sendMessage(player, "messages.plot.set.rent.success", "%cityname%", city.getCityName(), "%rent%", rent);
@@ -1409,6 +1415,62 @@ public class CommandPlot extends BaseCommand {
                     }
                 }
             }
+        }
+    }
+
+    @Subcommand("buy")
+    public static void onBuy(Player player) {
+        if (CityDatabase.getClaim(player.getLocation()) == null) {
+            plugin.sendMessage(player, "messages.error.plot.notFound");
+            return;
+        }
+        City city = CityDatabase.getCityByClaim(player.getLocation());
+        assert city != null;
+        if (!player.hasPermission("metropolis.plot.buy")) {
+            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+            return;
+        }
+        String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
+        if (role == null) {
+            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+            return;
+        }
+        Economy economy = MetropolisRevamped.getEconomy();
+        if (CityDatabase.getClaim(player.getLocation()) != null) {
+            for (Plot plot : city.getCityPlots()) {
+                Polygon polygon = new Polygon();
+                for (Location loc : plot.getPlotPoints()) {
+                    polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
+                }
+                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (plot.getPlotOwner() != null) {
+                        plugin.sendMessage(player, "messages.error.plot.alreadyOwned");
+                        return;
+                    }
+                    if (!plot.isForSale()) {
+                        plugin.sendMessage(player, "messages.error.plot.set.owner.notForSale", "%cityname%", city.getCityName());
+                        return;
+                    }
+                    if (economy.getBalance(player) < plot.getPlotPrice()) {
+                        plugin.sendMessage(player,"messages.error.missing.playerBalance","%cityname%",city.getCityName());
+                        return;
+                    }
+                    economy.withdrawPlayer(player,plot.getPlotPrice());
+                    city.addCityBalance(plot.getPlotPrice());
+                    Database.addLogEntry(city,"{ \"type\": \"buy\", \"subtype\": \"plot\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"player\": " + player.getUniqueId().toString() + " }");
+                    plot.setPlotOwner(player.getUniqueId().toString());
+                    plot.setForSale(false);
+                    plot.setPlotPrice(0);
+                    plugin.sendMessage(player, "messages.plot.buy.success", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName(), "%price%", String.valueOf(plot.getPlotPrice()));
+                    return;
+                }
+                if (city.getCityPlots().indexOf(plot) == city.getCityPlots().size() - 1) {
+                    plugin.sendMessage(player, "messages.error.plot.notFound");
+                    return;
+                }
+            }
+        } else {
+            plugin.sendMessage(player, "messages.error.plot.notFound");
         }
     }
 }

@@ -48,7 +48,7 @@ public class Utilities {
         return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
     }
 
-    public static boolean isCloseToOtherCity(Player player, Location location) {
+    public static boolean isCloseToOtherCity(Player player, Location location, String type) {
         int centerZ = location.getChunk().getZ();
         int centerX = location.getChunk().getX();
 
@@ -56,6 +56,9 @@ public class Utilities {
             for (int z = centerZ - 12 / 2; z <= centerZ + 12 / 2; z++) {
                 Location chunkLocation = new Location(location.getWorld(), x * 16, 0, z * 16);
                 if (CityDatabase.hasClaim(x, z, location.getWorld())) {
+                    if (type.equals("newcity")) {
+                        return true;
+                    }
                     if (!Objects.equals(Objects.requireNonNull(CityDatabase.getClaim(chunkLocation)).getCityName(), HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()))) {
                         return true;
                     }
@@ -74,14 +77,10 @@ public class Utilities {
 
         for (Location location : locations) {
             String test = "(" + location.getBlockX() + ", " + "y" + ", " + location.getBlockZ() + ")";
-            if (location.equals(locations[locations.length - 1])) {
-                points.append(test);
-                break;
-            }
             points.append(test).append(",");
         }
         Bukkit.broadcastMessage(points.toString());
-        return points.toString();
+        return points.substring(0, points.length() - 1);
     }
 
     public static String parseFlagChange(char[] flagsOriginal, String change) {

@@ -143,7 +143,7 @@ public class CommandCity extends BaseCommand {
             plugin.sendMessage(player,"messages.error.city.claimExists");
             return;
         }
-        if (Utilities.isCloseToOtherCity(player,player.getLocation())) {
+        if (Utilities.isCloseToOtherCity(player,player.getLocation(),"newcity")) {
             plugin.sendMessage(player,"messages.error.city.tooCloseToOtherCity");
             return;
         }
@@ -184,7 +184,7 @@ public class CommandCity extends BaseCommand {
             return;
         }
         City city = CityDatabase.getCity(cityName).get();
-        if (Utilities.isCloseToOtherCity(player,player.getLocation())) {
+        if (Utilities.isCloseToOtherCity(player,player.getLocation(),"city")) {
             plugin.sendMessage(player,"messages.error.city.tooCloseToOtherCity");
             return;
         }

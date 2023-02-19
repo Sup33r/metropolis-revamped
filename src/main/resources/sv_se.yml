@@ -55,6 +55,7 @@ messages:
           alreadyNoType: "§e%cityname% §7| §cTomten har redan ingen typ."
           invalidType: "§e%cityname% §7| §cTomttypen hittades inte. Använd /plot set type för att se alla typer."
         owner:
+          notForSale: "§e%cityname% §7| §cTomten är inte till salu."
           notOwner: "§e%cityname% §7| §cDu är inte ägare till tomten."
           alreadyNoOwner: "§e%cityname% §7| §cTomten har redan ingen ägare."
           alreadyOwner: "§e%cityname% §7| §cSpelaren är redan ägare till tomten."
@@ -81,6 +82,8 @@ messages:
   save:
     membership: "§aDin hemstad är nu %cityname%."
   plot:
+    buy:
+      success: "§e%cityname% §7| §aDu har köpt tomten %plotname% för %price% minemynt."
     toggle:
       pvp:
         success: "§e%cityname% §7| §aPVP är nu %status% på tomten."
