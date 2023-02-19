@@ -102,12 +102,12 @@ messages:
         success: "§e%cityname% §7| §aTomtens K-märkning %status%."
     set:
       rent:
-        success: "§e%cityname% §7| §aTomtens hyra är nu §2%rent%§a."
+        success: "§e%cityname% §7| §aTomtens hyra är nu %rent% minemynt."
         removed: "§e%cityname% §7| §aTomtens hyra är nu borttagen."
       name:
-        success: "§e%cityname% §7| §aTomtens namn är nu §2%name%§a."
+        success: "§e%cityname% §7| §aTomtens namn är nu %name%."
       type:
-        success: "§e%cityname% §7| §aTomtens typ är nu §2%type%§a."
+        success: "§e%cityname% §7| §aTomtens typ är nu %type%."
         removed: "§e%cityname% §7| §aTomtens typ är nu borttagen."
       owner:
         success: "§e%cityname% §7| §aTomtens ägare är nu %player%."

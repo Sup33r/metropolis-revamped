@@ -261,13 +261,13 @@ public class CommandPlot extends BaseCommand {
                             plugin.sendMessage(player, "messages.city.successful.set.plot.market.remove", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName());
                             return;
                         }
-                        if (arg.matches("[0-9]")) {
+                        if (arg.matches("[0-9]+")) {
                             if (plot.isForSale()) {
                                 if (plot.getPlotPrice() == Integer.parseInt(arg)) {
                                     plugin.sendMessage(player, "messages.error.plot.market.noChange", "%cityname%", city.getCityName());
                                     return;
                                 }
-                                plugin.sendMessage(player, "messages.city.successful.set.plot.market.change", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName(),"%from%",""+plot.getPlotPrice(), "%to%", arg);
+                                plugin.sendMessage(player, "messages.city.successful.set.plot.market.change", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName(),"%from%",Utilities.formattedMoney(plot.getPlotPrice()), "%to%", Utilities.formattedMoney(Integer.valueOf(arg)));
                                 Database.addLogEntry(city,"{ \"type\": \"plotMarket\", \"subtype\": \"change\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + plot.getPlotPrice() + ", \"to\": " + arg + ", \"player\": " + player.getUniqueId().toString() + " }");
                                 plot.setPlotPrice(Integer.parseInt(arg));
                                 return;
@@ -279,7 +279,7 @@ public class CommandPlot extends BaseCommand {
                             }
                             plot.setPlotPrice(Integer.parseInt(arg));
                             Database.addLogEntry(city,"{ \"type\": \"plotMarket\", \"subtype\": \"add\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"to\": " + arg + ", \"player\": " + player.getUniqueId().toString() + " }");
-                            plugin.sendMessage(player, "messages.city.successful.set.plot.market.set", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName(), "%amount%", arg);
+                            plugin.sendMessage(player, "messages.city.successful.set.plot.market.set", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName(), "%amount%", Utilities.formattedMoney(Integer.valueOf(arg)));
                             return;
                         }
                         plugin.sendMessage(player, "messages.syntax.plot.market");
@@ -306,7 +306,6 @@ public class CommandPlot extends BaseCommand {
             return;
         }
         if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) {
-            player.sendMessage(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName());
             plugin.sendMessage(player, "messages.error.plot.notFound");
             return;
         }
@@ -492,7 +491,7 @@ public class CommandPlot extends BaseCommand {
                             stringBuilderOutsiders.append(s);
                         }
                         String permsOutsiders = "+" + stringBuilderOutsiders.substring(0, stringBuilderOutsiders.toString().length());
-                        if (stringBuilderOutsiders.substring(0, stringBuilderOutsiders.toString().length()).isEmpty()) {
+                        if (stringBuilderOutsiders.substring(0, stringBuilderOutsiders.toString().length()).equals(" ") || stringBuilderOutsiders.substring(0, stringBuilderOutsiders.toString().length()).isEmpty() || stringBuilderOutsiders.substring(0, stringBuilderOutsiders.toString().length()) == null) {
                             permsOutsiders = "§onada";
                         }
                         StringBuilder stringBuilderMembers = new StringBuilder();
@@ -500,7 +499,7 @@ public class CommandPlot extends BaseCommand {
                             stringBuilderMembers.append(s);
                         }
                         String permsMembers = "+" + stringBuilderMembers.substring(0, stringBuilderMembers.toString().length());
-                        if (stringBuilderMembers.substring(0, stringBuilderMembers.toString().length()).isEmpty()) {
+                        if (stringBuilderOutsiders.substring(0, stringBuilderOutsiders.toString().length()).equals(" ") || stringBuilderOutsiders.substring(0, stringBuilderOutsiders.toString().length()).isEmpty() || stringBuilderOutsiders.substring(0, stringBuilderOutsiders.toString().length()) == null) {
                             permsMembers = "§onada";
                         }
                         plugin.sendMessage(player, "messages.plot.list.perm.header", "%plot%", plot.getPlotName());
@@ -513,7 +512,7 @@ public class CommandPlot extends BaseCommand {
                                 stringBuilder.append(s);
                             }
                             String perms = "+" + stringBuilder.substring(0, stringBuilder.toString().length());
-                            if (plotPerms.getPerms().length == 0) {
+                            if (plotPerms.getPerms() == null || plotPerms.getPerms().length == 0) {
                                 return;
                             }
                             plugin.sendMessage(player, "messages.plot.list.perm.players", "%player%", plotPerms.getPlayerName(), "%perms%", perms);
@@ -718,6 +717,7 @@ public class CommandPlot extends BaseCommand {
                         plot.setPlotOwner(offlinePlayer.getName());
                         plot.setPlotOwnerUUID(offlinePlayer.getUniqueId().toString());
                         plugin.sendMessage(player, "messages.plot.set.owner.success", "%player%", offlinePlayer.getName(), "%cityname%", city.getCityName());
+                        return;
                     }
                     if (city.getCityPlots().indexOf(plot) == city.getCityPlots().size() - 1) {
                         plugin.sendMessage(player, "messages.error.plot.notFound");
@@ -944,7 +944,6 @@ public class CommandPlot extends BaseCommand {
                 plugin.sendMessage(player, "messages.error.plot.notFound");
                 return;
             }
-            player.sendMessage(rent);
             City city = CityDatabase.getCityByClaim(player.getLocation());
             assert city != null;
             String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
@@ -975,7 +974,7 @@ public class CommandPlot extends BaseCommand {
                             plugin.sendMessage(player, "messages.plot.set.rent.removed", "%cityname%", city.getCityName());
                             return;
                         }
-                        if (!rent.matches("[0-9]")) {
+                            if (!rent.matches("[0-9]+")) {
                             plugin.sendMessage(player, "messages.syntax.plot.set.rent");
                             return;
                         }
@@ -991,7 +990,7 @@ public class CommandPlot extends BaseCommand {
                         }
                         Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"rent\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + plot.getPlotRent() + ", \"to\": " + rentInt + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                         plot.setPlotRent(rentInt);
-                        plugin.sendMessage(player, "messages.plot.set.rent.success", "%cityname%", city.getCityName(), "%rent%", rent);
+                        plugin.sendMessage(player, "messages.plot.set.rent.success", "%cityname%", city.getCityName(), "%rent%", Utilities.formattedMoney(rentInt));
                         return;
                     }
                     if (city.getCityPlots().indexOf(plot) == city.getCityPlots().size() - 1) {
@@ -1529,9 +1528,9 @@ public class CommandPlot extends BaseCommand {
                     Database.addLogEntry(city,"{ \"type\": \"buy\", \"subtype\": \"plot\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"player\": " + player.getUniqueId().toString() + " }");
                     plot.setPlotOwner(player.getDisplayName());
                     plot.setPlotOwnerUUID(player.getUniqueId().toString());
+                    plugin.sendMessage(player, "messages.plot.buy.success", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName(), "%price%", String.valueOf(plot.getPlotPrice()));
                     plot.setForSale(false);
                     plot.setPlotPrice(0);
-                    plugin.sendMessage(player, "messages.plot.buy.success", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName(), "%price%", String.valueOf(plot.getPlotPrice()));
                     return;
                 }
                 if (city.getCityPlots().indexOf(plot) == city.getCityPlots().size() - 1) {

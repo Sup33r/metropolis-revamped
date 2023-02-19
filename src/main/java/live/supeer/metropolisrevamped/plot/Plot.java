@@ -137,8 +137,8 @@ public class Plot {
     public void removePlotPerms() throws SQLException {
         DB.executeUpdate("UPDATE `mp_plots` SET `plotPermsMembers` = '', `plotPermsOutsiders` = '' WHERE `plotID` = " + plotID + ";");
         DB.executeUpdate("DELETE FROM `mp_plotperms` WHERE `plotId` = " + plotID + ";");
-        this.permsMembers = null;
-        this.permsOutsiders = null;
+        this.permsMembers = new char[]{' '};
+        this.permsOutsiders = new char[]{' '};
     }
 
     public boolean hasFlag(char needle) {
