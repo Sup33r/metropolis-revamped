@@ -526,7 +526,49 @@ public class CommandPlot extends BaseCommand {
             }
             return;
         }
-        if (args.length > 2 || args.length == 1) {
+        if (args.length > 2 ) {
+            plugin.sendMessage(player, "messages.syntax.plot.perm");
+            return;
+        }
+        if (args.length == 1) {
+            if (args[0].equals("-")) {
+                String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
+                if (role == null) {
+                    plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                    return;
+                }
+                if (role.equals("mayor") || role.equals("assistant") || role.equals("vicemayor")) {
+                    if (CityDatabase.getClaim(player.getLocation()) != null) {
+                        for (Plot plot : city.getCityPlots()) {
+                            Polygon polygon = new Polygon();
+                            for (Location loc : plot.getPlotPoints()) {
+                                polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
+                            }
+                            if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                                if (plot.isKMarked() && !role.equals("mayor")) {
+                                    plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                                    return;
+                                }
+                                Database.addLogEntry(city, "{ \"type\": \"plot\", \"subtype\": \"perm\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"type\": " + "all" + ", \"from\": " + "" + ", \"to\": " + "" + ", \"player\": " + player.getUniqueId().toString() + " }");
+                                plot.removePlotPerms();
+                                plugin.sendMessage(player, "messages.city.successful.set.plot.perm.remove.all", "%cityname%", city.getCityName());
+                                return;
+                            }
+                            if (city.getCityPlots().indexOf(plot) == city.getCityPlots().size() - 1) {
+                                plugin.sendMessage(player, "messages.error.plot.notFound");
+                                return;
+                            }
+                        }
+                    } else {
+                        plugin.sendMessage(player, "messages.error.plot.notFound");
+                        return;
+                    }
+                } else {
+                    plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                    return;
+                }
+                return;
+            }
             plugin.sendMessage(player, "messages.syntax.plot.perm");
             return;
         }
@@ -557,12 +599,6 @@ public class CommandPlot extends BaseCommand {
                     if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
                         if (plot.isKMarked() && !role.equals("mayor")) {
                             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
-                            return;
-                        }
-                        if (args[0].equals("-")) {
-                            Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"perm\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"type\": " + "all" + ", \"from\": " + "" + ", \"to\": " + "" + ", \"player\": " + player.getUniqueId().toString() + " }");
-                            plot.removePlotPerms();
-                            plugin.sendMessage(player, "messages.city.successful.set.plot.perm.remove.all","%cityname%", city.getCityName());
                             return;
                         }
                         if (args[0].equals("members")) {
@@ -600,6 +636,10 @@ public class CommandPlot extends BaseCommand {
                             plot.setPlotPerms("players", Utilities.parsePermChange(plot.getPlayerPlotPerm(offlinePlayer.getUniqueId().toString()).getPerms(), args[1], player, "plot"), offlinePlayer.getUniqueId().toString());
                         }
                         plugin.sendMessage(player, "messages.successful.set.plot.perm.change.player", "%player%", offlinePlayer.getName(), "%perms%", args[1], "%cityname%", city.getCityName());
+                    }
+                    if (city.getCityPlots().indexOf(plot) == city.getCityPlots().size() - 1) {
+                        plugin.sendMessage(player, "messages.error.plot.notFound");
+                        return;
                     }
                 }
             }

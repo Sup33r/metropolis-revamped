@@ -135,7 +135,7 @@ public class Plot {
     }
 
     public void removePlotPerms() throws SQLException {
-        DB.executeUpdate("UPDATE `mp_plots` SET `plotPermsMembers` = NULL, `plotPermsOutsiders` = NULL WHERE `plotID` = " + plotID + ";");
+        DB.executeUpdate("UPDATE `mp_plots` SET `plotPermsMembers` = '', `plotPermsOutsiders` = '' WHERE `plotID` = " + plotID + ";");
         DB.executeUpdate("DELETE FROM `mp_plotperms` WHERE `plotId` = " + plotID + ";");
         this.permsMembers = null;
         this.permsOutsiders = null;
