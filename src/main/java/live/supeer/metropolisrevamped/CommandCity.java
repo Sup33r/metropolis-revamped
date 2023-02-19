@@ -97,18 +97,14 @@ public class CommandCity extends BaseCommand {
                 plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",city.getCityName());
                 return;
             }
-
-
             if (!(reason.length() >= 8)) {
                 plugin.sendMessage(player,"messages.error.missing.reasonLength","%cityname%",city.getCityName());
                 return;
             }
-
             if (cityBalance <= 100000 || inputBalance > cityBalance - 100000) {
                 plugin.sendMessage(player,"messages.error.missing.balance","%cityname%",city.getCityName());
                 return;
             }
-
             CityDatabase.removeCityBalance(city,inputBalance);
             Database.addLogEntry(city,"{ \"type\": \"cityBank\", \"subtype\": \"withdraw\", \"balance\": " + inputBalance + ", \"player\": " + player.getUniqueId().toString() + ", \"reason\": \"" + reason + "\" }");
             economy.depositPlayer(player,inputBalance);
@@ -196,7 +192,9 @@ public class CommandCity extends BaseCommand {
             plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",cityName);
             return;
         }
-        CityDatabase.createClaim(city,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
+        Claim claim = CityDatabase.createClaim(city,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
+        assert claim != null;
+        Database.addLogEntry(city,"{ \"type\": \"buy\", \"subtype\": \"claim\", \"balance\": " + "500" + ", \"claimlocation\": " + Utilities.formatChunk(claim.getClaimWorld(),claim.getXPosition(),claim.getZPosition()) + ", \"player\": " + player.getUniqueId().toString() + " }");
         MetropolisListener.playerInCity.add(player.getUniqueId());
         Utilities.sendCityScoreboard(player,city);
         CityDatabase.removeCityBalance(city,MetropolisRevamped.configuration.getCityClaimCost());
@@ -245,7 +243,7 @@ public class CommandCity extends BaseCommand {
                         return;
                     }
                     CityDatabase.setCityMessage(city,"enterMessage",message);
-                    plugin.sendMessage(player,"messages.city.successful.set.enter.set","%cityname%",city.getCityName());
+                    Database.addLogEntry(city,"{ \"type\": \"set\", \"subtype\": \"enterMessage\", \"message\": " + message + ", \"player\": " + player.getUniqueId().toString() + " }");                    plugin.sendMessage(player,"messages.city.successful.set.enter.set","%cityname%",city.getCityName());
                 } else {
                     plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",city.getCityName());
                 }
@@ -274,6 +272,7 @@ public class CommandCity extends BaseCommand {
                         return;
                     }
                     CityDatabase.setCityMessage(city,"exitMessage",message);
+                    Database.addLogEntry(city,"{ \"type\": \"set\", \"subtype\": \"exitMessage\", \"message\": " + message + ", \"player\": " + player.getUniqueId().toString() + " }");
                     plugin.sendMessage(player,"messages.city.successful.set.exit.set","%cityname%",city.getCityName());
                 } else {
                     plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",city.getCityName());
@@ -303,6 +302,7 @@ public class CommandCity extends BaseCommand {
                         return;
                     }
                     CityDatabase.setCityMessage(city,"motdMessage",message);
+                    Database.addLogEntry(city,"{ \"type\": \"set\", \"subtype\": \"motdMessage\", \"message\": " + message + ", \"player\": " + player.getUniqueId().toString() + " }");
                     plugin.sendMessage(player,"messages.city.successful.set.motd.set","%cityname%",city.getCityName());
                 } else {
                     plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",city.getCityName());

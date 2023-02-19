@@ -65,6 +65,25 @@ public class Utilities {
         return false;
     }
 
+    public static String parsePoints(Location[] locations) {
+        if (locations == null) {
+            return null;
+        }
+
+        StringBuilder points = new StringBuilder();
+
+        for (Location location : locations) {
+            String test = "(" + location.getBlockX() + ", " + "y" + ", " + location.getBlockZ() + ")";
+            if (location.equals(locations[locations.length - 1])) {
+                points.append(test);
+                break;
+            }
+            points.append(test).append(",");
+        }
+        Bukkit.broadcastMessage(points.toString());
+        return points.toString();
+    }
+
     public static String parseFlagChange(char[] flagsOriginal, String change) {
         if (flagsOriginal == null) {
             flagsOriginal = new char[0];

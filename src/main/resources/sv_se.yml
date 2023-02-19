@@ -42,6 +42,8 @@ messages:
           cityCost: "§cDu har inte råd med 500 000 minemynt som en stad kostar."
     permissionDenied: "§cÅtkomst nekad."
     plot:
+      market:
+        noChange: "§e%cityname% §7| §cTomten är redan till salu för det angivna värdet."
       set:
         rent:
           tooHigh: "§e%cityname% §7| §cTomträttsavgälden får inte vara högre än 100 000 minemynt."
@@ -176,6 +178,7 @@ messages:
           market:
             remove: "§e%cityname% §7|§a Tomten drogs tillbaka från marknaden."
             set: "§e%cityname% §7|§a Tomten lades ut på marknaden för %amount% minemynt."
+            change: "§e%cityname% §7|§a Priset för tomten ändrades från %from% till %to% minemynt."
           perm:
             change:
               members: "§e%cityname% §7|§a Rättigheter för medlemmar på tomten ändrades till %perms%."

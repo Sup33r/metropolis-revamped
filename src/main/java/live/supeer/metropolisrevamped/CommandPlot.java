@@ -84,6 +84,7 @@ public class CommandPlot extends BaseCommand {
                     }
                     Plot plot = PlotDatabase.createPlot(player, locations, plotname, city, MetropolisListener.playerYMin.get(player.getUniqueId()), MetropolisListener.playerYMax.get(player.getUniqueId()));
                     assert plot != null;
+                        Database.addLogEntry(city,"{ \"type\": \"create\", \"subtype\": \"plot\", \"id\": " + plot.getPlotID() + ", \"name\": " + plotname + ", \"points\": " + Utilities.parsePoints(locations) + ", \"ymin\": " + MetropolisListener.playerYMin.get(player.getUniqueId()) + ", \"ymax\": " + MetropolisListener.playerYMax.get(player.getUniqueId()) + ", \"player\": " + player.getUniqueId().toString() + " }");
                     MetropolisListener.savedLocs.remove(player.getUniqueId());
                     MetropolisListener.playerPolygons.remove(player.getUniqueId());
                     MetropolisListener.playerYMin.remove(player.getUniqueId());
@@ -182,6 +183,7 @@ public class CommandPlot extends BaseCommand {
                         plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                         return;
                     }
+                    Database.addLogEntry(city,"{ \"type\": \"delete\", \"subtype\": \"plot\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"player\": " + player.getUniqueId().toString() + " }");
                     PlotDatabase.deletePlot(plot);
                     plugin.sendMessage(player, "messages.city.successful.set.delete.plot", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName());
                     return;
@@ -218,6 +220,7 @@ public class CommandPlot extends BaseCommand {
                 if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
                     if (plot.getPlotOwnerUUID().equals(player.getUniqueId().toString())) {
                         plot.removePlotOwner();
+                        Database.addLogEntry(city,"{ \"type\": \"leave\", \"subtype\": \"plot\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"player\": " + player.getUniqueId().toString() + " }");
                         plugin.sendMessage(player, "messages.city.successful.set.plot.leave", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName());
                     } else {
                         plugin.sendMessage(player, "messages.error.plot.set.owner.notOwner");
@@ -258,8 +261,23 @@ public class CommandPlot extends BaseCommand {
                             return;
                         }
                         if (arg.matches("[0-9]")) {
+                            if (plot.isForSale()) {
+                                if (plot.getPlotPrice() == Integer.parseInt(arg)) {
+                                    plugin.sendMessage(player, "messages.error.plot.market.noChange", "%cityname%", city.getCityName());
+                                    return;
+                                }
+                                plugin.sendMessage(player, "messages.city.successful.set.plot.market.change", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName(),"%from%",""+plot.getPlotPrice(), "%to%", arg);
+                                Database.addLogEntry(city,"{ \"type\": \"plotMarket\", \"subtype\": \"change\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + plot.getPlotPrice() + ", \"to\": " + arg + ", \"player\": " + player.getUniqueId().toString() + " }");
+                                plot.setPlotPrice(Integer.parseInt(arg));
+                                return;
+                            }
                             plot.setForSale(true);
+                            if (plot.getPlotPrice() == Integer.parseInt(arg)) {
+                                plugin.sendMessage(player, "messages.error.plot.market.noChange", "%cityname%", city.getCityName());
+                                return;
+                            }
                             plot.setPlotPrice(Integer.parseInt(arg));
+                            Database.addLogEntry(city,"{ \"type\": \"plotMarket\", \"subtype\": \"add\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"to\": " + arg + ", \"player\": " + player.getUniqueId().toString() + " }");
                             plugin.sendMessage(player, "messages.city.successful.set.plot.market.set", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName(), "%amount%", arg);
                             return;
                         }
@@ -350,7 +368,6 @@ public class CommandPlot extends BaseCommand {
     }
 
     @Subcommand("player")
-    @Syntax("§7Syntax: /plot player §nplayername§r")
     public static void onPlayer(Player player, String playerName) {
         if (!player.hasPermission("metropolis.plot.player")) {
             plugin.sendMessage(player, "messages.error.permissionDenied");
