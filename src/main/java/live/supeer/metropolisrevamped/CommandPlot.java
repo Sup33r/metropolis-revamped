@@ -323,17 +323,41 @@ public class CommandPlot extends BaseCommand {
                     plugin.sendMessage(player, "messages.plot.list.id", "%id%", String.valueOf(plot.getPlotID()));
                     plugin.sendMessage(player, "messages.plot.list.city", "%cityname%", city.getCityName());
                     plugin.sendMessage(player, "messages.plot.list.owner", "%owner%", plot.getPlotOwner());
-                    plugin.sendMessage(player, "messages.plot.list.pvp", "%status%", "placeholder");
-                    plugin.sendMessage(player, "messages.plot.list.animals", "%status%", "placeholder");
-                    plugin.sendMessage(player, "messages.plot.list.monsters", "%status%", "placeholder");
-                    plugin.sendMessage(player, "messages.plot.list.locked", "%status%", "placeholder");
+                    if (Arrays.toString(plot.getPlotFlags()).contains("p")) {
+                        plugin.sendMessage(player, "messages.plot.list.pvp", "%status%", "§cPå");
+                    } else {
+                        plugin.sendMessage(player, "messages.plot.list.pvp", "%status%", "§aAv");
+                    }
+                    if (Arrays.toString(plot.getPlotFlags()).contains("a")) {
+                        plugin.sendMessage(player, "messages.plot.list.animals", "%status%", "§aPå");
+                    } else {
+                        plugin.sendMessage(player, "messages.plot.list.animals", "%status%", "§aAv");
+                    }
+                    if (Arrays.toString(plot.getPlotFlags()).contains("m")) {
+                        plugin.sendMessage(player, "messages.plot.list.monsters", "%status%", "§cPå");
+                    } else {
+                        plugin.sendMessage(player, "messages.plot.list.monsters", "%status%", "§aAv");
+                    }
+                    if (Arrays.toString(plot.getPlotFlags()).contains("l")) {
+                        plugin.sendMessage(player, "messages.plot.list.monsters", "%status%", "§aJa");
+                    } else {
+                        plugin.sendMessage(player, "messages.plot.list.monsters", "%status%", "§aNej");
+                    }
                     if (plot.isKMarked()) {
-                        plugin.sendMessage(player, "messages.plot.list.k-marked", "%status%", "§cJa");
+                        plugin.sendMessage(player, "messages.plot.list.k-marked", "%status%", "§aJa");
                     } else {
                         plugin.sendMessage(player, "messages.plot.list.k-marked", "%status%", "§aNej");
                     }
-                    plugin.sendMessage(player, "messages.plot.list.lose.items", "%status%", "placeholder");
-                    plugin.sendMessage(player, "messages.plot.list.lose.xp", "%status%", "placeholder");
+                    if (Arrays.toString(plot.getPlotFlags()).contains("i")) {
+                        plugin.sendMessage(player, "messages.plot.list.lose.items", "%status%", "§cJa");
+                    } else {
+                        plugin.sendMessage(player, "messages.plot.list.lose.items", "%status%", "§aNej");
+                    }
+                    if (Arrays.toString(plot.getPlotFlags()).contains("x")) {
+                        plugin.sendMessage(player, "messages.plot.list.lose.xp", "%status%", "§cJa");
+                    } else {
+                        plugin.sendMessage(player, "messages.plot.list.lose.xp", "%status%", "§aNej");
+                    }
                     if (player.hasPermission("metropolis.plot.info.coordinates") || Objects.equals(CityDatabase.getCityRole(city, player.getUniqueId().toString()), "assistant") || Objects.equals(CityDatabase.getCityRole(city, player.getUniqueId().toString()), "vicemayor") || Objects.equals(CityDatabase.getCityRole(city, player.getUniqueId().toString()), "mayor")) {
                         plugin.sendMessage(player, "messages.plot.list.middle", "%world%", plot.getPlotCenter().getWorld().getName(), "%x%", String.valueOf(plot.getPlotCenter().getBlockX()), "%y%", String.valueOf(plot.getPlotCenter().getBlockY()), "%z%", String.valueOf(plot.getPlotCenter().getBlockZ()));
                     }
@@ -345,7 +369,9 @@ public class CommandPlot extends BaseCommand {
                             }
                             if (polygon1.contains(p.getLocation().getBlockX(), p.getLocation().getBlockZ())) {
                                 if (plot1.getPlotID() == plot.getPlotID()) {
-                                    players.add(p);
+                                    if (!players.contains(p)) {
+                                        players.add(p);
+                                    }
                                 }
                             }
                         }
@@ -439,8 +465,11 @@ public class CommandPlot extends BaseCommand {
             plugin.sendMessage(player, "messages.error.permissionDenied");
             return;
         }
+        if (CityDatabase.hasClaim(player.getLocation().getChunk().getX(),player.getLocation().getChunk().getZ(),player.getLocation().getChunk().getWorld())) {
+            plugin.sendMessage(player, "messages.error.plot.notFound");
+            return;
+        }
         if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) {
-            player.sendMessage(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName());
             plugin.sendMessage(player, "messages.error.plot.notFound");
             return;
         }
@@ -1444,7 +1473,7 @@ public class CommandPlot extends BaseCommand {
                 }
                 if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
                     if (plot.getPlotOwner() != null) {
-                        plugin.sendMessage(player, "messages.error.plot.alreadyOwned");
+                        plugin.sendMessage(player, "messages.error.plot.set.owner.alreadyOwner", "%cityname%", city.getCityName());
                         return;
                     }
                     if (!plot.isForSale()) {
@@ -1458,7 +1487,8 @@ public class CommandPlot extends BaseCommand {
                     economy.withdrawPlayer(player,plot.getPlotPrice());
                     city.addCityBalance(plot.getPlotPrice());
                     Database.addLogEntry(city,"{ \"type\": \"buy\", \"subtype\": \"plot\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"player\": " + player.getUniqueId().toString() + " }");
-                    plot.setPlotOwner(player.getUniqueId().toString());
+                    plot.setPlotOwner(player.getDisplayName());
+                    plot.setPlotOwnerUUID(player.getUniqueId().toString());
                     plot.setForSale(false);
                     plot.setPlotPrice(0);
                     plugin.sendMessage(player, "messages.plot.buy.success", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName(), "%price%", String.valueOf(plot.getPlotPrice()));

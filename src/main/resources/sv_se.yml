@@ -14,8 +14,7 @@ messages:
         withdraw: "§7Syntax: /city bank -§nbelopp§r§7 §nanledning"
         bank: "§7Syntax: /city bank"
     plot:
-      toggle:
-        toggle: "§7Syntax: /plot toggle §nanimals\n§7Syntax: /plot toggle §nmeeting\n§7Syntax: /plot toggle §nmobs\n§7Syntax: /plot toggle §nk"
+      toggle: "§7Syntax: /plot toggle §nanimals\n§7Syntax: /plot toggle §nmeeting\n§7Syntax: /plot toggle §nmobs\n§7Syntax: /plot toggle §nk"
       set:
         rent: "§7Syntax: /plot set rent §ntomträttsavgäld\n§7Syntax: /plot set rent -"
         set: "§7Syntax: /plot set type §nchurch\n§7Syntax: /plot set type §nfarm\n§7Syntax: /plot set type §nshop\n§7Syntax: /plot set type §nvacation\n§7Syntax: /plot set type -\n§7Syntax: /plot set owner §nspelare\n§7Syntax: /plot set owner -\n§7Syntax: /plot set rent §ntomträttsavgäld\n§7Syntax: /plot set rent -\n§7Syntax: /plot set name §nnamn\n§7Syntax: /plot set name -"
