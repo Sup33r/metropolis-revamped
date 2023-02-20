@@ -28,6 +28,7 @@ public class MetropolisListener implements Listener {
         if (CityDatabase.getClaim(player.getLocation()) != null) {
             if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) {Utilities.sendNatureScoreboard(player);}
             City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).get();
+            playerInCity.add(player.getUniqueId());
             Utilities.sendCityScoreboard(player, city);
         } else {
             Utilities.sendNatureScoreboard(player);
