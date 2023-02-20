@@ -103,7 +103,7 @@ public class CommandPlot extends BaseCommand {
                         plugin.sendMessage(player, "messages.error.plot.intersectsExistingClaim");
                         return;
                     }
-                    if (PlotDatabase.intersectsExistingPlot(regionPolygon, city)) {
+                    if (PlotDatabase.intersectsExistingPlot(regionPolygon,MetropolisListener.playerYMin.get(player.getUniqueId()),MetropolisListener.playerYMax.get(player.getUniqueId()), city)) {
                         plugin.sendMessage(player, "messages.error.plot.intersectsExistingPlot");
                         return;
                     }
@@ -200,10 +200,12 @@ public class CommandPlot extends BaseCommand {
         if (CityDatabase.getClaim(player.getLocation()) != null) {
             for (Plot plot : city.getCityPlots()) {
                 Polygon polygon = new Polygon();
+                int ymin = plot.getPlotYMin();
+                int ymax = plot.getPlotYMax();
                 for (Location location : plot.getPlotPoints()) {
                     polygon.addPoint(location.getBlockX(), location.getBlockZ());
                 }
-                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= ymin && player.getLocation().getBlockY() <= ymax) {
                     if (!isAssistant) {
                         plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                         return;
@@ -239,10 +241,12 @@ public class CommandPlot extends BaseCommand {
                     return;
                 }
                 Polygon polygon = new Polygon();
+                int ymin = plot.getPlotYMin();
+                int ymax = plot.getPlotYMax();
                 for (Location location : plot.getPlotPoints()) {
                     polygon.addPoint(location.getBlockX(), location.getBlockZ());
                 }
-                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= ymin && player.getLocation().getBlockY() <= ymax) {
                     if (plot.getPlotOwnerUUID().equals(player.getUniqueId().toString())) {
                         plot.removePlotOwner();
                         Database.addLogEntry(city,"{ \"type\": \"leave\", \"subtype\": \"plot\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"player\": " + player.getUniqueId().toString() + " }");
@@ -275,10 +279,12 @@ public class CommandPlot extends BaseCommand {
             String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
             for (Plot plot : city.getCityPlots()) {
                 Polygon polygon = new Polygon();
+                int ymin = plot.getPlotYMin();
+                int ymax = plot.getPlotYMax();
                 for (Location location : plot.getPlotPoints()) {
                     polygon.addPoint(location.getBlockX(), location.getBlockZ());
                 }
-                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= ymin && player.getLocation().getBlockY() <= ymax) {
                     if (Objects.equals(plot.getPlotOwnerUUID(), player.getUniqueId().toString()) || Objects.equals(role, "inviter") || Objects.equals(role, "assistant") || Objects.equals(role, "vicemayor") || Objects.equals(role, "mayor")) {
                         if (arg.equals("-")) {
                             plot.setForSale(false);
@@ -337,10 +343,12 @@ public class CommandPlot extends BaseCommand {
         if (CityDatabase.getClaim(player.getLocation()) != null) {
             for (Plot plot : city.getCityPlots()) {
                 Polygon polygon = new Polygon();
+                int ymin = plot.getPlotYMin();
+                int ymax = plot.getPlotYMax();
                 for (Location loc : plot.getPlotPoints()) {
                     polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                 }
-                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= ymin && player.getLocation().getBlockY() <= ymax) {
                     List<Player> players = new ArrayList<>();
                     plugin.sendMessage(player, "messages.plot.list.header", "%plot%", plot.getPlotName());
                     plugin.sendMessage(player, "messages.plot.list.id", "%id%", String.valueOf(plot.getPlotID()));
@@ -504,12 +512,13 @@ public class CommandPlot extends BaseCommand {
 
                 for (Plot plot : city.getCityPlots()) {
                     Polygon polygon = new Polygon();
-
+                    int yMin = plot.getPlotYMin();
+                    int yMax = plot.getPlotYMax();
                     for (Location loc : plot.getPlotPoints()) {
                         polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                     }
 
-                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                         StringBuilder stringBuilderOutsiders = new StringBuilder();
                         for (char s : plot.getPermsOutsiders()) {
                             stringBuilderOutsiders.append(s);
@@ -564,10 +573,12 @@ public class CommandPlot extends BaseCommand {
                     if (CityDatabase.getClaim(player.getLocation()) != null) {
                         for (Plot plot : city.getCityPlots()) {
                             Polygon polygon = new Polygon();
+                            int yMin = plot.getPlotYMin();
+                            int yMax = plot.getPlotYMax();
                             for (Location loc : plot.getPlotPoints()) {
                                 polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                             }
-                            if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                            if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                                 if (plot.isKMarked() && !role.equals("mayor")) {
                                     plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                                     return;
@@ -616,10 +627,12 @@ public class CommandPlot extends BaseCommand {
             if (CityDatabase.getClaim(player.getLocation()) != null) {
                 for (Plot plot : city.getCityPlots()) {
                     Polygon polygon = new Polygon();
+                    int yMin = plot.getPlotYMin();
+                    int yMax = plot.getPlotYMax();
                     for (Location loc : plot.getPlotPoints()) {
                         polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                     }
-                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                         if (plot.isKMarked() && !role.equals("mayor")) {
                             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                             return;
@@ -699,10 +712,12 @@ public class CommandPlot extends BaseCommand {
             if (CityDatabase.getClaim(player.getLocation()) != null) {
                 for (Plot plot : city.getCityPlots()) {
                     Polygon polygon = new Polygon();
+                    int yMin = plot.getPlotYMin();
+                    int yMax = plot.getPlotYMax();
                     for (Location loc : plot.getPlotPoints()) {
                         polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                     }
-                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                         if (plot.isKMarked() && isMayor) {
                             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                             return;
@@ -770,10 +785,12 @@ public class CommandPlot extends BaseCommand {
             if (CityDatabase.getClaim(player.getLocation()) != null) {
                 for (Plot plot : city.getCityPlots()) {
                     Polygon polygon = new Polygon();
+                    int yMin = plot.getPlotYMin();
+                    int yMax = plot.getPlotYMax();
                     for (Location loc : plot.getPlotPoints()) {
                         polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                     }
-                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                         if (plot.isKMarked() && isMayor) {
                             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                             return;
@@ -923,10 +940,12 @@ public class CommandPlot extends BaseCommand {
             if (CityDatabase.getClaim(player.getLocation()) != null) {
                 for (Plot plot : city.getCityPlots()) {
                     Polygon polygon = new Polygon();
+                    int yMin = plot.getPlotYMin();
+                    int yMax = plot.getPlotYMax();
                     for (Location loc : plot.getPlotPoints()) {
                         polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                     }
-                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                         if (plot.isKMarked() && !isMayor) {
                             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                             return;
@@ -980,10 +999,12 @@ public class CommandPlot extends BaseCommand {
             if (CityDatabase.getClaim(player.getLocation()) != null) {
                 for (Plot plot : city.getCityPlots()) {
                     Polygon polygon = new Polygon();
+                    int yMin = plot.getPlotYMin();
+                    int yMax = plot.getPlotYMax();
                     for (Location loc : plot.getPlotPoints()) {
                         polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                     }
-                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                         if (plot.isKMarked() && !isMayor) {
                             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                             return;
@@ -1061,10 +1082,12 @@ public class CommandPlot extends BaseCommand {
             if (CityDatabase.getClaim(player.getLocation()) != null) {
                 for (Plot plot : city.getCityPlots()) {
                     Polygon polygon = new Polygon();
+                    int yMin = plot.getPlotYMin();
+                    int yMax = plot.getPlotYMax();
                     for (Location loc : plot.getPlotPoints()) {
                         polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                     }
-                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                         if (plot.hasFlag('p')) {
                             Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "pvp" + ", \"state\": " + false + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotFlags(Objects.requireNonNull(Utilities.parseFlagChange(plot.getPlotFlags(), "-p")));
@@ -1107,10 +1130,12 @@ public class CommandPlot extends BaseCommand {
             if (CityDatabase.getClaim(player.getLocation()) != null) {
                 for (Plot plot : city.getCityPlots()) {
                     Polygon polygon = new Polygon();
+                    int yMin = plot.getPlotYMin();
+                    int yMax = plot.getPlotYMax();
                     for (Location loc : plot.getPlotPoints()) {
                         polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                     }
-                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                         if (plot.isKMarked() && !isMayor) {
                             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                             return;
@@ -1161,10 +1186,12 @@ public class CommandPlot extends BaseCommand {
             if (CityDatabase.getClaim(player.getLocation()) != null) {
                 for (Plot plot : city.getCityPlots()) {
                     Polygon polygon = new Polygon();
+                    int yMin = plot.getPlotYMin();
+                    int yMax = plot.getPlotYMax();
                     for (Location loc : plot.getPlotPoints()) {
                         polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                     }
-                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                         if (plot.isKMarked() && !isMayor) {
                             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                             return;
@@ -1215,10 +1242,12 @@ public class CommandPlot extends BaseCommand {
             if (CityDatabase.getClaim(player.getLocation()) != null) {
                 for (Plot plot : city.getCityPlots()) {
                     Polygon polygon = new Polygon();
+                    int yMin = plot.getPlotYMin();
+                    int yMax = plot.getPlotYMax();
                     for (Location loc : plot.getPlotPoints()) {
                         polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                     }
-                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                         if (plot.isKMarked() && !isMayor) {
                             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                             return;
@@ -1266,10 +1295,12 @@ public class CommandPlot extends BaseCommand {
             if (CityDatabase.getClaim(player.getLocation()) != null) {
                 for (Plot plot : city.getCityPlots()) {
                     Polygon polygon = new Polygon();
+                    int yMin = plot.getPlotYMin();
+                    int yMax = plot.getPlotYMax();
                     for (Location loc : plot.getPlotPoints()) {
                         polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                     }
-                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                         if (plot.hasFlag('x')) {
                             Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "keepexp" + ", \"state\": " + false + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotFlags(Objects.requireNonNull(Utilities.parseFlagChange(plot.getPlotFlags(), "-x")));
@@ -1309,10 +1340,12 @@ public class CommandPlot extends BaseCommand {
             if (CityDatabase.getClaim(player.getLocation()) != null) {
                 for (Plot plot : city.getCityPlots()) {
                     Polygon polygon = new Polygon();
+                    int yMin = plot.getPlotYMin();
+                    int yMax = plot.getPlotYMax();
                     for (Location loc : plot.getPlotPoints()) {
                         polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                     }
-                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                         if (plot.hasFlag('i')) {
                             Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "keepinv" + ", \"state\": " + false + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotFlags(Objects.requireNonNull(Utilities.parseFlagChange(plot.getPlotFlags(), "-i")));
@@ -1352,10 +1385,12 @@ public class CommandPlot extends BaseCommand {
             if (CityDatabase.getClaim(player.getLocation()) != null) {
                 for (Plot plot : city.getCityPlots()) {
                     Polygon polygon = new Polygon();
+                    int yMin = plot.getPlotYMin();
+                    int yMax = plot.getPlotYMax();
                     for (Location loc : plot.getPlotPoints()) {
                         polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                     }
-                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                         if (plot.hasFlag('l')) {
                             Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"toggle\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"item\": " + "lock" + ", \"state\": " + false + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                             plot.setPlotFlags(Objects.requireNonNull(Utilities.parseFlagChange(plot.getPlotFlags(), "-l")));
@@ -1397,10 +1432,12 @@ public class CommandPlot extends BaseCommand {
             if (CityDatabase.getClaim(player.getLocation()) != null) {
                 for (Plot plot : city.getCityPlots()) {
                     Polygon polygon = new Polygon();
+                    int yMin = plot.getPlotYMin();
+                    int yMax = plot.getPlotYMax();
                     for (Location loc : plot.getPlotPoints()) {
                         polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                     }
-                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                    if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                         if (!isMayor) {
                             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                             return;
@@ -1446,10 +1483,12 @@ public class CommandPlot extends BaseCommand {
         if (CityDatabase.getClaim(player.getLocation()) != null) {
             for (Plot plot : city.getCityPlots()) {
                 Polygon polygon = new Polygon();
+                int yMin = plot.getPlotYMin();
+                int yMax = plot.getPlotYMax();
                 for (Location loc : plot.getPlotPoints()) {
                     polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                 }
-                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                     if (!isViceMayor) {
                         plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                         return;
@@ -1485,7 +1524,7 @@ public class CommandPlot extends BaseCommand {
                                     plugin.sendMessage(player, "messages.error.plot.intersectsExistingClaim");
                                     return;
                                 }
-                                if (PlotDatabase.intersectsExistingPlot(regionPolygon, city)) {
+                                if (PlotDatabase.intersectsExistingPlot(regionPolygon,yMin,yMax, city)) {
                                     plugin.sendMessage(player, "messages.error.plot.intersectsExistingPlot");
                                     return;
                                 }
@@ -1531,10 +1570,12 @@ public class CommandPlot extends BaseCommand {
         if (CityDatabase.getClaim(player.getLocation()) != null) {
             for (Plot plot : city.getCityPlots()) {
                 Polygon polygon = new Polygon();
+                int yMin = plot.getPlotYMin();
+                int yMax = plot.getPlotYMax();
                 for (Location loc : plot.getPlotPoints()) {
                     polygon.addPoint(loc.getBlockX(), loc.getBlockZ());
                 }
-                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
+                if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= yMin && player.getLocation().getBlockY() <= yMax) {
                     if (plot.getPlotOwner() != null) {
                         plugin.sendMessage(player, "messages.error.plot.set.owner.alreadyOwner", "%cityname%", city.getCityName());
                         return;

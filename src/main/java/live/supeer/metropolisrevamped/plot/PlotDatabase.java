@@ -69,15 +69,6 @@ public class PlotDatabase {
         return null;
     }
 
-    public static Plot[] getPlayerPlots(Player player) {
-        try {
-            return DB.getResults("SELECT * FROM `mp_plots` WHERE `plotOwnerUUID` = " + Database.sqlString(player.getUniqueId().toString()) + ";").stream().map(Plot::new).toArray(Plot[]::new);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public static boolean plotExists(int id) {
         try {
             return DB.getFirstRow("SELECT * FROM `mp_plots` WHERE `plotId` = " + id + ";") != null;
@@ -87,14 +78,16 @@ public class PlotDatabase {
         return false;
     }
 
-    public static boolean intersectsExistingPlot(Polygon polygon, City city) {
+    public static boolean intersectsExistingPlot(Polygon polygon, int yMin, int yMax, City city) {
         try {
             for (Plot plot : city.getCityPlots()) {
                 Polygon existingPlotPolygon = new Polygon();
+                int minY = plot.getPlotYMin();
+                int maxY = plot.getPlotYMax();
                 for (Location plotPoint : plot.getPlotPoints()) {
                     existingPlotPolygon.addPoint(plotPoint.getBlockX(), plotPoint.getBlockZ());
                 }
-                if (polygon.intersects(existingPlotPolygon.getBounds())) {
+                if (polygon.intersects(existingPlotPolygon.getBounds()) && yMin <= maxY && yMax >= minY) {
                     return true;
                 }
             }
