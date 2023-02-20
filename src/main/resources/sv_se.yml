@@ -81,6 +81,31 @@ messages:
   save:
     membership: "§aDin hemstad är nu %cityname%."
   plot:
+    help:
+      header: "§2--- §aHjälp: /plot §2---"
+      buy: "§2/plot buy"
+      leave: "§2/plot leave"
+      market: "§2/plot market §a§npris\n§2/plot market -"
+      perm: "§2/plot perm §a§nspelare§r§2 +/-§a§nändring\n§2/plot perm members +/-§a§nändring\n§2/plot perm outsiders +/-§a§nändring"
+      set:
+        rent: "§2/plot set rent §a§ntomträttsavgäld\n§2/plot set rent -"
+        name: "§2/plot set name §a§nnamn\n§2/plot set name -"
+        type: "§2/plot set type §a§ntyp\n§2/plot set type -"
+        owner: "§2/plot set owner §a§nspelare\n§2/plot set owner -"
+      share: "§2/plot share §a§nspelare"
+      toggle:
+        animals: "§2/plot toggle animals"
+        mobs: "§2/plot toggle mobs"
+        meeting: "§2/plot toggle meeting"
+        k: "§2/plot toggle k"
+      type:
+        church: "§2/plot type church"
+        farm: "§2/plot type farm"
+        shop: "§2/plot type shop"
+        vacation: "§2/plot type vacation"
+        none: "§2/plot type -"
+      update: "§2/plot update"
+
     buy:
       success: "§e%cityname% §7| §aDu har köpt tomten %plotname% för %price% minemynt."
     toggle:

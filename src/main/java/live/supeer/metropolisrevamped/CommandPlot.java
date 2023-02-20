@@ -26,8 +26,32 @@ public class CommandPlot extends BaseCommand {
     static MetropolisRevamped plugin;
 
     @Default
+    @CatchUnknown
     public static void onPlot(Player player) {
-
+        if (!player.hasPermission("metropolis.plot")) {
+            plugin.sendMessage(player, "messages.error.permissionDenied");
+            return;
+        }
+        plugin.sendMessage(player, "messages.plot.help.header");
+        plugin.sendMessage(player, "messages.plot.help.buy");
+        plugin.sendMessage(player, "messages.plot.help.leave");
+        plugin.sendMessage(player, "messages.plot.help.market");
+        plugin.sendMessage(player, "messages.plot.help.perm");
+        plugin.sendMessage(player, "messages.plot.help.set.rent");
+        plugin.sendMessage(player, "messages.plot.help.set.name");
+        plugin.sendMessage(player, "messages.plot.help.set.type");
+        plugin.sendMessage(player, "messages.plot.help.set.owner");
+        plugin.sendMessage(player, "messages.plot.help.share");
+        plugin.sendMessage(player, "messages.plot.help.toggle.animals");
+        plugin.sendMessage(player, "messages.plot.help.toggle.mobs");
+        plugin.sendMessage(player, "messages.plot.help.toggle.meeting");
+        plugin.sendMessage(player, "messages.plot.help.toggle.k");
+        plugin.sendMessage(player, "messages.plot.help.type.church");
+        plugin.sendMessage(player, "messages.plot.help.type.farm");
+        plugin.sendMessage(player, "messages.plot.help.type.shop");
+        plugin.sendMessage(player, "messages.plot.help.type.vacation");
+        plugin.sendMessage(player, "messages.plot.help.type.none");
+        plugin.sendMessage(player, "messages.plot.help.update");
     }
 
     @Subcommand("new")
