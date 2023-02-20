@@ -355,6 +355,9 @@ public class Utilities {
                             board.updateLine(i+2,"§aTR: " + Utilities.formattedMoney(plot.getPlotRent()) + " minemynt");
                         }
                     }
+                    if (board.getLine(board.size()-1).equals(" ")) {
+                        board.removeLine(board.size()-1);
+                    }
                     return;
                 }
             }
