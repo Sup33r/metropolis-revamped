@@ -105,7 +105,7 @@ public class CityDatabase {
     }
     public static Optional<City> getCity(String cityName) {
         for (City city : cities) {
-            if (city.getCityName().equals(cityName)) return Optional.of(city);
+            if (city.getCityName().equalsIgnoreCase(cityName)) return Optional.of(city);
         }
         return Optional.empty();
     }
