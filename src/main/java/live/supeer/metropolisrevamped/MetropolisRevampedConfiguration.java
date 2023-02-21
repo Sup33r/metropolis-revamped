@@ -14,6 +14,7 @@ public class MetropolisRevampedConfiguration {
     private final int cityStartingBalance;
     private final int cityStartingTax;
     private final int cityClaimCost;
+    private final int inviteCooldown;
 
     MetropolisRevampedConfiguration(MetropolisRevamped plugin) {
         plugin.saveDefaultConfig();
@@ -24,6 +25,7 @@ public class MetropolisRevampedConfiguration {
         sqlDatabase = plugin.getConfig().getString("sql.database");
         sqlUsername = plugin.getConfig().getString("sql.username");
         sqlPassword = plugin.getConfig().getString("sql.password");
+        inviteCooldown = plugin.getConfig().getInt("settings.cooldownTime.invite");
         cityCreationCost = plugin.getConfig().getInt("settings.city.creationcost");
         cityStartingBalance = plugin.getConfig().getInt("settings.city.startingbalance");
         cityStartingTax = plugin.getConfig().getInt("settings.city.startingtax");

@@ -51,7 +51,7 @@ public class HCDatabase {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return true;
+        return false;
     }
 
 }

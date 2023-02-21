@@ -5,18 +5,21 @@ import co.aikar.commands.annotation.*;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.city.Claim;
-import live.supeer.metropolisrevamped.city.Member;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Objects;
+import java.util.UUID;
 
 @CommandAlias("city|c")
 public class CommandCity extends BaseCommand {
     static MetropolisRevamped plugin;
+
     @Subcommand("info")
     @Default
     public static void onInfo(Player player, @Optional String cityName) {
@@ -26,65 +29,65 @@ public class CommandCity extends BaseCommand {
     @Subcommand("bank")
     public static void onBank(Player player, @Optional String[] args) {
         if (!player.hasPermission("metropolis.city.bank")) {
-            plugin.sendMessage(player,"messages.error.permissionDenied");
+            plugin.sendMessage(player, "messages.error.permissionDenied");
             return;
         }
         Economy economy = MetropolisRevamped.getEconomy();
         if (args.length == 0) {
             if (HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
-                plugin.sendMessage(player,"messages.error.missing.homeCity");
+                plugin.sendMessage(player, "messages.error.missing.homeCity");
                 return;
             }
             String homeCity = HCDatabase.getHomeCityToCityname(player.getUniqueId().toString());
             if (CityDatabase.getCity(homeCity).isEmpty()) {
-                plugin.sendMessage(player,"messages.error.missing.city");
+                plugin.sendMessage(player, "messages.error.missing.city");
                 return;
             }
             City city = CityDatabase.getCity(homeCity).get();
             String cityBalance = Utilities.formattedMoney(CityDatabase.getCityBalance(city));
-            plugin.sendMessage(player,"messages.city.balance","%balance%",cityBalance,"%cityname%",homeCity);
+            plugin.sendMessage(player, "messages.city.balance", "%balance%", cityBalance, "%cityname%", homeCity);
             return;
         }
         if (args[0].startsWith("+")) {
             if (args[0].substring(1).replaceAll("[0-9]", "").matches("[^0-9]") || args.length < 2 || args[0].length() == 1) {
-                plugin.sendMessage(player,"messages.syntax.city.bank.deposit");
+                plugin.sendMessage(player, "messages.syntax.city.bank.deposit");
                 return;
             }
 
-            int inputBalance = Integer.parseInt(args[0].replaceAll("[^0-9]",""));
+            int inputBalance = Integer.parseInt(args[0].replaceAll("[^0-9]", ""));
             String cityName = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
             String playerCity = HCDatabase.getHomeCityToCityname(player.getUniqueId().toString());
 
             if (CityDatabase.getCity(cityName).isEmpty()) {
-                plugin.sendMessage(player,"messages.error.missing.city");
+                plugin.sendMessage(player, "messages.error.missing.city");
                 return;
             }
             City city = CityDatabase.getCity(cityName).get();
 
             if (economy.getBalance(player) < inputBalance) {
-                plugin.sendMessage(player,"messages.error.missing.playerBalance","%cityname%",playerCity);
+                plugin.sendMessage(player, "messages.error.missing.playerBalance", "%cityname%", playerCity);
                 return;
             }
 
-            economy.withdrawPlayer(player,inputBalance);
-            CityDatabase.addCityBalance(city,inputBalance);
-            Database.addLogEntry(city,"{ \"type\": \"cityBank\", \"subtype\": \"deposit\", \"balance\": " + inputBalance + ", \"player\": " + player.getUniqueId().toString() + " }");
-            plugin.sendMessage(player,"messages.city.successful.deposit","%amount%",Utilities.formattedMoney(inputBalance),"%cityname%",cityName);
+            economy.withdrawPlayer(player, inputBalance);
+            CityDatabase.addCityBalance(city, inputBalance);
+            Database.addLogEntry(city, "{ \"type\": \"cityBank\", \"subtype\": \"deposit\", \"balance\": " + inputBalance + ", \"player\": " + player.getUniqueId().toString() + " }");
+            plugin.sendMessage(player, "messages.city.successful.deposit", "%amount%", Utilities.formattedMoney(inputBalance), "%cityname%", cityName);
             return;
         }
         if (args[0].startsWith("-")) {
             if (args[0].substring(1).replaceAll("[0-9]", "").matches("[^0-9]") || args.length < 2 || args[0].length() == 1) {
-                plugin.sendMessage(player,"messages.syntax.city.bank.withdraw");
+                plugin.sendMessage(player, "messages.syntax.city.bank.withdraw");
                 return;
             }
 
             if (HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
-                plugin.sendMessage(player,"messages.error.missing.homeCity");
+                plugin.sendMessage(player, "messages.error.missing.homeCity");
                 return;
             }
-            int inputBalance = Integer.parseInt(args[0].replaceAll("[^0-9]",""));
+            int inputBalance = Integer.parseInt(args[0].replaceAll("[^0-9]", ""));
             if (CityDatabase.getCity(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString())).isEmpty()) {
-                plugin.sendMessage(player,"messages.error.missing.city");
+                plugin.sendMessage(player, "messages.error.missing.city");
                 return;
             }
             City city = HCDatabase.getHomeCityToCity(player.getUniqueId().toString());
@@ -92,74 +95,74 @@ public class CommandCity extends BaseCommand {
             String reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
             assert city != null;
             int cityBalance = city.getCityBalance();
-            String cityRole = CityDatabase.getCityRole(city,player.getUniqueId().toString());
+            String cityRole = CityDatabase.getCityRole(city, player.getUniqueId().toString());
 
             if (cityRole == null || cityRole.equals("member") || cityRole.equals("inviter") || cityRole.equals("assistant")) {
-                plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",city.getCityName());
+                plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                 return;
             }
             if (!(reason.length() >= 8)) {
-                plugin.sendMessage(player,"messages.error.missing.reasonLength","%cityname%",city.getCityName());
+                plugin.sendMessage(player, "messages.error.missing.reasonLength", "%cityname%", city.getCityName());
                 return;
             }
             if (cityBalance <= 100000 || inputBalance > cityBalance - 100000) {
-                plugin.sendMessage(player,"messages.error.missing.balance","%cityname%",city.getCityName());
+                plugin.sendMessage(player, "messages.error.missing.balance", "%cityname%", city.getCityName());
                 return;
             }
-            CityDatabase.removeCityBalance(city,inputBalance);
-            Database.addLogEntry(city,"{ \"type\": \"cityBank\", \"subtype\": \"withdraw\", \"balance\": " + inputBalance + ", \"player\": " + player.getUniqueId().toString() + ", \"reason\": \"" + reason + "\" }");
-            economy.depositPlayer(player,inputBalance);
-            plugin.sendMessage(player,"messages.city.successful.withdraw","%amount%",inputBalanceFormatted,"%cityname%",city.getCityName());
+            CityDatabase.removeCityBalance(city, inputBalance);
+            Database.addLogEntry(city, "{ \"type\": \"cityBank\", \"subtype\": \"withdraw\", \"balance\": " + inputBalance + ", \"player\": " + player.getUniqueId().toString() + ", \"reason\": \"" + reason + "\" }");
+            economy.depositPlayer(player, inputBalance);
+            plugin.sendMessage(player, "messages.city.successful.withdraw", "%amount%", inputBalanceFormatted, "%cityname%", city.getCityName());
             return;
         }
-        plugin.sendMessage(player,"messages.syntax.city.bank.bank");
-        plugin.sendMessage(player,"messages.syntax.city.bank.deposit");
-        plugin.sendMessage(player,"messages.syntax.city.bank.withdraw");
+        plugin.sendMessage(player, "messages.syntax.city.bank.bank");
+        plugin.sendMessage(player, "messages.syntax.city.bank.deposit");
+        plugin.sendMessage(player, "messages.syntax.city.bank.withdraw");
     }
 
     @Subcommand("new")
     public static void onNew(Player player, String cityName) {
         Economy economy = MetropolisRevamped.getEconomy();
         if (!player.hasPermission("metropolis.city.new")) {
-            plugin.sendMessage(player,"messages.error.permissionDenied");
+            plugin.sendMessage(player, "messages.error.permissionDenied");
             return;
         }
         if (CityDatabase.getPlayerCityCount(player.getUniqueId().toString()) >= 3) {
-            plugin.sendMessage(player,"messages.error.city.maxCityCount");
+            plugin.sendMessage(player, "messages.error.city.maxCityCount");
             return;
         }
         if (economy.getBalance(player) < MetropolisRevamped.configuration.getCityCreationCost()) {
-            plugin.sendMessage(player,"messages.error.city.missing.balance.cityCost");
+            plugin.sendMessage(player, "messages.error.city.missing.balance.cityCost");
             return;
         }
         if (cityName.length() < 1 || cityName.length() > 16) {
-            plugin.sendMessage(player,"messages.error.city.nameLength");
+            plugin.sendMessage(player, "messages.error.city.nameLength");
             return;
         }
         if (CityDatabase.getCity(cityName).isPresent()) {
-            plugin.sendMessage(player,"messages.error.city.cityExists");
+            plugin.sendMessage(player, "messages.error.city.cityExists");
             return;
         }
         if (CityDatabase.getClaim(player.getLocation()) != null) {
-            plugin.sendMessage(player,"messages.error.city.claimExists");
+            plugin.sendMessage(player, "messages.error.city.claimExists");
             return;
         }
-        if (Utilities.isCloseToOtherCity(player,player.getLocation(),"newcity")) {
-            plugin.sendMessage(player,"messages.error.city.tooCloseToOtherCity");
+        if (Utilities.isCloseToOtherCity(player, player.getLocation(), "newcity")) {
+            plugin.sendMessage(player, "messages.error.city.tooCloseToOtherCity");
             return;
         }
 
-        City city = CityDatabase.newCity(cityName,player);
+        City city = CityDatabase.newCity(cityName, player);
         assert city != null;
-        Database.addLogEntry(city,"{ \"type\": \"create\", \"subtype\": \"city\", \"name\": " + city.getCityName() + ", \"tax\": " + MetropolisRevamped.configuration.getCityStartingTax() + ", \"spawn\": " + Utilities.formatLocation(city.getCitySpawn()) + ", \"balance\": " + MetropolisRevamped.configuration.getCityStartingBalance() + ", \"player\": " + player.getUniqueId().toString() + " }");
-        Database.addLogEntry(city,"{ \"type\": \"join\", \"subtype\": \"city\", \"player\": " + player.getUniqueId().toString() + " }");
-        Database.addLogEntry(city,"{ \"type\": \"rank\", \"subtype\": \"change\", \"from\": " + "member" + ", \"to\": " + "mayor" + ", \"player\": " + player.getUniqueId().toString() + " }");
-        Claim claim = CityDatabase.createClaim(city,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
+        Database.addLogEntry(city, "{ \"type\": \"create\", \"subtype\": \"city\", \"name\": " + city.getCityName() + ", \"tax\": " + MetropolisRevamped.configuration.getCityStartingTax() + ", \"spawn\": " + Utilities.formatLocation(city.getCitySpawn()) + ", \"balance\": " + MetropolisRevamped.configuration.getCityStartingBalance() + ", \"player\": " + player.getUniqueId().toString() + " }");
+        Database.addLogEntry(city, "{ \"type\": \"join\", \"subtype\": \"city\", \"player\": " + player.getUniqueId().toString() + " }");
+        Database.addLogEntry(city, "{ \"type\": \"rank\", \"subtype\": \"change\", \"from\": " + "member" + ", \"to\": " + "mayor" + ", \"player\": " + player.getUniqueId().toString() + " }");
+        Claim claim = CityDatabase.createClaim(city, player.getLocation(), false, player.getUniqueId().toString(), player.getName());
         MetropolisListener.playerInCity.add(player.getUniqueId());
-        Utilities.sendCityScoreboard(player,city);
+        Utilities.sendCityScoreboard(player, city);
         assert claim != null;
-        Database.addLogEntry(city,"{ \"type\": \"buy\", \"subtype\": \"claim\", \"balance\": " + "0" + ", \"claimlocation\": " + Utilities.formatChunk(claim.getClaimWorld(),claim.getXPosition(),claim.getZPosition()) + ", \"player\": " + player.getUniqueId().toString() + " }");
-        economy.withdrawPlayer(player,MetropolisRevamped.configuration.getCityCreationCost());
+        Database.addLogEntry(city, "{ \"type\": \"buy\", \"subtype\": \"claim\", \"balance\": " + "0" + ", \"claimlocation\": " + Utilities.formatChunk(claim.getClaimWorld(), claim.getXPosition(), claim.getZPosition()) + ", \"player\": " + player.getUniqueId().toString() + " }");
+        economy.withdrawPlayer(player, MetropolisRevamped.configuration.getCityCreationCost());
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             if (onlinePlayer.hasPermission("metropolis.city.new")) {
                 plugin.sendMessage(onlinePlayer, "messages.city.successful.creation.others", "%playername%", player.getDisplayName(), "%cityname%", cityName);
@@ -173,145 +176,146 @@ public class CommandCity extends BaseCommand {
     @Subcommand("claim")
     public static void onClaim(Player player, @Optional String mass) {
         if (!player.hasPermission("metropolis.city.claim")) {
-            plugin.sendMessage(player,"messages.error.permissionDenied");
+            plugin.sendMessage(player, "messages.error.permissionDenied");
             return;
         }
         if (HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
-            plugin.sendMessage(player,"messages.error.missing.homeCity");
+            plugin.sendMessage(player, "messages.error.missing.homeCity");
             return;
         }
         String cityName = HCDatabase.getHomeCityToCityname(player.getUniqueId().toString());
         if (CityDatabase.getClaim(player.getLocation()) != null) {
-            plugin.sendMessage(player,"messages.error.city.claimExists");
+            plugin.sendMessage(player, "messages.error.city.claimExists");
             return;
         }
         if (CityDatabase.getCity(cityName).isEmpty()) {
-            plugin.sendMessage(player,"messages.error.missing.city");
+            plugin.sendMessage(player, "messages.error.missing.city");
             return;
         }
         City city = CityDatabase.getCity(cityName).get();
-        if (Utilities.isCloseToOtherCity(player,player.getLocation(),"city")) {
-            plugin.sendMessage(player,"messages.error.city.tooCloseToOtherCity");
+        if (Utilities.isCloseToOtherCity(player, player.getLocation(), "city")) {
+            plugin.sendMessage(player, "messages.error.city.tooCloseToOtherCity");
             return;
         }
-        if (CityDatabase.getCityRole(city,player.getUniqueId().toString()) == null || Objects.equals(CityDatabase.getCityRole(city, player.getUniqueId().toString()), "member") || Objects.equals(CityDatabase.getCityRole(city, player.getUniqueId().toString()), "inviter")) {
-            plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",cityName);
+        if (CityDatabase.getCityRole(city, player.getUniqueId().toString()) == null || Objects.equals(CityDatabase.getCityRole(city, player.getUniqueId().toString()), "member") || Objects.equals(CityDatabase.getCityRole(city, player.getUniqueId().toString()), "inviter")) {
+            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", cityName);
             return;
         }
-        Claim claim = CityDatabase.createClaim(city,player.getLocation(),false,player.getUniqueId().toString(),player.getName());
+        Claim claim = CityDatabase.createClaim(city, player.getLocation(), false, player.getUniqueId().toString(), player.getName());
         assert claim != null;
-        Database.addLogEntry(city,"{ \"type\": \"buy\", \"subtype\": \"claim\", \"balance\": " + "500" + ", \"claimlocation\": " + Utilities.formatChunk(claim.getClaimWorld(),claim.getXPosition(),claim.getZPosition()) + ", \"player\": " + player.getUniqueId().toString() + " }");
+        Database.addLogEntry(city, "{ \"type\": \"buy\", \"subtype\": \"claim\", \"balance\": " + "500" + ", \"claimlocation\": " + Utilities.formatChunk(claim.getClaimWorld(), claim.getXPosition(), claim.getZPosition()) + ", \"player\": " + player.getUniqueId().toString() + " }");
         MetropolisListener.playerInCity.add(player.getUniqueId());
-        Utilities.sendCityScoreboard(player,city);
-        CityDatabase.removeCityBalance(city,MetropolisRevamped.configuration.getCityClaimCost());
-        plugin.sendMessage(player,"messages.city.successful.claim","%cityname%",cityName, "%amount%", Utilities.formattedMoney(MetropolisRevamped.configuration.getCityClaimCost()));
+        Utilities.sendCityScoreboard(player, city);
+        CityDatabase.removeCityBalance(city, MetropolisRevamped.configuration.getCityClaimCost());
+        plugin.sendMessage(player, "messages.city.successful.claim", "%cityname%", cityName, "%amount%", Utilities.formattedMoney(MetropolisRevamped.configuration.getCityClaimCost()));
     }
 
     @Subcommand("set")
     public static void onSet(Player player, @Optional String[] args) {
         if (!player.hasPermission("metropolis.city.set")) {
-            plugin.sendMessage(player,"messages.error.permissionDenied");
+            plugin.sendMessage(player, "messages.error.permissionDenied");
             return;
         }
         if (args.length == 0) {
-            plugin.sendMessage(player,"messages.syntax.city.set.enter");
-            plugin.sendMessage(player,"messages.syntax.city.set.exit");
-            plugin.sendMessage(player,"messages.syntax.city.set.maxplotspermember");
-            plugin.sendMessage(player,"messages.syntax.city.set.motd");
-            plugin.sendMessage(player,"messages.syntax.city.set.name");
-            plugin.sendMessage(player,"messages.syntax.city.set.spawn");
-            plugin.sendMessage(player,"messages.syntax.city.set.tax");
+            plugin.sendMessage(player, "messages.syntax.city.set.enter");
+            plugin.sendMessage(player, "messages.syntax.city.set.exit");
+            plugin.sendMessage(player, "messages.syntax.city.set.maxplotspermember");
+            plugin.sendMessage(player, "messages.syntax.city.set.motd");
+            plugin.sendMessage(player, "messages.syntax.city.set.name");
+            plugin.sendMessage(player, "messages.syntax.city.set.spawn");
+            plugin.sendMessage(player, "messages.syntax.city.set.tax");
             return;
         }
 
         if (args.length >= 2) {
             if (args[0].equals("enter")) {
                 if (!player.hasPermission("metropolis.city.set.enter")) {
-                    plugin.sendMessage(player,"messages.error.permissionDenied");
+                    plugin.sendMessage(player, "messages.error.permissionDenied");
                     return;
                 }
                 if (HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
-                    plugin.sendMessage(player,"messages.error.missing.homeCity");
+                    plugin.sendMessage(player, "messages.error.missing.homeCity");
                     return;
                 }
                 if (CityDatabase.getCity(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString())).isEmpty()) {
-                    plugin.sendMessage(player,"messages.error.missing.city");
+                    plugin.sendMessage(player, "messages.error.missing.city");
                     return;
                 }
                 City city = CityDatabase.getCity(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString())).get();
-                String cityRole = CityDatabase.getCityRole(city,player.getUniqueId().toString());
+                String cityRole = CityDatabase.getCityRole(city, player.getUniqueId().toString());
                 String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
                 assert cityRole != null;
                 if (cityRole.equals("assistant") || cityRole.equals("mayor") || cityRole.equals("vicemayor")) {
                     if (message.equals("-")) {
-                        CityDatabase.setCityMessage(city,"enterMessage",null);
-                        plugin.sendMessage(player,"messages.city.successful.set.enter.removed","%cityname%",city.getCityName());
+                        CityDatabase.setCityMessage(city, "enterMessage", null);
+                        plugin.sendMessage(player, "messages.city.successful.set.enter.removed", "%cityname%", city.getCityName());
                         return;
                     }
-                    CityDatabase.setCityMessage(city,"enterMessage",message);
-                    Database.addLogEntry(city,"{ \"type\": \"set\", \"subtype\": \"enterMessage\", \"message\": " + message + ", \"player\": " + player.getUniqueId().toString() + " }");                    plugin.sendMessage(player,"messages.city.successful.set.enter.set","%cityname%",city.getCityName());
+                    CityDatabase.setCityMessage(city, "enterMessage", message);
+                    Database.addLogEntry(city, "{ \"type\": \"set\", \"subtype\": \"enterMessage\", \"message\": " + message + ", \"player\": " + player.getUniqueId().toString() + " }");
+                    plugin.sendMessage(player, "messages.city.successful.set.enter.set", "%cityname%", city.getCityName());
                 } else {
-                    plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",city.getCityName());
+                    plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                 }
             }
             if (args[0].equals("exit")) {
                 if (!player.hasPermission("metropolis.city.set.exit")) {
-                    plugin.sendMessage(player,"messages.error.permissionDenied");
+                    plugin.sendMessage(player, "messages.error.permissionDenied");
                     return;
                 }
                 if (HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
-                    plugin.sendMessage(player,"messages.error.missing.homeCity");
+                    plugin.sendMessage(player, "messages.error.missing.homeCity");
                     return;
                 }
                 if (CityDatabase.getCity(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString())).isEmpty()) {
-                    plugin.sendMessage(player,"messages.error.missing.city");
+                    plugin.sendMessage(player, "messages.error.missing.city");
                     return;
                 }
                 City city = CityDatabase.getCity(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString())).get();
-                String cityRole = CityDatabase.getCityRole(city,player.getUniqueId().toString());
+                String cityRole = CityDatabase.getCityRole(city, player.getUniqueId().toString());
                 String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
                 assert cityRole != null;
                 if (cityRole.equals("assistant") || cityRole.equals("mayor") || cityRole.equals("vicemayor")) {
                     if (message.equals("-")) {
-                        CityDatabase.setCityMessage(city,"exitMessage",null);
-                        plugin.sendMessage(player,"messages.city.successful.set.exit.removed","%cityname%",city.getCityName());
+                        CityDatabase.setCityMessage(city, "exitMessage", null);
+                        plugin.sendMessage(player, "messages.city.successful.set.exit.removed", "%cityname%", city.getCityName());
                         return;
                     }
-                    CityDatabase.setCityMessage(city,"exitMessage",message);
-                    Database.addLogEntry(city,"{ \"type\": \"set\", \"subtype\": \"exitMessage\", \"message\": " + message + ", \"player\": " + player.getUniqueId().toString() + " }");
-                    plugin.sendMessage(player,"messages.city.successful.set.exit.set","%cityname%",city.getCityName());
+                    CityDatabase.setCityMessage(city, "exitMessage", message);
+                    Database.addLogEntry(city, "{ \"type\": \"set\", \"subtype\": \"exitMessage\", \"message\": " + message + ", \"player\": " + player.getUniqueId().toString() + " }");
+                    plugin.sendMessage(player, "messages.city.successful.set.exit.set", "%cityname%", city.getCityName());
                 } else {
-                    plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",city.getCityName());
+                    plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                 }
             }
             if (args[0].equals("motd")) {
                 if (!player.hasPermission("metropolis.city.set.motd")) {
-                    plugin.sendMessage(player,"messages.error.permissionDenied");
+                    plugin.sendMessage(player, "messages.error.permissionDenied");
                     return;
                 }
                 if (HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
-                    plugin.sendMessage(player,"messages.error.missing.homeCity");
+                    plugin.sendMessage(player, "messages.error.missing.homeCity");
                     return;
                 }
                 if (CityDatabase.getCity(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString())).isEmpty()) {
-                    plugin.sendMessage(player,"messages.error.missing.city");
+                    plugin.sendMessage(player, "messages.error.missing.city");
                     return;
                 }
                 City city = CityDatabase.getCity(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString())).get();
-                String cityRole = CityDatabase.getCityRole(city,player.getUniqueId().toString());
+                String cityRole = CityDatabase.getCityRole(city, player.getUniqueId().toString());
                 String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
                 assert cityRole != null;
                 if (cityRole.equals("assistant") || cityRole.equals("mayor") || cityRole.equals("vicemayor")) {
                     if (message.equals("-")) {
-                        CityDatabase.setCityMessage(city,"motdMessage",null);
-                        plugin.sendMessage(player,"messages.city.successful.set.motd.removed","%cityname%",city.getCityName());
+                        CityDatabase.setCityMessage(city, "motdMessage", null);
+                        plugin.sendMessage(player, "messages.city.successful.set.motd.removed", "%cityname%", city.getCityName());
                         return;
                     }
-                    CityDatabase.setCityMessage(city,"motdMessage",message);
-                    Database.addLogEntry(city,"{ \"type\": \"set\", \"subtype\": \"motdMessage\", \"message\": " + message + ", \"player\": " + player.getUniqueId().toString() + " }");
-                    plugin.sendMessage(player,"messages.city.successful.set.motd.set","%cityname%",city.getCityName());
+                    CityDatabase.setCityMessage(city, "motdMessage", message);
+                    Database.addLogEntry(city, "{ \"type\": \"set\", \"subtype\": \"motdMessage\", \"message\": " + message + ", \"player\": " + player.getUniqueId().toString() + " }");
+                    plugin.sendMessage(player, "messages.city.successful.set.motd.set", "%cityname%", city.getCityName());
                 } else {
-                    plugin.sendMessage(player,"messages.error.city.permissionDenied","%cityname%",city.getCityName());
+                    plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                 }
             }
         }
@@ -320,40 +324,115 @@ public class CommandCity extends BaseCommand {
     @Subcommand("price")
     public static void onPrice(Player player) {
         if (player.hasPermission("metropolis.city.price")) {
-            plugin.sendMessage(player,"messages.city.price","%city%",Utilities.formattedMoney(plugin.getConfig().getInt("settings.city.creationcost")),"%chunk%",Utilities.formattedMoney(plugin.getConfig().getInt("settings.city.claimcost")),"%bonus%",Utilities.formattedMoney(plugin.getConfig().getInt("settings.city.bonuscost")),"%go%",Utilities.formattedMoney(plugin.getConfig().getInt("settings.city.citygocost")),"%outpost%",Utilities.formattedMoney(plugin.getConfig().getInt("settings.city.outpostcost")));
+            plugin.sendMessage(player, "messages.city.price", "%city%", Utilities.formattedMoney(plugin.getConfig().getInt("settings.city.creationcost")), "%chunk%", Utilities.formattedMoney(plugin.getConfig().getInt("settings.city.claimcost")), "%bonus%", Utilities.formattedMoney(plugin.getConfig().getInt("settings.city.bonuscost")), "%go%", Utilities.formattedMoney(plugin.getConfig().getInt("settings.city.citygocost")), "%outpost%", Utilities.formattedMoney(plugin.getConfig().getInt("settings.city.outpostcost")));
         } else {
-            plugin.sendMessage(player,"messages.error.permissionDenied");
+            plugin.sendMessage(player, "messages.error.permissionDenied");
         }
     }
 
     @Subcommand("join")
     public static void onJoin(Player player, String cityname) {
         if (!player.hasPermission("metropolis.city.join")) {
-            plugin.sendMessage(player,"messages.error.permissionDenied");
+            plugin.sendMessage(player, "messages.error.permissionDenied");
             return;
         }
         if (CityDatabase.getCity(cityname).isEmpty() || cityname == null) {
-            plugin.sendMessage(player,"messages.error.missing.city");
+            plugin.sendMessage(player, "messages.error.missing.city");
             return;
         }
         City city = CityDatabase.getCity(cityname).get();
-        if (city.getCityName().equals(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()))) {
-            plugin.sendMessage(player,"messages.error.city.alreadyInCity");
+        if (HCDatabase.hasHomeCity(player.getUniqueId().toString()) || city.getCityName().equals(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()))) {
+            plugin.sendMessage(player, "messages.error.city.alreadyInCity");
             return;
         }
-        if (!city.isOpen()) {
-            plugin.sendMessage(player,"messages.error.city.closed","%cityname%",city.getCityName());
+        if (!city.isOpen() && !player.hasPermission("metropolis.admin.city.join") || !city.isOpen() && invites.containsKey(player) && invites.get(player).equals(city)) {
+            plugin.sendMessage(player, "messages.error.city.closed", "%cityname%", city.getCityName());
             return;
         }
         if (Objects.requireNonNull(CityDatabase.memberCityList(player.getUniqueId().toString())).length >= 3) {
-            plugin.sendMessage(player,"messages.error.city.maxCityCount");
+            plugin.sendMessage(player, "messages.error.city.maxCityCount");
             return;
         }
-        if (CityDatabase.getCityRole(city,player.getUniqueId().toString()) != null) {
-            plugin.sendMessage(player,"messages.error.city.alreadyInCity");
+        if (CityDatabase.getCityRole(city, player.getUniqueId().toString()) != null) {
+            plugin.sendMessage(player, "messages.error.city.alreadyInCity");
             return;
         }
-        CityDatabase.newMember(city,player);
+        CityDatabase.newMember(city, player);
+        invites.remove(player, city);
+        plugin.sendMessage(player, "messages.city.successful.join", "%cityname%", city.getCityName(), "%playername%", player.getName());
+    }
+
+    private static final HashMap<Player, City> invites = new HashMap<>();
+    private static final HashMap<HashMap<UUID, City>, Integer> inviteCooldownTime = new HashMap<>();
+    private static final HashMap<HashMap<UUID, City>, BukkitRunnable> inviteCooldownTask = new HashMap<>();
+
+    @Subcommand("invite")
+    public static void onInvite(Player player, String invitee) {
+        if (!player.hasPermission("metropolis.city.invite")) {
+            plugin.sendMessage(player, "messages.error.permissionDenied");
+            return;
+        }
+        if (HCDatabase.hasHomeCity(player.getUniqueId().toString()) || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
+            player.sendMessage("HEO");
+            plugin.sendMessage(player, "messages.error.missing.homeCity");
+            return;
+        }
+        @Deprecated
+        Player inviteePlayer = Bukkit.getPlayer(invitee);
+        if (inviteePlayer == null) {
+            plugin.sendMessage(player, "messages.error.missing.player");
+            return;
+        }
+        City city = HCDatabase.getHomeCityToCity(player.getUniqueId().toString());
+        assert city != null;
+        String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
+        if (role == null) {
+            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+            return;
+        }
+        boolean isInviter = role.equals("inviter") || role.equals("assistant") || role.equals("vicemayor") || role.equals("mayor");
+        if (!isInviter) {
+            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+            return;
+        }
+        HashMap<UUID, City> uuidCityHashMap = new HashMap<>() {{
+            put(inviteePlayer.getUniqueId(), city);
+        }};
+        if (CityDatabase.getCityRole(city, invitee) != null) {
+            plugin.sendMessage(player, "messages.error.city.alreadyInCity");
+            return;
+        }
+        if (invites.containsKey(player) && invites.get(player).equals(city)) {
+            plugin.sendMessage(player, "messages.error.city.invite.alreadyInvited", "%cityname%", city.getCityName());
+            return;
+        }
+        if (!inviteCooldownTime.containsKey(uuidCityHashMap)) {
+            if (inviteCooldownTime.containsKey(uuidCityHashMap)) {
+                if (inviteCooldownTime.get(uuidCityHashMap) > 0) {
+                    plugin.sendMessage(player, "messages.error.city.invite.cooldown", "%playername%", invitee, "%time%", inviteCooldownTime.get(uuidCityHashMap).toString());
+                    return;
+                }
+            }
+            invites.put(inviteePlayer, city);
+            plugin.sendMessage(player, "messages.city.invite.invited", "%player%", invitee, "%cityname%", city.getCityName(), "%inviter%", player.getName());
+            plugin.sendMessage(inviteePlayer, "messages.city.invite.inviteMessage", "%cityname%", city.getCityName(), "%inviter%", player.getName());
+            inviteCooldownTime.put(uuidCityHashMap, MetropolisRevamped.configuration.getInviteCooldown());
+            inviteCooldownTask.put(uuidCityHashMap, new BukkitRunnable() {
+                @Override
+                public void run() {
+                    inviteCooldownTime.put(uuidCityHashMap, inviteCooldownTime.get(uuidCityHashMap) - 1);
+                    if (inviteCooldownTime.get(uuidCityHashMap) == 0) {
+                        inviteCooldownTime.remove(uuidCityHashMap);
+                        inviteCooldownTask.remove(uuidCityHashMap);
+                        invites.remove(inviteePlayer, city);
+                        cancel();
+                    }
+                }
+            });
+            inviteCooldownTask.get(uuidCityHashMap).runTaskTimer(plugin, 20, 20);
+        } else {
+            plugin.sendMessage(player, "messages.error.city.invite.alreadyInvited", "%cityname%", city.getCityName());
+        }
 
     }
 
