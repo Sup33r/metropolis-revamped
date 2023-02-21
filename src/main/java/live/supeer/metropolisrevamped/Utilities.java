@@ -2,8 +2,12 @@ package live.supeer.metropolisrevamped;
 import fr.mrmicky.fastboard.FastBoard;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
+import live.supeer.metropolisrevamped.city.Claim;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import live.supeer.metropolisrevamped.plot.Plot;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.entity.Player;
@@ -390,12 +394,29 @@ public class Utilities {
     }
 
     public static void generateMap(Player player, double lineHeight) {
+        String playerCity = "";
+        TextComponent[][] cityMap = new TextComponent[30][(int) 9];
         int x, y = 0;
-        for (double tby = player.getLocation().getX() + (30 - 15 - 1); tby >= player.getLocation().getX() - 15; tby--) {
+        for (double cby = player.getLocation().getX() + (30 - 15 - 1); cby >= player.getLocation().getX() - 15; cby--) {
             x = 0;
-            for (double tbx = player.getLocation().getZ() - lineHeight/2; tbx <= player.getLocation().getZ() + (lineHeight - lineHeight/2 - 1); tbx++) {
-
+            for (double cbx = player.getLocation().getZ() - lineHeight/2; cbx <= player.getLocation().getZ() + (lineHeight - lineHeight/2 - 1); cbx++) {
+                Claim claim = CityDatabase.getClaim(new Location(player.getWorld(), cby, player.getLocation().getY(), cbx));
+                if (claim == null || CityDatabase.getCity(claim.getCityName()).isEmpty()) {
+                    cityMap[x][y] = Component.empty().color(NamedTextColor.WHITE);
+                    return;
+                }
+                City city = CityDatabase.getCity(claim.getCityName()).get();
+                if (x == 15 && y == lineHeight/2) {
+                    cityMap[x][y] = cityMap[x][y].color(NamedTextColor.BLACK);
+                    playerCity = city.getCityName();
+                } else if (city.getCityName().equals(playerCity)) {
+                    cityMap[x][y] = cityMap[x][y].color(NamedTextColor.GREEN);
+                } else {
+                    cityMap[x][y] = cityMap[x][y].color(NamedTextColor.RED);
+                }
+                x++;
             }
+            y++;
         }
     }
 
