@@ -30,6 +30,7 @@ messages:
       notFound: "§cSpelaren hittades inte."
       notInCity: "§cSpelaren är inte medlem i någon stad."
     city:
+      closed: "§e%cityname% §7| §cStaden är stängd för allmänheten."
       permissionDenied: "§e%cityname% §7| §cÅtkomst nekad."
       cityExists: "§cDen specifierade staden finns redan."
       nameLength: "§cStadens namn måste vara mellan 1-16 tecken långt."
@@ -195,7 +196,9 @@ messages:
     successful:
       withdraw: "§e%cityname% §7|§a Du tog ut %amount% minemynt från stadskassan."
       deposit: "§e%cityname% §7|§a Du satte in %amount% minemynt i stadskassan."
-      creation: "§b%playername% skapade staden %cityname%."
+      creation:
+       others: "§b%playername% skapade staden %cityname%."
+       self: "§aDu skapade staden %cityname%."
       claim: "§e%cityname% §7|§a Markbit övertagen för %amount% minemynt."
       set:
         enter:

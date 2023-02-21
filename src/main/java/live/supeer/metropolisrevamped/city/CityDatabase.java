@@ -82,7 +82,7 @@ public class CityDatabase {
         return null;
     }
 
-    private static void newMember(City city, Player player) {
+    public static void newMember(City city, Player player) {
         try {
             String cityName = city.getCityName();
             DB.executeUpdate("INSERT INTO `mp_members` (`playerName`, `playerUUID`, `cityID`, `cityName`, `cityRole`, `joinDate`) VALUES (" + Database.sqlString(player.getDisplayName()) + ", " + Database.sqlString(player.getUniqueId().toString()) + ", " + city.getCityID() + ", " + Database.sqlString(cityName) + ", " + "'mayor'" + ", " + Utilities.getTimestamp() + ");");

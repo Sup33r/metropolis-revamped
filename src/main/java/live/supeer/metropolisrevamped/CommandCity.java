@@ -5,6 +5,7 @@ import co.aikar.commands.annotation.*;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.city.Claim;
+import live.supeer.metropolisrevamped.city.Member;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -160,7 +161,12 @@ public class CommandCity extends BaseCommand {
         Database.addLogEntry(city,"{ \"type\": \"buy\", \"subtype\": \"claim\", \"balance\": " + "0" + ", \"claimlocation\": " + Utilities.formatChunk(claim.getClaimWorld(),claim.getXPosition(),claim.getZPosition()) + ", \"player\": " + player.getUniqueId().toString() + " }");
         economy.withdrawPlayer(player,MetropolisRevamped.configuration.getCityCreationCost());
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            plugin.sendMessage(onlinePlayer,"messages.city.successful.creation","%playername%",player.getDisplayName(),"%cityname%",cityName);
+            if (onlinePlayer.hasPermission("metropolis.city.new")) {
+                plugin.sendMessage(onlinePlayer, "messages.city.successful.creation.others", "%playername%", player.getDisplayName(), "%cityname%", cityName);
+                if (onlinePlayer == player) {
+                    plugin.sendMessage(onlinePlayer, "messages.city.successful.creation.self", "%cityname%", cityName);
+                }
+            }
         }
     }
 
@@ -322,6 +328,33 @@ public class CommandCity extends BaseCommand {
 
     @Subcommand("join")
     public static void onJoin(Player player, String cityname) {
+        if (!player.hasPermission("metropolis.city.join")) {
+            plugin.sendMessage(player,"messages.error.permissionDenied");
+            return;
+        }
+        if (CityDatabase.getCity(cityname).isEmpty() || cityname == null) {
+            plugin.sendMessage(player,"messages.error.missing.city");
+            return;
+        }
+        City city = CityDatabase.getCity(cityname).get();
+        if (city.getCityName().equals(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()))) {
+            plugin.sendMessage(player,"messages.error.city.alreadyInCity");
+            return;
+        }
+        if (!city.isOpen()) {
+            plugin.sendMessage(player,"messages.error.city.closed","%cityname%",city.getCityName());
+            return;
+        }
+        if (Objects.requireNonNull(CityDatabase.memberCityList(player.getUniqueId().toString())).length >= 3) {
+            plugin.sendMessage(player,"messages.error.city.maxCityCount");
+            return;
+        }
+        if (CityDatabase.getCityRole(city,player.getUniqueId().toString()) != null) {
+            plugin.sendMessage(player,"messages.error.city.alreadyInCity");
+            return;
+        }
+        CityDatabase.newMember(city,player);
 
     }
+
 }
