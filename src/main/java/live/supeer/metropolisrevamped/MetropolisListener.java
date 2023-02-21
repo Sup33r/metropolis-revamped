@@ -21,9 +21,8 @@ public class MetropolisListener implements Listener {
 
     public static HashMap<UUID, List<Location>> savedLocs = new HashMap<>();
 
-
     @EventHandler
-    public static void playerJoinScoreboard(PlayerJoinEvent event) {
+    public static void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (CityDatabase.getClaim(player.getLocation()) != null) {
             if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) {Utilities.sendNatureScoreboard(player);}
@@ -33,11 +32,6 @@ public class MetropolisListener implements Listener {
         } else {
             Utilities.sendNatureScoreboard(player);
         }
-    }
-
-    @EventHandler
-    public static void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
         String[] list = CityDatabase.memberCityList(player.getUniqueId().toString());
         for (int i = 0; i < Objects.requireNonNull(list).length; i++) {
             if (CityDatabase.getCity(list[i]).isPresent()) {
@@ -48,6 +42,7 @@ public class MetropolisListener implements Listener {
                 }
             }
         }
+
     }
 
     public static HashMap<UUID, Polygon> playerPolygons = new HashMap<>();

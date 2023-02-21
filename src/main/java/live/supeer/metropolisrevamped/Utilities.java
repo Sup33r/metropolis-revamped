@@ -389,6 +389,16 @@ public class Utilities {
         board.updateLine(0,plugin.getMessage("messages.city.scoreboard.pvp_on"));
     }
 
+    public static void generateMap(Player player, double lineHeight) {
+        int x, y = 0;
+        for (double tby = player.getLocation().getX() + (30 - 15 - 1); tby >= player.getLocation().getX() - 15; tby--) {
+            x = 0;
+            for (double tbx = player.getLocation().getZ() - lineHeight/2; tbx <= player.getLocation().getZ() + (lineHeight - lineHeight/2 - 1); tbx++) {
+
+            }
+        }
+    }
+
     public static ItemStack letterBanner(String letter,String lore) {
         String letterLower = letter.toLowerCase();
         ItemStack banner = new ItemStack(org.bukkit.Material.WHITE_BANNER);

@@ -126,6 +126,14 @@ messages:
       k-marked:
         success: "§e%cityname% §7| §aTomtens K-märkning %status%."
     set:
+      plot:
+        expand:
+          up:
+            amount: "§e%cityname% §7| §aTomten har expanderats med %amount% block uppåt."
+            max: "§aMarkeringen har expanderats till 319 på y-led."
+          down:
+            amount: "§e%cityname% §7| §aTomten har expanderats med %amount% block nedåt."
+            max: "§aMarkeringen har expanderats till -64 på y-led."
       rent:
         success: "§e%cityname% §7| §aTomtens hyra är nu %rent% minemynt."
         removed: "§e%cityname% §7| §aTomtens hyra är nu borttagen."
