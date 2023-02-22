@@ -696,6 +696,10 @@ public class CommandPlot extends BaseCommand {
         @Subcommand("owner")
         @CommandCompletion("@players")
         public static void onOwner(Player player, String playerName) {
+            if (!player.hasPermission("metropolis.plot.set.owner")) {
+                plugin.sendMessage(player, "messages.error.permissionDenied");
+                return;
+            }
             if (CityDatabase.getClaim(player.getLocation()) == null) {
                 plugin.sendMessage(player, "messages.error.plot.notFound");
                 return;
@@ -769,6 +773,10 @@ public class CommandPlot extends BaseCommand {
         @Subcommand("type")
         @CommandCompletion("@plotType")
         public static void onType(Player player, String type) {
+            if (!player.hasPermission("metropolis.plot.set.type")) {
+                plugin.sendMessage(player, "messages.error.permissionDenied");
+                return;
+            }
             if (CityDatabase.getClaim(player.getLocation()) == null) {
                 plugin.sendMessage(player, "messages.error.plot.notFound");
                 return;
@@ -924,6 +932,10 @@ public class CommandPlot extends BaseCommand {
 
         @Subcommand("name")
         public static void onName(Player player, String name) {
+            if (!player.hasPermission("metropolis.plot.name")) {
+                plugin.sendMessage(player, "messages.error.permissionDenied");
+                return;
+            }
             if (CityDatabase.getClaim(player.getLocation()) == null) {
                 plugin.sendMessage(player, "messages.error.plot.notFound");
                 return;
@@ -1558,7 +1570,7 @@ public class CommandPlot extends BaseCommand {
         City city = CityDatabase.getCityByClaim(player.getLocation());
         assert city != null;
         if (!player.hasPermission("metropolis.plot.buy")) {
-            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+            plugin.sendMessage(player, "messages.error.permissionDenied");
             return;
         }
         String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());

@@ -341,7 +341,7 @@ public class CommandCity extends BaseCommand {
             return;
         }
         City city = CityDatabase.getCity(cityname).get();
-        if (HCDatabase.hasHomeCity(player.getUniqueId().toString()) || city.getCityName().equals(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()))) {
+        if (!HCDatabase.hasHomeCity(player.getUniqueId().toString()) && city.getCityName().equals(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()))) {
             plugin.sendMessage(player, "messages.error.city.alreadyInCity");
             return;
         }
@@ -398,7 +398,7 @@ public class CommandCity extends BaseCommand {
         HashMap<UUID, City> uuidCityHashMap = new HashMap<>() {{
             put(inviteePlayer.getUniqueId(), city);
         }};
-        if (CityDatabase.getCityRole(city, invitee) != null) {
+        if (CityDatabase.getCityRole(city, inviteePlayer.getDisplayName()) != null) {
             plugin.sendMessage(player, "messages.error.city.alreadyInCity");
             return;
         }
@@ -406,15 +406,19 @@ public class CommandCity extends BaseCommand {
             plugin.sendMessage(player, "messages.error.city.invite.alreadyInvited", "%cityname%", city.getCityName());
             return;
         }
+        if (inviteePlayer == player) {
+            plugin.sendMessage(player, "messages.error.city.invite.self");
+            return;
+        }
         if (!inviteCooldownTime.containsKey(uuidCityHashMap)) {
             if (inviteCooldownTime.containsKey(uuidCityHashMap)) {
                 if (inviteCooldownTime.get(uuidCityHashMap) > 0) {
-                    plugin.sendMessage(player, "messages.error.city.invite.cooldown", "%playername%", invitee, "%time%", inviteCooldownTime.get(uuidCityHashMap).toString());
+                    plugin.sendMessage(player, "messages.error.city.invite.cooldown", "%playername%", inviteePlayer.getDisplayName(), "%time%", inviteCooldownTime.get(uuidCityHashMap).toString());
                     return;
                 }
             }
             invites.put(inviteePlayer, city);
-            plugin.sendMessage(player, "messages.city.invite.invited", "%player%", invitee, "%cityname%", city.getCityName(), "%inviter%", player.getName());
+            plugin.sendMessage(player, "messages.city.invite.invited", "%player%", inviteePlayer.getDisplayName(), "%cityname%", city.getCityName(), "%inviter%", player.getName());
             plugin.sendMessage(inviteePlayer, "messages.city.invite.inviteMessage", "%cityname%", city.getCityName(), "%inviter%", player.getName());
             inviteCooldownTime.put(uuidCityHashMap, MetropolisRevamped.configuration.getInviteCooldown());
             inviteCooldownTask.put(uuidCityHashMap, new BukkitRunnable() {

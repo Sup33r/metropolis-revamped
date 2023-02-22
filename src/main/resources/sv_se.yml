@@ -31,6 +31,7 @@ messages:
       notInCity: "§cSpelaren är inte medlem i någon stad."
     city:
       invite:
+        self: "§e%cityname% §7| §cMan kan inte bjuda in sig själv till en stad."
         alreadyInvited: "§e%cityname% §7| §cSpelaren är redan inbjuden till staden."
       closed: "§e%cityname% §7| §cStaden är stängd för allmänheten."
       permissionDenied: "§e%cityname% §7| §cÅtkomst nekad."
@@ -39,6 +40,7 @@ messages:
       maxCityCount: "§cMan kan inte vara medlem i fler än 3 städer."
       claimExists: "§cDenna markbit är redan upptagen."
       tooCloseToOtherCity: "§cDenna markbit är för nära en annan stad."
+      alreadyInCity: "§cDu är redan medlem i en stad."
       missing:
         balance:
           cityCost: "§cDu har inte råd med 500 000 minemynt som en stad kostar."
@@ -200,7 +202,7 @@ messages:
       owner: "§2§lÄgare:"
       price: "§2§lTill salu:"
     successful:
-      join: "§e%cityname% §7|§b%playername% gick med i staden."
+      join: "§e%cityname% §7| §b%playername% gick med i staden."
       withdraw: "§e%cityname% §7|§a Du tog ut %amount% minemynt från stadskassan."
       deposit: "§e%cityname% §7|§a Du satte in %amount% minemynt i stadskassan."
       creation:
