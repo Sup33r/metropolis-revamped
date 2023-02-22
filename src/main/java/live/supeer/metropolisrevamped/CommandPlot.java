@@ -804,6 +804,10 @@ public class CommandPlot extends BaseCommand {
                             return;
                         }
                         if (type.equals("-")) {
+                            if (!player.hasPermission("metropolis.plot.set.type.remove")) {
+                                plugin.sendMessage(player, "messages.error.permissionDenied");
+                                return;
+                            }
                             if (!isAssistant) {
                                 plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                                 return;
@@ -818,6 +822,10 @@ public class CommandPlot extends BaseCommand {
                             return;
                         }
                         if (type.equals("church")) {
+                            if (!player.hasPermission("metropolis.plot.set.type.church")) {
+                                plugin.sendMessage(player, "messages.error.permissionDenied");
+                                return;
+                            }
                             if (!isAssistant) {
                                 plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                                 return;
@@ -838,6 +846,10 @@ public class CommandPlot extends BaseCommand {
                             return;
                         }
                         if (type.equals("farm")) {
+                            if (!player.hasPermission("metropolis.plot.set.type.farm")) {
+                                plugin.sendMessage(player, "messages.error.permissionDenied");
+                                return;
+                            }
                             if (!isAssistant) {
                                 plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                                 return;
@@ -858,6 +870,10 @@ public class CommandPlot extends BaseCommand {
                             return;
                         }
                         if (type.equals("shop")) {
+                            if (!player.hasPermission("metropolis.plot.set.type.shop")) {
+                                plugin.sendMessage(player, "messages.error.permissionDenied");
+                                return;
+                            }
                             if (!isAssistant) {
                                 plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                                 return;
@@ -878,6 +894,10 @@ public class CommandPlot extends BaseCommand {
                             return;
                         }
                         if (type.equals("vacation")) {
+                            if (!player.hasPermission("metropolis.plot.set.type.vacation")) {
+                                plugin.sendMessage(player, "messages.error.permissionDenied");
+                                return;
+                            }
                             if (!isAssistant) {
                                 plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                                 return;
@@ -898,7 +918,7 @@ public class CommandPlot extends BaseCommand {
                             return;
                         }
                         if (type.equals("jail")) {
-                            if (player.hasPermission("metropolis.admin")) {
+                            if (player.hasPermission("metropolis.admin.plot.set.type.jail")) {
                                 if (plot.getPlotType() == null) {
                                     Database.addLogEntry(city,"{ \"type\": \"plot\", \"subtype\": \"type\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"from\": " + null + ", \"to\": " + "jail" + ", \"issuer\": " + player.getUniqueId().toString() + " }");
                                     plot.setPlotType("jail");
@@ -932,7 +952,7 @@ public class CommandPlot extends BaseCommand {
 
         @Subcommand("name")
         public static void onName(Player player, String name) {
-            if (!player.hasPermission("metropolis.plot.name")) {
+            if (!player.hasPermission("metropolis.plot.set.name")) {
                 plugin.sendMessage(player, "messages.error.permissionDenied");
                 return;
             }
@@ -995,6 +1015,10 @@ public class CommandPlot extends BaseCommand {
 
         @Subcommand("rent")
         public static void onRent(Player player, String rent) {
+            if (!player.hasPermission("metropolis.plot.set.rent")) {
+                plugin.sendMessage(player, "messages.error.permissionDenied");
+                return;
+            }
             if (CityDatabase.getClaim(player.getLocation()) == null) {
                 plugin.sendMessage(player, "messages.error.plot.notFound");
                 return;
@@ -1081,6 +1105,10 @@ public class CommandPlot extends BaseCommand {
 
         @Subcommand("pvp")
         public static void onPvp(Player player) {
+            if (!player.hasPermission("metropolis.admin.plot.toggle.pvp")) {
+                plugin.sendMessage(player, "messages.error.permissionDenied");
+                return;
+            }
             if (CityDatabase.getClaim(player.getLocation()) == null) {
                 plugin.sendMessage(player, "messages.error.plot.notFound");
                 return;
@@ -1126,6 +1154,10 @@ public class CommandPlot extends BaseCommand {
 
         @Subcommand("animals")
         public static void onAnimals(Player player) {
+            if (!player.hasPermission("metropolis.plot.toggle.animals")) {
+                plugin.sendMessage(player, "messages.error.permissionDenied");
+                return;
+            }
             if (CityDatabase.getClaim(player.getLocation()) == null) {
                 plugin.sendMessage(player, "messages.error.plot.notFound");
                 return;
@@ -1182,6 +1214,10 @@ public class CommandPlot extends BaseCommand {
 
         @Subcommand("mobs")
         public static void onMobs(Player player) {
+            if (!player.hasPermission("metropolis.plot.toggle.mobs")) {
+                plugin.sendMessage(player, "messages.error.permissionDenied");
+                return;
+            }
             if (CityDatabase.getClaim(player.getLocation()) == null) {
                 plugin.sendMessage(player, "messages.error.plot.notFound");
                 return;
@@ -1238,6 +1274,10 @@ public class CommandPlot extends BaseCommand {
 
         @Subcommand("meeting")
         public static void onMeeting(Player player) {
+            if (!player.hasPermission("metropolis.plot.toggle.meeting")) {
+                plugin.sendMessage(player, "messages.error.permissionDenied");
+                return;
+            }
             if (CityDatabase.getClaim(player.getLocation()) == null) {
                 plugin.sendMessage(player, "messages.error.plot.notFound");
                 return;
@@ -1294,6 +1334,10 @@ public class CommandPlot extends BaseCommand {
 
         @Subcommand("keepexp")
         public static void onXp(Player player) {
+            if (!player.hasPermission("metropolis.admin.plot.toggle.keepexp")) {
+                plugin.sendMessage(player, "messages.error.permissionDenied");
+                return;
+            }
             if (CityDatabase.getClaim(player.getLocation()) == null) {
                 plugin.sendMessage(player, "messages.error.plot.notFound");
                 return;
@@ -1339,6 +1383,10 @@ public class CommandPlot extends BaseCommand {
 
         @Subcommand("keepinv")
         public static void onKeepInv(Player player) {
+            if (!player.hasPermission("metropolis.admin.plot.toggle.keepinv")) {
+                plugin.sendMessage(player, "messages.error.permissionDenied");
+                return;
+            }
             if (CityDatabase.getClaim(player.getLocation()) == null) {
                 plugin.sendMessage(player, "messages.error.plot.notFound");
                 return;
@@ -1384,6 +1432,10 @@ public class CommandPlot extends BaseCommand {
 
         @Subcommand("lock")
         public static void onLock(Player player) {
+            if (!player.hasPermission("metropolis.admin.plot.toggle.lock")) {
+                plugin.sendMessage(player, "messages.error.permissionDenied");
+                return;
+            }
             if (CityDatabase.getClaim(player.getLocation()) == null) {
                 plugin.sendMessage(player, "messages.error.plot.notFound");
                 return;
@@ -1429,6 +1481,10 @@ public class CommandPlot extends BaseCommand {
 
         @Subcommand("k")
         public static void onKMark(Player player) {
+            if (!player.hasPermission("metropolis.plot.toggle.kmark")) {
+                plugin.sendMessage(player, "messages.error.permissionDenied");
+                return;
+            }
             if (CityDatabase.getClaim(player.getLocation()) == null) {
                 plugin.sendMessage(player, "messages.error.plot.notFound");
                 return;
@@ -1476,6 +1532,10 @@ public class CommandPlot extends BaseCommand {
 
     @Subcommand("update")
     public static void onUpdate(Player player) {
+        if (!player.hasPermission("metropolis.plot.update")) {
+            plugin.sendMessage(player, "messages.error.permissionDenied");
+            return;
+        }
         if (CityDatabase.getClaim(player.getLocation()) == null) {
             plugin.sendMessage(player, "messages.error.plot.notFound");
             return;
@@ -1563,6 +1623,10 @@ public class CommandPlot extends BaseCommand {
 
     @Subcommand("buy")
     public static void onBuy(Player player) {
+        if (!player.hasPermission("metropolis.plot.buy")) {
+            plugin.sendMessage(player, "messages.error.permissionDenied");
+            return;
+        }
         if (CityDatabase.getClaim(player.getLocation()) == null) {
             plugin.sendMessage(player, "messages.error.plot.notFound");
             return;
