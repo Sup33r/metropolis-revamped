@@ -76,7 +76,7 @@ public class City {
 
     public void setEnterMessage(String enterMessage) {
         this.enterMessage = enterMessage;
-        DB.executeUpdateAsync("UPDATE `mp_cities` SET `enterMessage` = '" + Database.sqlString(enterMessage) + "' WHERE `cityID` = " + cityID + ";");
+        DB.executeUpdateAsync("UPDATE `mp_cities` SET `enterMessage` = " + Database.sqlString(enterMessage) + " WHERE `cityID` = " + cityID + ";");
     }
 
     public void setExitMessage(String exitMessage) {

@@ -506,7 +506,7 @@ public class CommandCity extends BaseCommand {
                 return;
             }
             if (message.equals("-")) {
-                city.setEnterMessage(null);
+                city.setExitMessage(null);
                 plugin.sendMessage(player, "messages.city.successful.set.exit.removed", "%cityname%", city.getCityName());
                 return;
             }
@@ -514,7 +514,7 @@ public class CommandCity extends BaseCommand {
                 plugin.sendMessage(player, "messages.error.city.messageTooLong", "%cityname%", city.getCityName(), "%count%", "225");
                 return;
             }
-            city.setEnterMessage(message);
+            city.setExitMessage(message);
             plugin.sendMessage(player, "messages.city.successful.set.exit.set", "%cityname%", city.getCityName());
         }
     }
