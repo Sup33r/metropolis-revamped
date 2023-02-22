@@ -440,4 +440,83 @@ public class CommandCity extends BaseCommand {
 
     }
 
+    @Subcommand("set")
+    public static void onSet(Player player) {
+
+    }
+
+    @Subcommand("set")
+    public class Set extends BaseCommand {
+
+        @Subcommand("enter")
+        public static void onEnter(Player player, String message) {
+            if (!player.hasPermission("metropolis.city.set.enter")) {
+                plugin.sendMessage(player, "messages.error.permissionDenied");
+                return;
+            }
+            if (HCDatabase.hasHomeCity(player.getUniqueId().toString()) || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
+                plugin.sendMessage(player, "messages.error.missing.homeCity");
+                return;
+            }
+            City city = HCDatabase.getHomeCityToCity(player.getUniqueId().toString());
+            assert city != null;
+            String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
+            if (role == null) {
+                plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                return;
+            }
+            boolean isViceMayor = role.equals("mayor") || role.equals("vicemayor");
+            if (!isViceMayor) {
+                plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                return;
+            }
+            if (message.equals("-")) {
+                city.setEnterMessage(null);
+                plugin.sendMessage(player, "messages.city.successful.set.enter.removed", "%cityname%", city.getCityName());
+                return;
+            }
+            if (message.length() > 225) {
+                plugin.sendMessage(player, "messages.error.city.messageTooLong", "%cityname%", city.getCityName(), "%count%", "225");
+                return;
+            }
+            city.setEnterMessage(message);
+            plugin.sendMessage(player, "messages.city.successful.set.enter.set", "%cityname%", city.getCityName());
+        }
+
+        @Subcommand("exit")
+        public static void onExit(Player player, String message) {
+            if (!player.hasPermission("metropolis.city.set.exit")) {
+                plugin.sendMessage(player, "messages.error.permissionDenied");
+                return;
+            }
+            if (HCDatabase.hasHomeCity(player.getUniqueId().toString()) || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
+                plugin.sendMessage(player, "messages.error.missing.homeCity");
+                return;
+            }
+            City city = HCDatabase.getHomeCityToCity(player.getUniqueId().toString());
+            assert city != null;
+            String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
+            if (role == null) {
+                plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                return;
+            }
+            boolean isViceMayor = role.equals("mayor") || role.equals("vicemayor");
+            if (!isViceMayor) {
+                plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                return;
+            }
+            if (message.equals("-")) {
+                city.setEnterMessage(null);
+                plugin.sendMessage(player, "messages.city.successful.set.exit.removed", "%cityname%", city.getCityName());
+                return;
+            }
+            if (message.length() > 225) {
+                plugin.sendMessage(player, "messages.error.city.messageTooLong", "%cityname%", city.getCityName(), "%count%", "225");
+                return;
+            }
+            city.setEnterMessage(message);
+            plugin.sendMessage(player, "messages.city.successful.set.exit.set", "%cityname%", city.getCityName());
+        }
+    }
+
 }

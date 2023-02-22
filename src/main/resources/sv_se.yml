@@ -30,6 +30,7 @@ messages:
       notFound: "§cSpelaren hittades inte."
       notInCity: "§cSpelaren är inte medlem i någon stad."
     city:
+      messageTooLong: "§e%cityname% §7| §cMeddelandet får inte vara längre än %count% tecken."
       invite:
         self: "§e%cityname% §7| §cMan kan inte bjuda in sig själv till en stad."
         alreadyInvited: "§e%cityname% §7| §cSpelaren är redan inbjuden till staden."
@@ -179,7 +180,7 @@ messages:
           3: "§7r = repair (anvil), s = switch, t = teleport, v = villager"
   city:
     invite:
-      invited: "§e%cityname% §7| §b%player% §7har blivit inbjuden till staden av %inviter%."
+      invited: "§e%cityname% §7| §e%player% har blivit inbjuden till staden av %inviter%."
       inviteMessage: "§e%cityname% §7| §aDu har blivit inbjuden till staden av %inviter%.\n§aSkriv /city join %cityname% för att gå med."
     motd: "§e%cityname% §7|§e %motd%"
     balance: "§e%cityname% §7|§a Stadskassa: %balance% minemynt."
@@ -202,6 +203,8 @@ messages:
       owner: "§2§lÄgare:"
       price: "§2§lTill salu:"
     successful:
+      remove:
+        enterMessage: "§e%cityname% §7|§a Meddelandet vid stadsankomst togs bort."
       join: "§e%cityname% §7| §b%playername% gick med i staden."
       withdraw: "§e%cityname% §7|§a Du tog ut %amount% minemynt från stadskassan."
       deposit: "§e%cityname% §7|§a Du satte in %amount% minemynt i stadskassan."
@@ -211,15 +214,14 @@ messages:
       claim: "§e%cityname% §7|§a Markbit övertagen för %amount% minemynt."
       set:
         enter:
-          removed: "§e%cityname% §7|§a Meddelandet togs bort."
-          set: "§e%cityname% §7|§a Meddelandet ändrades."
+          removed: "§e%cityname% §7|§a Meddelandet vid stadsankomst togs bort."
+          set: "§e%cityname% §7|§a Meddelandet vid stadsankomst ändrades."
         exit:
-          removed: "§e%cityname% §7|§a Meddelandet togs bort."
-          set: "§e%cityname% §7|§a Meddelandet ändrades."
-
+          removed: "§e%cityname% §7|§a Meddelandet vid stadsavfärd togs bort."
+          set: "§e%cityname% §7|§a Meddelandet vid stadsavfärd ändrades."
         motd:
-            removed: "§e%cityname% §7|§a Meddelandet togs bort."
-            set: "§e%cityname% §7|§a Meddelandet ändrades."
+            removed: "§e%cityname% §7|§a Det dagliga meddelandet (MOTD) togs bort."
+            set: "§e%cityname% §7|§a Det dagliga meddelandet (MOTD) ändrades."
         plot:
           delete: "§e%cityname% §7|§a Tomten %plot% togs bort."
           market:
