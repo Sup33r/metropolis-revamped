@@ -158,7 +158,7 @@ public class CommandCity extends BaseCommand {
         Database.addLogEntry(city, "{ \"type\": \"join\", \"subtype\": \"city\", \"player\": " + player.getUniqueId().toString() + " }");
         Database.addLogEntry(city, "{ \"type\": \"rank\", \"subtype\": \"change\", \"from\": " + "member" + ", \"to\": " + "mayor" + ", \"player\": " + player.getUniqueId().toString() + " }");
         Claim claim = CityDatabase.createClaim(city, player.getLocation(), false, player.getUniqueId().toString(), player.getName());
-        MetropolisListener.playerInCity.add(player.getUniqueId());
+        MetropolisListener.playerInCity.put(player.getUniqueId(),city);
         Utilities.sendCityScoreboard(player, city);
         assert claim != null;
         Database.addLogEntry(city, "{ \"type\": \"buy\", \"subtype\": \"claim\", \"balance\": " + "0" + ", \"claimlocation\": " + Utilities.formatChunk(claim.getClaimWorld(), claim.getXPosition(), claim.getZPosition()) + ", \"player\": " + player.getUniqueId().toString() + " }");
@@ -204,7 +204,7 @@ public class CommandCity extends BaseCommand {
         Claim claim = CityDatabase.createClaim(city, player.getLocation(), false, player.getUniqueId().toString(), player.getName());
         assert claim != null;
         Database.addLogEntry(city, "{ \"type\": \"buy\", \"subtype\": \"claim\", \"balance\": " + "500" + ", \"claimlocation\": " + Utilities.formatChunk(claim.getClaimWorld(), claim.getXPosition(), claim.getZPosition()) + ", \"player\": " + player.getUniqueId().toString() + " }");
-        MetropolisListener.playerInCity.add(player.getUniqueId());
+        MetropolisListener.playerInCity.put(player.getUniqueId(),city);
         Utilities.sendCityScoreboard(player, city);
         CityDatabase.removeCityBalance(city, MetropolisRevamped.configuration.getCityClaimCost());
         plugin.sendMessage(player, "messages.city.successful.claim", "%cityname%", cityName, "%amount%", Utilities.formattedMoney(MetropolisRevamped.configuration.getCityClaimCost()));

@@ -182,6 +182,8 @@ messages:
     invite:
       invited: "§e%cityname% §7| §e%player% har blivit inbjuden till staden av %inviter%."
       inviteMessage: "§e%cityname% §7| §aDu har blivit inbjuden till staden av %inviter%.\n§aSkriv /city join %cityname% för att gå med."
+    enter: "§e%cityname% §7|§e %enter%"
+    exit: "§e%cityname% §7|§e %exit%"
     motd: "§e%cityname% §7|§e %motd%"
     balance: "§e%cityname% §7|§a Stadskassa: %balance% minemynt."
     price: "§2--- §aPrislista städer §2--- \n§2Ny stad: §a%city% minemynt\n§2Överta markbit: §a%chunk% minemynt\n§2Bonusmarkbit: §2%bonus% minemynt\n§2Stadsteleporteringspunkt: §a%go% minemynt\n§2Utpost: §a%outpost% minemynt"

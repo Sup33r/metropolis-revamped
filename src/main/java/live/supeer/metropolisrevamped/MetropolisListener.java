@@ -27,7 +27,7 @@ public class MetropolisListener implements Listener {
         if (CityDatabase.getClaim(player.getLocation()) != null) {
             if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) {Utilities.sendNatureScoreboard(player);}
             City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).get();
-            playerInCity.add(player.getUniqueId());
+            playerInCity.put(player.getUniqueId(),city);
             Utilities.sendCityScoreboard(player, city);
         } else {
             Utilities.sendNatureScoreboard(player);
@@ -48,17 +48,17 @@ public class MetropolisListener implements Listener {
     public static HashMap<UUID, Polygon> playerPolygons = new HashMap<>();
     public static HashMap<UUID, Integer> playerYMin = new HashMap<>();
     public static HashMap<UUID, Integer> playerYMax = new HashMap<>();
-    public static List<UUID> playerInCity = new ArrayList<>();
+    public static HashMap<UUID, City> playerInCity = new HashMap<>();
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         Location from = event.getFrom();
         Location to = event.getTo();
-        if (playerInCity.contains(event.getPlayer().getUniqueId()) && CityDatabase.getClaim(to) == null) {
+        if (playerInCity.containsKey(event.getPlayer().getUniqueId()) && CityDatabase.getClaim(to) == null) {
             Utilities.sendNatureScoreboard(event.getPlayer());
             playerInCity.remove(event.getPlayer().getUniqueId());
         }
-        if (playerInCity.contains(event.getPlayer().getUniqueId())) {
+        if (playerInCity.containsKey(event.getPlayer().getUniqueId())) {
             if (CityDatabase.getClaim(to) != null) {
                 if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(to)).getCityName()).isEmpty()) {
                     Utilities.sendNatureScoreboard(event.getPlayer());
@@ -66,6 +66,11 @@ public class MetropolisListener implements Listener {
                     return;
                 }
                 City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(to)).getCityName()).get();
+                if (!city.getCityName().equals(playerInCity.get(event.getPlayer().getUniqueId()).getCityName())) {
+                    Utilities.sendCityScoreboard(event.getPlayer(), city);
+                    playerInCity.remove(event.getPlayer().getUniqueId());
+                    playerInCity.put(event.getPlayer().getUniqueId(),city);
+                }
                 Utilities.sendCityScoreboard(event.getPlayer(), city);
             }
         }
@@ -74,9 +79,31 @@ public class MetropolisListener implements Listener {
             if (CityDatabase.getClaim(to) != null) {
                 if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(to)).getCityName()).isEmpty()) {Utilities.sendNatureScoreboard(event.getPlayer());}
                 City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(to)).getCityName()).get();
+                if (playerInCity.containsKey(event.getPlayer().getUniqueId())) {
+                    if (!city.getCityName().equals(playerInCity.get(event.getPlayer().getUniqueId()).getCityName())) {
+                        if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(from)).getCityName()).isPresent()) {
+                            City fromCity = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(from)).getCityName()).get();
+                            if (fromCity.getExitMessage() != null) {
+                                plugin.sendMessage(event.getPlayer(),"messages.city.exit","%cityname%",fromCity.getCityName(), "%exit%", fromCity.getExitMessage());
+                            }
+                        }
+                        if (city.getEnterMessage() != null) {
+                            plugin.sendMessage(event.getPlayer(),"messages.city.enter","%cityname%",city.getCityName(), "%enter%", city.getEnterMessage());
+                        }
+                    }
+                }
                 Utilities.sendCityScoreboard(event.getPlayer(), city);
-                playerInCity.add(event.getPlayer().getUniqueId());
+                playerInCity.remove(event.getPlayer().getUniqueId());
+                playerInCity.put(event.getPlayer().getUniqueId(),city);
             } else {
+                if (playerInCity.containsKey(event.getPlayer().getUniqueId())) {
+                    if (CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(from)).getCityName()).isPresent()) {
+                        City fromCity = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(from)).getCityName()).get();
+                        if (fromCity.getExitMessage() != null) {
+                            plugin.sendMessage(event.getPlayer(),"messages.city.exit","%cityname%",fromCity.getCityName(), "%exit%", fromCity.getExitMessage());
+                        }
+                    }
+                }
                 Utilities.sendNatureScoreboard(event.getPlayer());
                 playerInCity.remove(event.getPlayer().getUniqueId());
             }
