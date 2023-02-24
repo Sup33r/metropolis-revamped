@@ -103,6 +103,13 @@ public class CityDatabase {
         }
         return null;
     }
+    public static void newCityGo(Location location, String name, City city) {
+        try {
+            DB.executeInsert("INSERT INTO `mp_citygoes` (`cityID`, `goName`, `goLocation`, `createDate`) VALUES (" + city.getCityID() + ", " + Database.sqlString(name) + ", " + Database.sqlString(Utilities.locationToString(location)) + ", " + Utilities.getTimestamp() + ");");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     public static Optional<City> getCity(String cityName) {
         for (City city : cities) {
             if (city.getCityName().equalsIgnoreCase(cityName)) return Optional.of(city);

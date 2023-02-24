@@ -143,6 +143,17 @@ public class Database {
                       `playerName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       PRIMARY KEY (cityId,playerUUID)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
+
+            DB.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS `mp_citygoes` (
+                      `cityID` int(11) NOT NULL,
+                      `goName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `goNickname` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                      `goLocation` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                      `isOpen` tinyint(1) DEFAULT 1,
+                      `accessLevel` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                      `createDate` bigint(30) DEFAULT NULL,
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
