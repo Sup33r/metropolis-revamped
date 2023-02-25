@@ -7,18 +7,16 @@ import live.supeer.metropolisrevamped.plot.Plot;
 import org.bukkit.*;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 
 import java.awt.*;
 import java.text.NumberFormat;
-import java.util.*;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.Objects;
 
-public class Utilities implements Listener {
+public class Utilities {
     static MetropolisRevamped plugin;
     public static String formatLocation(Location location) {
         return "([" + location.getWorld().getName() + "]" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + ")";
@@ -390,136 +388,6 @@ public class Utilities implements Listener {
         board.updateTitle(plugin.getMessage("messages.city.scoreboard.nature"));
         board.updateLine(0,plugin.getMessage("messages.city.scoreboard.pvp_on"));
     }
-
-    public static List<Player> players = new ArrayList<>();
-    @EventHandler
-    public void onPlayerMoveEvent(PlayerMoveEvent event) {
-        if (event.getFrom().getX() != event.getTo().getX() || event.getFrom().getY() != event.getTo().getY() || event.getFrom().getZ() != event.getTo().getZ()) {
-            if (players.contains(event.getPlayer())) {
-                players.remove(event.getPlayer());
-                event.getPlayer().sendMessage("§cDen pågående teleporteringen avbröts.");
-                if (plugin.afkPlayers.containsKey(event.getPlayer())) {
-                    plugin.afkPlayers.remove(event.getPlayer());
-                }
-            }
-        }
-    }
-
-    @EventHandler
-    public void onPlayerDamageEvent(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Player p = (Player) event.getEntity();
-            if (players.contains(p.getPlayer())) {
-                players.remove(p.getPlayer());
-                p.getPlayer().sendMessage("§cDen pågående teleporteringen avbröts.");
-                if (plugin.afkPlayers.containsKey(p)) {
-                    plugin.afkPlayers.remove(p);
-                }
-            }
-        }
-    }
-
-    public static boolean TeleportStrings(UUID PlayerUUID, World World, Double X, Double Y, Double Z, Float Yaw, Float Pitch, String Name) {
-        Player p = Bukkit.getPlayer(PlayerUUID);
-
-        if (p.isInsideVehicle()) {
-            p.sendMessage("§cDen pågående teleporteringen avbröts.");
-            if (plugin.afkPlayers.containsKey(p)) {
-                plugin.afkPlayers.remove(p);
-            }
-            return false;
-        }
-
-        if (p.hasPermission("mandatory.teleport.nowait")) {
-            p.teleport(new Location(World, X, Y, Z, Yaw, Pitch));
-            p.sendMessage("§aTeleporterar dig till §2" + Name + "§a...");
-            return false;
-        }
-
-        if (players.contains(p)) {
-            p.sendMessage("§cDu har redan en pågående teleportering.");
-            return false;
-        }
-        players.add(p);
-        p.sendMessage("§cStå still! §bDu kommer att teleporteras om 3 sekunder, men bara om du inte rör dig och inte tar skada.");
-        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if (players.contains(p)) {
-                    if (!p.isInsideVehicle()) {
-                        p.teleport(new Location(World, X, Y, Z, Yaw, Pitch));
-                        plugin.backLocations.remove(p);
-                        p.sendMessage("§aTeleporterar dig till §2" + Name + "§a...");
-                        players.remove(p);
-                        plugin.backLocations.put(p, p.getLocation());
-                    }
-                    else {
-                        p.sendMessage("§cDen pågående teleporteringen avbröts.");
-                        players.remove(p);
-
-                        if (plugin.afkPlayers.containsKey(p)) {
-                            plugin.afkPlayers.remove(p);
-                        }
-                    }
-                }
-            }
-        }, 20*3);
-
-
-        return false;
-    }
-
-    public static boolean Teleport(UUID playerUUID, Location location, String name) {
-        Player p = Bukkit.getPlayer(playerUUID);
-
-        if (p.isInsideVehicle()) {
-            p.sendMessage("§cDen pågående teleporteringen avbröts.");
-            return false;
-        }
-
-        if (p.hasPermission("mandatory.teleport.nowait")) {
-            p.teleport(location);
-            p.sendMessage("§aTeleporterar dig till §2" + name + "§a...");
-            return false;
-        }
-
-        if (players.contains(p)) {
-            p.sendMessage("§cDu har redan en pågående teleportering.");
-            return false;
-        }
-        players.add(p);
-        p.sendMessage("§cStå still! §bDu kommer att teleporteras om 3 sekunder, men bara om du inte rör dig och inte tar skada.");
-        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if (players.contains(p)) {
-                    if (!p.isInsideVehicle()) {
-                        plugin.backLocations.remove(p);
-                        p.teleport(location);
-                        p.sendMessage("§aTeleporterar dig till §2" + name + "§a...");
-                        plugin.backLocations.put(p, p.getLocation());
-                        players.remove(p);
-                    }
-                    else {
-                        p.sendMessage("§cDen pågående teleporteringen avbröts.");
-                        players.remove(p);
-                        if (plugin.afkPlayers.containsKey(p)) {
-                            plugin.afkPlayers.remove(p);
-                        }
-                    }
-                }
-            }
-        }, 20*3);
-
-
-        return false;
-    }
-
-
     public static ItemStack letterBanner(String letter,String lore) {
         String letterLower = letter.toLowerCase();
         ItemStack banner = new ItemStack(org.bukkit.Material.WHITE_BANNER);

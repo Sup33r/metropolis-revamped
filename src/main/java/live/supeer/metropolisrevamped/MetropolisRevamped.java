@@ -45,7 +45,11 @@ public final class MetropolisRevamped extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-
+        if (getServer().getPluginManager().getPlugin("Mandatory") == null) {
+            this.getLogger().severe("[Metropolis] Mandatory not found, disabling plugin");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         PaperCommandManager manager = new PaperCommandManager(this);
         manager.enableUnstableAPI("brigadier");
 

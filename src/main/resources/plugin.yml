@@ -3,6 +3,7 @@ version: '${project.version}'
 main: live.supeer.metropolisrevamped.MetropolisRevamped
 depend:
   - Vault
+  - Mandatory
 api-version: 1.19
 authors: [ Supeeer ]
 description: A kinda cool plugin
