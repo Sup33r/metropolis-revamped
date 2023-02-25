@@ -13,6 +13,7 @@ public class MetropolisRevampedConfiguration {
     private final int cityCreationCost;
     private final int cityStartingBalance;
     private final int cityStartingTax;
+    private final int cityGoCost;
     private final int cityClaimCost;
     private final int inviteCooldown;
 
@@ -29,6 +30,7 @@ public class MetropolisRevampedConfiguration {
         cityCreationCost = plugin.getConfig().getInt("settings.city.creationcost");
         cityStartingBalance = plugin.getConfig().getInt("settings.city.startingbalance");
         cityStartingTax = plugin.getConfig().getInt("settings.city.startingtax");
+        cityGoCost = plugin.getConfig().getInt("settings.city.gocost");
         cityClaimCost = plugin.getConfig().getInt("settings.city.claimcost");
     }
 }

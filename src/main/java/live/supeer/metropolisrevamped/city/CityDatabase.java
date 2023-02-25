@@ -9,6 +9,7 @@ import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import live.supeer.metropolisrevamped.plot.Plot;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -16,6 +17,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class CityDatabase {
     public static MetropolisRevamped plugin;
@@ -110,6 +112,58 @@ public class CityDatabase {
             e.printStackTrace();
         }
     }
+
+    public static boolean cityGoExists(String name, City city) {
+        try {
+            var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
+            return results.size() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static int getCityGoCount(City city) {
+        try {
+            var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + ";");
+            return results.size();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    public static List<String> getCityGoNames(City city, String role) {
+        try {
+            var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `accessLevel` = " + role + ";");
+            return results.stream().map(result -> result.getString("goName")).collect(Collectors.toList());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static Location getCityGoLocation(String name, City city) {
+        try {
+            var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
+            if (results.size() > 0) {
+                return Utilities.stringToLocation(results.get(0).getString("goLocation"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static String getCityGoAccessLevel(String name, City city) {
+        try {
+            var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
+            if (results.size() > 0) {
+                return results.get(0).getString("accessLevel");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static Optional<City> getCity(String cityName) {
         for (City city : cities) {
             if (city.getCityName().equalsIgnoreCase(cityName)) return Optional.of(city);
