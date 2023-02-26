@@ -427,7 +427,7 @@ public class CommandCity extends BaseCommand {
             Location location = CityDatabase.getCityGoLocation(go, city);
             assert location != null;
             player.teleport(location);
-            plugin.sendMessage(player, "messages.city.go.teleport", "%cityname%", city.getCityName(), "%goname%", go);
+            //Istället för player.teleport här så ska vi ha en call till Mandatory, som sköter VIP teleportering.
         }
     }
 
