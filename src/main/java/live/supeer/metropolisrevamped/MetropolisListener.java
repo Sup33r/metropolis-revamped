@@ -1,6 +1,7 @@
 package live.supeer.metropolisrevamped;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
+import live.supeer.metropolisrevamped.plot.Plot;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -126,6 +127,29 @@ public class MetropolisListener implements Listener {
         }
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (event.getMaterial() == Material.STICK) {
+                if (CommandCity.blockEnabled.contains(player)) {
+                    if (CityDatabase.getClaim(player.getLocation()) == null || CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) {
+                        plugin.sendMessage(player, "messages.error.permissionDenied");
+                        return;
+                    }
+                    City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).get();
+                    String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
+                    assert role != null;
+                    for (Plot plot : city.getCityPlots()) {
+                        Polygon polygon = new Polygon();
+                        int ymin = plot.getPlotYMin();
+                        int ymax = plot.getPlotYMax();
+                        for (Location location : plot.getPlotPoints()) {
+                            polygon.addPoint(location.getBlockX(), location.getBlockZ());
+                        }
+                        if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= ymin && player.getLocation().getBlockY() <= ymax) {
+                            if (Objects.equals(plot.getPlotOwnerUUID(), player.getUniqueId().toString()) || Objects.equals(role, "assistant") || Objects.equals(role, "vicemayor") || Objects.equals(role, "mayor")) {
+                            }
+                        }
+                    }
+                    boolean isViceMayor = role.equals("mayor") || role.equals("vicemayor");
+                    return;
+                }
                 event.setCancelled(true);
                 if (savedPlayers.contains(player)) {
                     plugin.sendMessage(player,"messages.city.markings.finished");

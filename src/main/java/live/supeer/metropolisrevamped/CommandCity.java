@@ -633,7 +633,7 @@ public class CommandCity extends BaseCommand {
         }
     }
 
-    private static final List<Player> blockEnabled = new ArrayList<>();
+    public static final List<Player> blockEnabled = new ArrayList<>();
 
     @Subcommand("block")
     public static void onBlock(Player player, @Optional String page) {
