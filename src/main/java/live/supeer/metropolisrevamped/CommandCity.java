@@ -2,6 +2,7 @@ package live.supeer.metropolisrevamped;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
+import co.aikar.commands.annotation.Optional;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.city.Claim;
@@ -12,10 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @CommandAlias("city|c")
 public class CommandCity extends BaseCommand {
@@ -632,6 +630,29 @@ public class CommandCity extends BaseCommand {
         @Subcommand("outpost")
         public static void onOutpost(Player player) {
 
+        }
+    }
+
+    private static final List<Player> blockEnabled = new ArrayList<>();
+
+    @Subcommand("block")
+    public static void onBlock(Player player, @Optional String page) {
+        if (page == null) {
+            if (!player.hasPermission("metropolis.city.block")) {
+                plugin.sendMessage(player, "messages.error.permissionDenied");
+                return;
+            }
+            if (blockEnabled.contains(player)) {
+                blockEnabled.remove(player);
+                plugin.sendMessage(player, "messages.block.disabled");
+                return;
+            } else {
+                blockEnabled.add(player);
+                plugin.sendMessage(player, "messages.block.enabled");
+            }
+            if (HCDatabase.hasHomeCity(player.getUniqueId().toString()) || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
+                plugin.sendMessage(player, "messages.error.missing.homeCity");
+            }
         }
     }
 

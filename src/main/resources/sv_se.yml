@@ -1,9 +1,11 @@
 messages:
+  block:
+    enabled: "§aBlockdataläget är nu aktiverat. Högerklicka med en pinne eller ett jordblock för att få fram blockdatan."
+    disabled: "§aBlockdataläget är nu inaktiverat."
   teleport: "§aTeleporterar dig till §2%to%§a..."
   list:
     goes: "§2--- §aStadsteleporteringspunkter (sida §l%startPage% §r§aav l%totalPages%§r§a) §2---"
   syntax:
-
     city:
       buy:
         bonus: "§7Syntax: /city buy bonus §nantal"
