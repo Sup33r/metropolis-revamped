@@ -2,6 +2,9 @@ package live.supeer.metropolisrevamped;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.plot.Plot;
+import net.coreprotect.CoreProtect;
+import net.coreprotect.CoreProtectAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -11,12 +14,42 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.plugin.Plugin;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
 
 public class MetropolisListener implements Listener {
+    private static CoreProtectAPI protect;
+    public MetropolisListener() {
+        protect = getCoreProtect();
+        if (protect == null) {
+            Bukkit.getLogger().severe("[Metropolis] CoreProtect not found. Disabling plugin");
+            plugin.getPluginLoader().disablePlugin(plugin);
+        }
+    }
+    private CoreProtectAPI getCoreProtect() {
+        Plugin coreProtect = Bukkit.getPluginManager().getPlugin("CoreProtect");
+
+        // Check that CoreProtect is loaded
+        if (!(coreProtect instanceof CoreProtect)) {
+            return null;
+        }
+
+        // Check that a compatible version of CoreProtect is loaded
+        if (Double.parseDouble(coreProtect.getDescription().getVersion()) < 9){
+            return null;
+        }
+
+        // Check that the API is enabled
+        CoreProtectAPI protect = ((CoreProtect)coreProtect).getAPI();
+        if (!protect.isEnabled()) {
+            return null;
+        }
+        return protect;
+    }
+
     static MetropolisRevamped plugin;
     private static final List<Player> savedPlayers = new ArrayList<>();
 
@@ -144,6 +177,11 @@ public class MetropolisListener implements Listener {
                         }
                         if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= ymin && player.getLocation().getBlockY() <= ymax) {
                             if (Objects.equals(plot.getPlotOwnerUUID(), player.getUniqueId().toString()) || Objects.equals(role, "assistant") || Objects.equals(role, "vicemayor") || Objects.equals(role, "mayor")) {
+                                if (protect.blockLookup(event.getClickedBlock(),0).isEmpty()) {
+                                    for (int i = 0; i < protect.blockLookup(event.getClickedBlock(),0).size(); i++) {
+
+                                    }
+                                }
                             }
                         }
                     }
