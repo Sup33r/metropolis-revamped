@@ -112,6 +112,7 @@ messages:
         notFound: "§cRättighetsflaggan hittades inte. Använd /plot perm för att se alla rättigheter."
         noChange: "§cDet finns inga ändringar att göra."
     missing:
+      blockHistory: "§cDu har ingen sparad blockhistorik."
       go: "§e%cityname% §7| §cDen specifierade teleporteringspunkten hittades inte."
       goes: "§cDet finns inga stadsteleporteringspunkter i din stad."
       page: "§cSidan hittades inte."
@@ -220,7 +221,7 @@ messages:
   city:
     blockhistory:
       noData: "§cIngen blockdata hittades på det specificerade blocket."
-      header: "§2--- §aBlockhistorik: (%location%) (sida %page%/%totalpages%) §2---"
+      header: "§2--- §aBlockhistorik: %location% (sida %page%/%totalpages%) §2---"
     go:
       created: "§e%cityname% §7| §aDu har skapat teleporteringspunkten %name% för 5 000 minemynt."
     invite:

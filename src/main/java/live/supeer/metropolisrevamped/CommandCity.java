@@ -7,10 +7,13 @@ import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.city.Claim;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
+import net.coreprotect.CoreProtect;
+import net.coreprotect.CoreProtectAPI;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -18,6 +21,28 @@ import java.util.*;
 @CommandAlias("city|c")
 public class CommandCity extends BaseCommand {
     static MetropolisRevamped plugin;
+
+    private CoreProtectAPI getCoreProtect() {
+        Plugin corePlugin = plugin.getServer().getPluginManager().getPlugin("CoreProtect");
+
+        // Check that CoreProtect is loaded
+        if (!(corePlugin instanceof CoreProtect)) {
+            return null;
+        }
+
+        // Check that the API is enabled
+        CoreProtectAPI CoreProtect = ((CoreProtect) corePlugin).getAPI();
+        if (!CoreProtect.isEnabled()) {
+            return null;
+        }
+
+        // Check that a compatible version of the API is loaded
+        if (CoreProtect.APIVersion() < 9) {
+            return null;
+        }
+
+        return CoreProtect;
+    }
 
     @Subcommand("info")
     @Default
@@ -636,14 +661,20 @@ public class CommandCity extends BaseCommand {
     public static final List<Player> blockEnabled = new ArrayList<>();
 
     @Subcommand("block")
-    public static void onBlock(Player player, @Optional Integer page) {
+    public void onBlock(Player player, @Optional Integer page) {
+        if (!player.hasPermission("metropolis.city.block")) {
+            plugin.sendMessage(player, "messages.error.permissionDenied");
+            return;
+        }
+        if (getCoreProtect() == null) {
+            Bukkit.getLogger().severe("[Metropolis] CoreProtect not found.");
+            player.sendMessage("§cSomething went wrong. Please contact an administrator.");
+            return;
+        }
         if (page == null) {
-            if (!player.hasPermission("metropolis.city.block")) {
-                plugin.sendMessage(player, "messages.error.permissionDenied");
-                return;
-            }
             if (blockEnabled.contains(player)) {
                 blockEnabled.remove(player);
+                MetropolisListener.savedBlockHistory.remove(player.getUniqueId());
                 plugin.sendMessage(player, "messages.block.disabled");
                 return;
             } else {
@@ -653,7 +684,50 @@ public class CommandCity extends BaseCommand {
             if (HCDatabase.hasHomeCity(player.getUniqueId().toString()) || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
                 plugin.sendMessage(player, "messages.error.missing.homeCity");
             }
+        } else {
+            if (!MetropolisListener.savedBlockHistory.containsKey(player.getUniqueId())) {
+                plugin.sendMessage(player, "messages.error.missing.blockHistory");
+                return;
+            }
+            if (page < 1) {
+                plugin.sendMessage(player, "messages.error.missing.page");
+                return;
+            }
+            int itemsPerPage = 8;
+            int start = (page * itemsPerPage) - itemsPerPage;
+            int stop = page * itemsPerPage;
+
+            if (start >= MetropolisListener.savedBlockHistory.get(player.getUniqueId()).size()) {
+                plugin.sendMessage(player, "messages.error.missing.page");
+                return;
+            }
+            String[] firstLine = MetropolisListener.savedBlockHistory.get(player.getUniqueId()).get(0);
+            CoreProtectAPI.ParseResult firstResult = getCoreProtect().parseResult(firstLine);
+            player.sendMessage("");
+            plugin.sendMessage(player,"messages.city.blockhistory.header", "%location%","([" + firstResult.worldName() + "]" + firstResult.getX() + "," + firstResult.getY() + "," + firstResult.getZ() + ")", "%page%", String.valueOf(start+1), "%totalpages%", String.valueOf((int) Math.ceil(((double) MetropolisListener.savedBlockHistory.get(player.getUniqueId()).size()) / ((double) itemsPerPage))));
+            for (int i = start; i < stop; i++) {
+                if (i >= MetropolisListener.savedBlockHistory.get(player.getUniqueId()).size()) {
+                    break;
+                }
+                CoreProtectAPI.ParseResult result = getCoreProtect().parseResult(MetropolisListener.savedBlockHistory.get(player.getUniqueId()).get(i));
+                String row = "";
+                int show = i + 1;
+                if (result.getActionId() == 0) {
+                    row = "§2#" + show + " " + result.getPlayer() + " -- §c" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " + Utilities.niceDate(result.getTimestamp() / 1000L);
+                }
+                if (result.getActionId() == 1) {
+                    row = "§2#" + show + " " + result.getPlayer() + " -- §a" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " + Utilities.niceDate(result.getTimestamp() / 1000L);
+
+                }
+                if (result.getActionId() == 2) {
+                    row = "§2#" + show + " " + result.getPlayer() + " -- §e" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " + Utilities.niceDate(result.getTimestamp() / 1000L);
+                }
+                if (!row.equals("")) {
+                    player.sendMessage(row);
+                }
+            }
         }
+
     }
 
 }
