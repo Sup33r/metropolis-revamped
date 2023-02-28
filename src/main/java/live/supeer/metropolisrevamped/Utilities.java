@@ -406,12 +406,12 @@ public class Utilities {
         String[] months = { plugin.getMessage("messages.months.january"), plugin.getMessage("messages.months.february"), plugin.getMessage("messages.months.march"), plugin.getMessage("messages.months.april"), plugin.getMessage("messages.months.may"), plugin.getMessage("messages.months.june"), plugin.getMessage("messages.months.july"), plugin.getMessage("messages.months.august"), plugin.getMessage("messages.months.september"), plugin.getMessage("messages.months.october"), plugin.getMessage("messages.months.november"), plugin.getMessage("messages.months.december")};
 
         if (date.get(Calendar.DAY_OF_MONTH) == dateNow.get(Calendar.DAY_OF_MONTH) && date.get(Calendar.MONTH) == dateNow.get(Calendar.MONTH) && date.get(Calendar.YEAR) == dateNow.get(Calendar.YEAR)) {
-            day = plugin.getMessage("days.today");
+            day = plugin.getMessage("messages.days.today");
         } else {
             Calendar dateYesterday = Calendar.getInstance();
             dateYesterday.setTimeInMillis((rightNow - 86400) * 1000);
 
-            day = date.get(Calendar.DAY_OF_MONTH) == dateYesterday.get(Calendar.DAY_OF_MONTH) && date.get(Calendar.MONTH) == dateYesterday.get(Calendar.MONTH) && date.get(Calendar.YEAR) == dateYesterday.get(Calendar.YEAR) ? plugin.getMessage("days.yesterday") : date.get(Calendar.DAY_OF_MONTH) + " " + months[date.get(Calendar.MONTH)] + (dateNow.get(Calendar.YEAR) != date.get(Calendar.YEAR) ? " " + date.get(Calendar.YEAR) : "");
+            day = date.get(Calendar.DAY_OF_MONTH) == dateYesterday.get(Calendar.DAY_OF_MONTH) && date.get(Calendar.MONTH) == dateYesterday.get(Calendar.MONTH) && date.get(Calendar.YEAR) == dateYesterday.get(Calendar.YEAR) ? plugin.getMessage("messages.days.yesterday") : date.get(Calendar.DAY_OF_MONTH) + " " + months[date.get(Calendar.MONTH)] + (dateNow.get(Calendar.YEAR) != date.get(Calendar.YEAR) ? " " + date.get(Calendar.YEAR) : "");
         }
 
         return day + ", " + String.format("%02d", date.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", date.get(Calendar.MINUTE));

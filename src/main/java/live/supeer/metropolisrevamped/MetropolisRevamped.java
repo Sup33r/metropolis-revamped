@@ -99,7 +99,7 @@ public final class MetropolisRevamped extends JavaPlugin {
         if (message != null && !message.isEmpty()) {
             return message;
         }
-        return "HEJ";
+        return null;
     }
 
     private @NotNull String getLocale(@NotNull CommandSender sender) {

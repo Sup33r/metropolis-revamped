@@ -137,6 +137,8 @@ public class MetropolisListener implements Listener {
         }
     }
 
+    public static HashMap<UUID,List<String[]>> savedBlockHistory = new HashMap<>();
+
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -157,11 +159,12 @@ public class MetropolisListener implements Listener {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (event.getMaterial() == Material.STICK) {
                 if (CommandCity.blockEnabled.contains(player)) {
-                    if (CityDatabase.getClaim(player.getLocation()) == null || CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).isEmpty()) {
+                    event.setCancelled(true);
+                    if (CityDatabase.getClaim(event.getClickedBlock().getLocation()) == null || CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(event.getClickedBlock().getLocation())).getCityName()).isEmpty()) {
                         plugin.sendMessage(player, "messages.error.permissionDenied");
                         return;
                     }
-                    City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(player.getLocation())).getCityName()).get();
+                    City city = CityDatabase.getCity(Objects.requireNonNull(CityDatabase.getClaim(event.getClickedBlock().getLocation())).getCityName()).get();
                     String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
                     assert role != null;
                     for (Plot plot : city.getCityPlots()) {
@@ -171,42 +174,54 @@ public class MetropolisListener implements Listener {
                         for (Location location : plot.getPlotPoints()) {
                             polygon.addPoint(location.getBlockX(), location.getBlockZ());
                         }
-                        if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= ymin && player.getLocation().getBlockY() <= ymax) {
-                            if (Objects.equals(plot.getPlotOwnerUUID(), player.getUniqueId().toString()) || Objects.equals(role, "assistant") || Objects.equals(role, "vicemayor") || Objects.equals(role, "mayor")) {
-                                if (getCoreProtect() == null) {
-                                    Bukkit.getLogger().severe("[Metropolis] CoreProtect not found.");
-                                    player.sendMessage("§cSomething went wrong. Please contact an administrator.");
-                                    return;
-                                }
-                                if (getCoreProtect().blockLookup(event.getClickedBlock(),0).isEmpty()) {
-                                    plugin.sendMessage(player,"messages.city.blockhistory.noData");
-                                    return;
-                                }
-                                int itemsPerPage = 8;
-                                int start = 0;
-                                player.sendMessage("");
-                                plugin.sendMessage(player,"messages.city.blockhistory.header", "%location%",Utilities.formatLocation(event.getClickedBlock().getLocation()), "%page%", String.valueOf(start+1), "%totalpages%", String.valueOf((int) Math.ceil(((double) getCoreProtect().blockLookup(event.getClickedBlock(),0).size()) / ((double) itemsPerPage))));
-                                for (int i = start; i < itemsPerPage; i++) {
-                                    CoreProtectAPI.ParseResult result = getCoreProtect().parseResult(getCoreProtect().blockLookup(event.getClickedBlock(),0).get(i));
-                                    String row = "";
-                                    int show = i + 1;
-                                    if (result.getActionId() == 0) {
-                                        row = "§2#" + show + " " + result.getPlayer() + " -- §c" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " +  Utilities.niceDate(result.getTimestamp()/1000L);
-                                    }
-                                    if (result.getActionId() == 1) {
-                                        row = "§2#" + show + " " + result.getPlayer() + " -- §a" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " +  Utilities.niceDate(result.getTimestamp()/1000L);
-
-                                    }
-                                    if (result.getActionId() == 2) {
-                                        row = "§2#" + show + " " + result.getPlayer() + " -- §e" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " +  Utilities.niceDate(result.getTimestamp()/1000L);
-                                    }
-                                    if (!row.equals("")) {
-                                        player.sendMessage(row);
-                                    }
-                                }
+                        if (polygon.contains(event.getClickedBlock().getX(), event.getClickedBlock().getZ()) && event.getClickedBlock().getY() >= ymin && event.getClickedBlock().getY() <= ymax) {
+                            if (!Objects.equals(plot.getPlotOwnerUUID(), player.getUniqueId().toString()) || !Objects.equals(role, "assistant") || !Objects.equals(role, "vicemayor") || !Objects.equals(role, "mayor")) {
+                                plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                                return;
                             }
                         }
                     }
+                    boolean isAssistant = Objects.equals(role, "assistant") || Objects.equals(role, "vicemayor") || Objects.equals(role, "mayor");
+                    if (!isAssistant) {
+                        plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                        return;
+                    }
+
+                    if (getCoreProtect() == null) {
+                        Bukkit.getLogger().severe("[Metropolis] CoreProtect not found.");
+                        player.sendMessage("§cSomething went wrong. Please contact an administrator.");
+                        return;
+                    }
+                    if (getCoreProtect().blockLookup(event.getClickedBlock(),0).isEmpty()) {
+                        plugin.sendMessage(player,"messages.city.blockhistory.noData");
+                        return;
+                    }
+                    int itemsPerPage = 8;
+                    int start = 0;
+                    player.sendMessage("");
+                    plugin.sendMessage(player,"messages.city.blockhistory.header", "%location%",Utilities.formatLocation(event.getClickedBlock().getLocation()), "%page%", String.valueOf(start+1), "%totalpages%", String.valueOf((int) Math.ceil(((double) getCoreProtect().blockLookup(event.getClickedBlock(),0).size()) / ((double) itemsPerPage))));
+                    for (int i = start; i < itemsPerPage; i++) {
+                        if (i >= getCoreProtect().blockLookup(event.getClickedBlock(), 0).size()) {
+                            break;
+                        }
+                        CoreProtectAPI.ParseResult result = getCoreProtect().parseResult(getCoreProtect().blockLookup(event.getClickedBlock(), 0).get(i));
+                        String row = "";
+                        int show = i + 1;
+                        if (result.getActionId() == 0) {
+                            row = "§2#" + show + " " + result.getPlayer() + " -- §c" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " + Utilities.niceDate(result.getTimestamp() / 1000L);
+                        }
+                        if (result.getActionId() == 1) {
+                            row = "§2#" + show + " " + result.getPlayer() + " -- §a" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " + Utilities.niceDate(result.getTimestamp() / 1000L);
+
+                        }
+                        if (result.getActionId() == 2) {
+                            row = "§2#" + show + " " + result.getPlayer() + " -- §e" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " + Utilities.niceDate(result.getTimestamp() / 1000L);
+                        }
+                        if (!row.equals("")) {
+                            player.sendMessage(row);
+                        }
+                    }
+                    savedBlockHistory.put(player.getUniqueId(), getCoreProtect().blockLookup(event.getClickedBlock(), 0));
                     return;
                 }
                 event.setCancelled(true);
