@@ -22,25 +22,26 @@ import java.util.List;
 
 public class MetropolisListener implements Listener {
     static MetropolisRevamped plugin;
-    private static CoreProtectAPI getCoreProtect() {
-        Plugin coreProtect = Bukkit.getPluginManager().getPlugin("CoreProtect");
+    private CoreProtectAPI getCoreProtect() {
+        Plugin corePlugin = plugin.getServer().getPluginManager().getPlugin("CoreProtect");
 
         // Check that CoreProtect is loaded
-        if (!(coreProtect instanceof CoreProtect)) {
-            return null;
-        }
-
-        // Check that a compatible version of CoreProtect is loaded
-        if (Double.parseDouble(coreProtect.getDescription().getVersion()) < 9){
+        if (!(corePlugin instanceof CoreProtect)) {
             return null;
         }
 
         // Check that the API is enabled
-        CoreProtectAPI protect = ((CoreProtect)coreProtect).getAPI();
-        if (!protect.isEnabled()) {
+        CoreProtectAPI CoreProtect = ((CoreProtect) corePlugin).getAPI();
+        if (!CoreProtect.isEnabled()) {
             return null;
         }
-        return protect;
+
+        // Check that a compatible version of the API is loaded
+        if (CoreProtect.APIVersion() < 9) {
+            return null;
+        }
+
+        return CoreProtect;
     }
 
     private static final List<Player> savedPlayers = new ArrayList<>();
@@ -138,7 +139,7 @@ public class MetropolisListener implements Listener {
 
 
     @EventHandler
-    public static void onPlayerInteract(PlayerInteractEvent event) {
+    public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
             if (event.getMaterial() == Material.STICK) {
@@ -172,30 +173,32 @@ public class MetropolisListener implements Listener {
                         }
                         if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= ymin && player.getLocation().getBlockY() <= ymax) {
                             if (Objects.equals(plot.getPlotOwnerUUID(), player.getUniqueId().toString()) || Objects.equals(role, "assistant") || Objects.equals(role, "vicemayor") || Objects.equals(role, "mayor")) {
-                                CoreProtectAPI protect = getCoreProtect();
-                                if (protect == null) {
+                                if (getCoreProtect() == null) {
                                     Bukkit.getLogger().severe("[Metropolis] CoreProtect not found.");
+                                    player.sendMessage("§cSomething went wrong. Please contact an administrator.");
                                     return;
                                 }
-                                if (protect.blockLookup(event.getClickedBlock(),0).isEmpty()) {
+                                if (getCoreProtect().blockLookup(event.getClickedBlock(),0).isEmpty()) {
                                     plugin.sendMessage(player,"messages.city.blockhistory.noData");
                                     return;
                                 }
                                 int itemsPerPage = 8;
                                 int start = 0;
-                                plugin.sendMessage(player,"messages.city.blockhistory.header", "%location%",Utilities.formatLocation(event.getClickedBlock().getLocation()), "%page%", String.valueOf(start+1), "%totalpages%", String.valueOf((int) Math.ceil(((double) protect.blockLookup(event.getClickedBlock(),0).size()) / ((double) itemsPerPage))));
+                                player.sendMessage("");
+                                plugin.sendMessage(player,"messages.city.blockhistory.header", "%location%",Utilities.formatLocation(event.getClickedBlock().getLocation()), "%page%", String.valueOf(start+1), "%totalpages%", String.valueOf((int) Math.ceil(((double) getCoreProtect().blockLookup(event.getClickedBlock(),0).size()) / ((double) itemsPerPage))));
                                 for (int i = start; i < itemsPerPage; i++) {
-                                    CoreProtectAPI.ParseResult result = protect.parseResult(protect.blockLookup(event.getClickedBlock(),0).get(i));
+                                    CoreProtectAPI.ParseResult result = getCoreProtect().parseResult(getCoreProtect().blockLookup(event.getClickedBlock(),0).get(i));
                                     String row = "";
+                                    int show = i + 1;
                                     if (result.getActionId() == 0) {
-                                        row = "§2#" + i + " " + result.getPlayer() + " -- §c" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " +  Utilities.niceDate(result.getTimestamp());
+                                        row = "§2#" + show + " " + result.getPlayer() + " -- §c" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " +  Utilities.niceDate(result.getTimestamp()/1000L);
                                     }
                                     if (result.getActionId() == 1) {
-                                        row = "§2#" + i + " " + result.getPlayer() + " -- §a" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " +  Utilities.niceDate(result.getTimestamp());
+                                        row = "§2#" + show + " " + result.getPlayer() + " -- §a" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " +  Utilities.niceDate(result.getTimestamp()/1000L);
 
                                     }
                                     if (result.getActionId() == 2) {
-                                        row = "§2#" + i + " " + result.getPlayer() + " -- §e" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " +  Utilities.niceDate(result.getTimestamp());
+                                        row = "§2#" + show + " " + result.getPlayer() + " -- §e" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " +  Utilities.niceDate(result.getTimestamp()/1000L);
                                     }
                                     if (!row.equals("")) {
                                         player.sendMessage(row);
@@ -204,7 +207,6 @@ public class MetropolisListener implements Listener {
                             }
                         }
                     }
-                    boolean isViceMayor = role.equals("mayor") || role.equals("vicemayor");
                     return;
                 }
                 event.setCancelled(true);

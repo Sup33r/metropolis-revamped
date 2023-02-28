@@ -13,8 +13,8 @@ messages:
     november: "November"
     december: "December"
   days:
-    yesterday: "Igår"
-    today: "Idag"
+    yesterday: "i går"
+    today: "i dag"
   block:
     enabled: "§aBlockdataläget är nu aktiverat. Högerklicka med en pinne eller ett jordblock för att få fram blockdatan."
     disabled: "§aBlockdataläget är nu inaktiverat."
