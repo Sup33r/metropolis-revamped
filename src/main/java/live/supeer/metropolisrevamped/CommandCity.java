@@ -17,6 +17,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @CommandAlias("city|c")
 public class CommandCity extends BaseCommand {
@@ -371,12 +373,12 @@ public class CommandCity extends BaseCommand {
             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
             return;
         }
-        if (go == null || !go.replaceAll("[0-9]", "").matches("[^0-9]")) {
+        if (go == null || !go.replaceAll("[0-9]", "").matches("[^0-9].*")) {
             if (!player.hasPermission("metropolis.city.go.list")) {
                 plugin.sendMessage(player, "messages.error.permissionDenied");
                 return;
             }
-            if (CityDatabase.getCityGoCount(city) == 0) {
+            if (CityDatabase.getCityGoCount(city,role) == 0) {
                 plugin.sendMessage(player, "messages.error.missing.goes");
                 return;
             }
@@ -389,14 +391,17 @@ public class CommandCity extends BaseCommand {
             int itemsPerPage = 25;
             int start = (goInt * itemsPerPage) - itemsPerPage;
             int stop = goInt * itemsPerPage;
-
-            if (start >= CityDatabase.getCityGoCount(city)) {
+            if (Integer.parseInt(go) < 1 || Integer.parseInt(go) > (int) Math.ceil(((double) CityDatabase.getCityGoCount(city,role)) / ((double) itemsPerPage))) {
+                plugin.sendMessage(player, "messages.error.missing.page");
+                return;
+            }
+            if (start >= CityDatabase.getCityGoCount(city,role)) {
                 plugin.sendMessage(player, "messages.error.missing.page");
                 return;
             }
 
             for (int i = start; i < stop; i++) {
-                if (i == CityDatabase.getCityGoCount(city)) {
+                if (i == CityDatabase.getCityGoCount(city,role)) {
                     break;
                 }
                 String name = Objects.requireNonNull(CityDatabase.getCityGoNames(city, role)).get(i);
@@ -406,7 +411,7 @@ public class CommandCity extends BaseCommand {
                 tmpMessage.append(name).append(", ");
 
             }
-            plugin.sendMessage(player, "messages.list.goes", "%startPage%", String.valueOf(goInt), "%totalPages%", String.valueOf((int) Math.ceil(((double) CityDatabase.getCityGoCount(city)) / ((double) itemsPerPage))));
+            plugin.sendMessage(player, "messages.list.goes", "%startPage%", String.valueOf(goInt), "%totalPages%", String.valueOf((int) Math.ceil(((double) CityDatabase.getCityGoCount(city,role)) / ((double) itemsPerPage))));
             player.sendMessage("§2" + tmpMessage.substring(0, tmpMessage.length() - 2));
 
         } else {
@@ -419,8 +424,14 @@ public class CommandCity extends BaseCommand {
                 return;
             }
             String goAccessLevel = CityDatabase.getCityGoAccessLevel(go, city);
-            boolean hasAccess = goAccessLevel == null;
-            assert goAccessLevel != null;
+            if (goAccessLevel == null) {
+                Location location = CityDatabase.getCityGoLocation(go, city);
+                assert location != null;
+                player.teleport(location);
+                //Istället för player.teleport här så ska vi ha en call till Mandatory, som sköter VIP teleportering.
+                return;
+            }
+            boolean hasAccess = false;
             switch (goAccessLevel) {
                 case "mayor" -> {
                     if (role.equals("mayor")) {
@@ -621,8 +632,11 @@ public class CommandCity extends BaseCommand {
             }
             City city = HCDatabase.getHomeCityToCity(player.getUniqueId().toString());
             assert city != null;
-            if (!name.replaceAll("[0-9]", "").matches("[^0-9]") || name.length() > 20 || name.matches("[^\\p{L}_0-9\\-]+")) {
-                plugin.sendMessage(player, "messages.error.city.invalidName", "%cityname%", city.getCityName());
+            final String regex = "[^\\p{L}_0-9\\\\-]+";
+            final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+            final Matcher matcher = pattern.matcher(name);
+            if (matcher.find() || name.matches("^[0-9].*") || name.length() > 20) {
+                plugin.sendMessage(player, "messages.error.city.go.invalidName");
                 return;
             }
             String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());

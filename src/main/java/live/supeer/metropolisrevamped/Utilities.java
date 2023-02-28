@@ -78,9 +78,12 @@ public class Utilities {
 
         for (Location location : locations) {
             String test = "(" + location.getBlockX() + ", " + "y" + ", " + location.getBlockZ() + ")";
+            if (Arrays.asList(locations).indexOf(location) == locations.length - 1) {
+                points.append(test);
+                break;
+            }
             points.append(test).append(",");
         }
-        Bukkit.broadcastMessage(points.toString());
         return points.substring(0, points.length() - 1);
     }
 

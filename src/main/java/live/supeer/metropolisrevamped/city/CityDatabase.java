@@ -9,13 +9,13 @@ import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import live.supeer.metropolisrevamped.plot.Plot;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -123,21 +123,89 @@ public class CityDatabase {
         return false;
     }
 
-    public static int getCityGoCount(City city) {
-        try {
-            var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + ";");
-            return results.size();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public static int getCityGoCount(City city, String role) {
+        if (role == null) {
+            try {
+                var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `accessLevel` IS NULL ;");
+                return results.size();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if (Objects.equals(role, "inviter")) {
+            try {
+                var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `accessLevel` IS NULL OR `accessLevel` = 'inviter';");
+                return results.size();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if (Objects.equals(role, "assistant")) {
+            try {
+                var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `accessLevel` IS NULL OR `accessLevel` = 'inviter' OR `accessLevel` = 'assistant';");
+                return results.size();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if (Objects.equals(role, "vicemayor")) {
+            try {
+                var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `accessLevel` IS NULL OR `accessLevel` = 'inviter' OR `accessLevel` = 'assistant' OR `accessLevel` = 'vicemayor';");
+                return results.size();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if (Objects.equals(role, "mayor")) {
+            try {
+                var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `accessLevel` IS NULL OR `accessLevel` = 'inviter' OR `accessLevel` = 'assistant' OR `accessLevel` = 'vicemayor' OR `accessLevel` = 'mayor';");
+                return results.size();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return 0;
     }
     public static List<String> getCityGoNames(City city, String role) {
-        try {
-            var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `accessLevel` = " + role + ";");
-            return results.stream().map(result -> result.getString("goName")).collect(Collectors.toList());
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (role == null) {
+            try {
+                var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `accessLevel` IS NULL ;");
+                return results.stream().map(result -> result.getString("goName")).collect(Collectors.toList());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if (Objects.equals(role, "inviter")) {
+            try {
+                var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `accessLevel` IS NULL OR `accessLevel` = 'inviter';");
+                return results.stream().map(result -> result.getString("goName")).collect(Collectors.toList());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if (Objects.equals(role, "assistant")) {
+            try {
+                var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `accessLevel` IS NULL OR `accessLevel` = 'inviter' OR `accessLevel` = 'assistant';");
+                return results.stream().map(result -> result.getString("goName")).collect(Collectors.toList());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if (Objects.equals(role, "vicemayor")) {
+            try {
+                var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `accessLevel` IS NULL OR `accessLevel` = 'inviter' OR `accessLevel` = 'assistant' OR `accessLevel` = 'vicemayor';");
+                return results.stream().map(result -> result.getString("goName")).collect(Collectors.toList());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if (Objects.equals(role, "mayor")) {
+            try {
+                var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `accessLevel` IS NULL OR `accessLevel` = 'inviter' OR `accessLevel` = 'assistant' OR `accessLevel` = 'vicemayor' OR `accessLevel` = 'mayor';");
+                return results.stream().map(result -> result.getString("goName")).collect(Collectors.toList());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
