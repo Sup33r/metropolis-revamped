@@ -704,7 +704,7 @@ public class CommandCity extends BaseCommand {
             String[] firstLine = MetropolisListener.savedBlockHistory.get(player.getUniqueId()).get(0);
             CoreProtectAPI.ParseResult firstResult = getCoreProtect().parseResult(firstLine);
             player.sendMessage("");
-            plugin.sendMessage(player,"messages.city.blockhistory.header", "%location%","([" + firstResult.worldName() + "]" + firstResult.getX() + "," + firstResult.getY() + "," + firstResult.getZ() + ")", "%page%", String.valueOf(start+1), "%totalpages%", String.valueOf((int) Math.ceil(((double) MetropolisListener.savedBlockHistory.get(player.getUniqueId()).size()) / ((double) itemsPerPage))));
+            plugin.sendMessage(player,"messages.city.blockhistory.header", "%location%","([" + firstResult.worldName() + "]" + firstResult.getX() + "," + firstResult.getY() + "," + firstResult.getZ() + ")", "%page%", page.toString(), "%totalpages%", String.valueOf((int) Math.ceil(((double) MetropolisListener.savedBlockHistory.get(player.getUniqueId()).size()) / ((double) itemsPerPage))));
             for (int i = start; i < stop; i++) {
                 if (i >= MetropolisListener.savedBlockHistory.get(player.getUniqueId()).size()) {
                     break;
