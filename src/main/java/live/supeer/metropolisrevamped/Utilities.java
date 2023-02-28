@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.BannerMeta;
 import java.awt.*;
 import java.text.NumberFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -387,6 +388,33 @@ public class Utilities {
         FastBoard board = new FastBoard(player);
         board.updateTitle(plugin.getMessage("messages.city.scoreboard.nature"));
         board.updateLine(0,plugin.getMessage("messages.city.scoreboard.pvp_on"));
+    }
+    public static String niceDate(long timestamp) {
+        if (timestamp == 0) {
+            return "unknown";
+        }
+
+        long rightNow = getTimestamp();
+
+        Calendar date = Calendar.getInstance();
+        date.setTimeInMillis(timestamp * 1000);
+
+        Calendar dateNow = Calendar.getInstance();
+        dateNow.setTimeInMillis(rightNow * 1000);
+
+        String day;
+        String[] months = { plugin.getMessage("messages.months.january"), plugin.getMessage("messages.months.february"), plugin.getMessage("messages.months.march"), plugin.getMessage("messages.months.april"), plugin.getMessage("messages.months.may"), plugin.getMessage("messages.months.june"), plugin.getMessage("messages.months.july"), plugin.getMessage("messages.months.august"), plugin.getMessage("messages.months.september"), plugin.getMessage("messages.months.october"), plugin.getMessage("messages.months.november"), plugin.getMessage("messages.months.december")};
+
+        if (date.get(Calendar.DAY_OF_MONTH) == dateNow.get(Calendar.DAY_OF_MONTH) && date.get(Calendar.MONTH) == dateNow.get(Calendar.MONTH) && date.get(Calendar.YEAR) == dateNow.get(Calendar.YEAR)) {
+            day = plugin.getMessage("days.today");
+        } else {
+            Calendar dateYesterday = Calendar.getInstance();
+            dateYesterday.setTimeInMillis((rightNow - 86400) * 1000);
+
+            day = date.get(Calendar.DAY_OF_MONTH) == dateYesterday.get(Calendar.DAY_OF_MONTH) && date.get(Calendar.MONTH) == dateYesterday.get(Calendar.MONTH) && date.get(Calendar.YEAR) == dateYesterday.get(Calendar.YEAR) ? plugin.getMessage("days.yesterday") : date.get(Calendar.DAY_OF_MONTH) + " " + months[date.get(Calendar.MONTH)] + (dateNow.get(Calendar.YEAR) != date.get(Calendar.YEAR) ? " " + date.get(Calendar.YEAR) : "");
+        }
+
+        return day + ", " + String.format("%02d", date.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", date.get(Calendar.MINUTE));
     }
     public static ItemStack letterBanner(String letter,String lore) {
         String letterLower = letter.toLowerCase();

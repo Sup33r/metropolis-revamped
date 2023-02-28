@@ -29,6 +29,7 @@ public final class MetropolisRevamped extends JavaPlugin {
         plugin = this;
         this.logger = getLogger();
         configuration = new MetropolisRevampedConfiguration(this);
+        Utilities.plugin = this;
         CommandCity.plugin = this;
         CommandPlot.plugin = this;
         CommandHomeCity.plugin = this;
@@ -37,7 +38,6 @@ public final class MetropolisRevamped extends JavaPlugin {
         CityDatabase.plugin = this;
         City.plugin = this;
         Member.plugin = this;
-        Utilities.plugin = this;
         MetropolisListener.plugin = this;
         this.languageManager = new LanguageManager(this, "sv_se");
         if (!setupEconomy() ) {
@@ -99,7 +99,7 @@ public final class MetropolisRevamped extends JavaPlugin {
         if (message != null && !message.isEmpty()) {
             return message;
         }
-        return null;
+        return "HEJ";
     }
 
     private @NotNull String getLocale(@NotNull CommandSender sender) {

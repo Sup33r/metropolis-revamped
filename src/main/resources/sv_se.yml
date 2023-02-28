@@ -1,4 +1,20 @@
 messages:
+  months:
+    january: "Januari"
+    february: "Februari"
+    march: "Mars"
+    april: "April"
+    may: "Maj"
+    june: "Juni"
+    july: "Juli"
+    august: "Augusti"
+    september: "September"
+    october: "Oktober"
+    november: "November"
+    december: "December"
+  days:
+    yesterday: "Igår"
+    today: "Idag"
   block:
     enabled: "§aBlockdataläget är nu aktiverat. Högerklicka med en pinne eller ett jordblock för att få fram blockdatan."
     disabled: "§aBlockdataläget är nu inaktiverat."
@@ -64,6 +80,8 @@ messages:
     permissionDenied: "§cÅtkomst nekad."
 
     plot:
+      expand:
+        invalidHeight: "§cDu måste ändra höjden med ett positivt heltal, exklusive 0."
       market:
         noChange: "§e%cityname% §7| §cTomten är redan till salu för det angivna värdet."
       set:
@@ -155,11 +173,12 @@ messages:
     set:
       plot:
         expand:
+          max: "§aMarkeringen har expanderats från berggrund till himmel."
           up:
-            amount: "§e%cityname% §7| §aTomten har expanderats med %amount% block uppåt."
+            amount: "§aMarkeringen har expanderats med %amount% block uppåt."
             max: "§aMarkeringen har expanderats till 319 på y-led."
           down:
-            amount: "§e%cityname% §7| §aTomten har expanderats med %amount% block nedåt."
+            amount: "§aMarkeringen har expanderats med %amount% block nedåt."
             max: "§aMarkeringen har expanderats till -64 på y-led."
       rent:
         success: "§e%cityname% §7| §aTomtens hyra är nu %rent% minemynt."
@@ -199,6 +218,9 @@ messages:
           2: "§7f = frame, g = go, h = home, j = jukebox"
           3: "§7r = repair (anvil), s = switch, t = teleport, v = villager"
   city:
+    blockhistory:
+      noData: "§cIngen blockdata hittades på det specificerade blocket."
+      header: "§2--- §aBlockhistorik: (%location%) (sida %page%/%totalpages%) §2---"
     go:
       created: "§e%cityname% §7| §aDu har skapat teleporteringspunkten %name% för 5 000 minemynt."
     invite:
@@ -216,6 +238,7 @@ messages:
       finished: "§cDu har redan en markering igång."
       sameBlock: "§cDu kan inte markera samma block två gånger."
       differentWorlds: "§cDu kan inte markera block i olika världar."
+      none: "§cDu måste starta en markering innan du kan lägga till yttligare punkter."
     scoreboard:
       plots: "§2§lAntal tomter:"
       members: "§2§lAntal medlemmar:"
@@ -266,7 +289,6 @@ messages:
           tp: "§e%cityname% §7|§a Du teleporterades till tomten %plotname%."
           new: "§e%cityname% §7|§a Du skapade en tomt med namnet %plotname%."
           expand:
-            max: "§aMarkeringen har expanderats från berggrund till himmel."
             down:
               set: "§aMarkeringens nedre y har sänkts till %y%."
               max: "§aMarkeringens nedre y har satts till -64."

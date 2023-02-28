@@ -636,7 +636,7 @@ public class CommandCity extends BaseCommand {
     public static final List<Player> blockEnabled = new ArrayList<>();
 
     @Subcommand("block")
-    public static void onBlock(Player player, @Optional String page) {
+    public static void onBlock(Player player, @Optional Integer page) {
         if (page == null) {
             if (!player.hasPermission("metropolis.city.block")) {
                 plugin.sendMessage(player, "messages.error.permissionDenied");

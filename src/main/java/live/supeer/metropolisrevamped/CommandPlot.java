@@ -157,16 +157,20 @@ public class CommandPlot extends BaseCommand {
             }
         }
         if (args[0].matches("[0-9]+")) {
+            if (Integer.parseInt(args[0]) == 0) {
+                plugin.sendMessage(player,"messages.error.plot.expand.invalidHeight");
+                return;
+            }
             if (args[1].equals("up")) {
                 if (MetropolisListener.playerYMax.get(player.getUniqueId()) + Integer.parseInt(args[0]) > 319) {
-                    plugin.sendMessage(player, "messages.error.plot.tooLowExpand");
+                    plugin.sendMessage(player, "messages.error.plot.tooHighExpand");
                     return;
                 }
                 MetropolisListener.playerYMax.put(player.getUniqueId(), MetropolisListener.playerYMax.get(player.getUniqueId()) + Integer.parseInt(args[0]));
                 plugin.sendMessage(player, "messages.plot.set.plot.expand.up.amount", "%amount%", args[0]);
             } else if (args[1].equals("down")) {
                 if (MetropolisListener.playerYMin.get(player.getUniqueId()) - Integer.parseInt(args[0]) < -64) {
-                    plugin.sendMessage(player, "messages.error.plot.tooHighExpand");
+                    plugin.sendMessage(player, "messages.error.plot.tooLowExpand");
                     return;
                 }
                 MetropolisListener.playerYMin.put(player.getUniqueId(), MetropolisListener.playerYMin.get(player.getUniqueId()) - Integer.parseInt(args[0]));

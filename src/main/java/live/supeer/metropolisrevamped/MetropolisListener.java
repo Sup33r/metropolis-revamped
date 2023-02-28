@@ -21,15 +21,8 @@ import java.util.*;
 import java.util.List;
 
 public class MetropolisListener implements Listener {
-    private static CoreProtectAPI protect;
-    public MetropolisListener() {
-        protect = getCoreProtect();
-        if (protect == null) {
-            Bukkit.getLogger().severe("[Metropolis] CoreProtect not found. Disabling plugin");
-            plugin.getPluginLoader().disablePlugin(plugin);
-        }
-    }
-    private CoreProtectAPI getCoreProtect() {
+    static MetropolisRevamped plugin;
+    private static CoreProtectAPI getCoreProtect() {
         Plugin coreProtect = Bukkit.getPluginManager().getPlugin("CoreProtect");
 
         // Check that CoreProtect is loaded
@@ -50,7 +43,6 @@ public class MetropolisListener implements Listener {
         return protect;
     }
 
-    static MetropolisRevamped plugin;
     private static final List<Player> savedPlayers = new ArrayList<>();
 
     public static HashMap<UUID, List<Location>> savedLocs = new HashMap<>();
@@ -155,6 +147,9 @@ public class MetropolisListener implements Listener {
                 savedLocs.remove(player.getUniqueId());
                 savedLocs.put(player.getUniqueId(), new ArrayList<>());
                 savedLocs.get(player.getUniqueId()).add(event.getClickedBlock().getLocation());
+                playerYMax.remove(player.getUniqueId());
+                playerYMin.remove(player.getUniqueId());
+                playerPolygons.remove(player.getUniqueId());
                 plugin.sendMessage(player,"messages.city.markings.new", "%world%", event.getClickedBlock().getWorld().getName(), "%x%", String.valueOf(event.getClickedBlock().getX()), "%y%", String.valueOf(event.getClickedBlock().getY()), "%z%", String.valueOf(event.getClickedBlock().getZ()));
             }
         }
@@ -177,9 +172,33 @@ public class MetropolisListener implements Listener {
                         }
                         if (polygon.contains(player.getLocation().getBlockX(), player.getLocation().getBlockZ()) && player.getLocation().getBlockY() >= ymin && player.getLocation().getBlockY() <= ymax) {
                             if (Objects.equals(plot.getPlotOwnerUUID(), player.getUniqueId().toString()) || Objects.equals(role, "assistant") || Objects.equals(role, "vicemayor") || Objects.equals(role, "mayor")) {
+                                CoreProtectAPI protect = getCoreProtect();
+                                if (protect == null) {
+                                    Bukkit.getLogger().severe("[Metropolis] CoreProtect not found.");
+                                    return;
+                                }
                                 if (protect.blockLookup(event.getClickedBlock(),0).isEmpty()) {
-                                    for (int i = 0; i < protect.blockLookup(event.getClickedBlock(),0).size(); i++) {
+                                    plugin.sendMessage(player,"messages.city.blockhistory.noData");
+                                    return;
+                                }
+                                int itemsPerPage = 8;
+                                int start = 0;
+                                plugin.sendMessage(player,"messages.city.blockhistory.header", "%location%",Utilities.formatLocation(event.getClickedBlock().getLocation()), "%page%", String.valueOf(start+1), "%totalpages%", String.valueOf((int) Math.ceil(((double) protect.blockLookup(event.getClickedBlock(),0).size()) / ((double) itemsPerPage))));
+                                for (int i = start; i < itemsPerPage; i++) {
+                                    CoreProtectAPI.ParseResult result = protect.parseResult(protect.blockLookup(event.getClickedBlock(),0).get(i));
+                                    String row = "";
+                                    if (result.getActionId() == 0) {
+                                        row = "§2#" + i + " " + result.getPlayer() + " -- §c" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " +  Utilities.niceDate(result.getTimestamp());
+                                    }
+                                    if (result.getActionId() == 1) {
+                                        row = "§2#" + i + " " + result.getPlayer() + " -- §a" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " +  Utilities.niceDate(result.getTimestamp());
 
+                                    }
+                                    if (result.getActionId() == 2) {
+                                        row = "§2#" + i + " " + result.getPlayer() + " -- §e" + result.getType().toString().toLowerCase().replace("_", " ") + "§2 -- " +  Utilities.niceDate(result.getTimestamp());
+                                    }
+                                    if (!row.equals("")) {
+                                        player.sendMessage(row);
                                     }
                                 }
                             }
@@ -191,6 +210,10 @@ public class MetropolisListener implements Listener {
                 event.setCancelled(true);
                 if (savedPlayers.contains(player)) {
                     plugin.sendMessage(player,"messages.city.markings.finished");
+                    return;
+                }
+                if (savedLocs.get(player.getUniqueId()) == null || savedLocs.get(player.getUniqueId()).isEmpty()) {
+                    plugin.sendMessage(player,"messages.city.markings.none");
                     return;
                 }
                 if (savedLocs.get(player.getUniqueId()).size() > 0 && savedLocs.get(player.getUniqueId()).get(savedLocs.get(player.getUniqueId()).size()-1).equals(event.getClickedBlock().getLocation())) {
