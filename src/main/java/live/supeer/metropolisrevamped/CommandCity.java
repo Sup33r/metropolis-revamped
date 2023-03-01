@@ -357,11 +357,12 @@ public class CommandCity extends BaseCommand {
 
 
     @Subcommand("go")
-    public static void onGo(Player player, @Optional String go) {
+    public static void onGo(Player player, String[] args) {
         if (!player.hasPermission("metropolis.city.go")) {
             plugin.sendMessage(player, "messages.error.permissionDenied");
             return;
         }
+        player.sendMessage(args.length + "");
         if (HCDatabase.hasHomeCity(player.getUniqueId().toString()) || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
             plugin.sendMessage(player, "messages.error.missing.homeCity");
             return;
@@ -373,7 +374,7 @@ public class CommandCity extends BaseCommand {
             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
             return;
         }
-        if (go == null || !go.replaceAll("[0-9]", "").matches("[^0-9].*")) {
+        if (args.length == 0 || args.length == 1 && !args[0].replaceAll("[0-9]", "").matches("[^0-9].*")) {
             if (!player.hasPermission("metropolis.city.go.list")) {
                 plugin.sendMessage(player, "messages.error.permissionDenied");
                 return;
@@ -382,16 +383,16 @@ public class CommandCity extends BaseCommand {
                 plugin.sendMessage(player, "messages.error.missing.goes");
                 return;
             }
-            if (go == null) {
-                go = "1";
+            if (args[0] == null) {
+                args[0] = "1";
             }
-            int goInt = Integer.parseInt(go);
+            int goInt = Integer.parseInt(args[0]);
             StringBuilder tmpMessage = new StringBuilder();
 
             int itemsPerPage = 25;
             int start = (goInt * itemsPerPage) - itemsPerPage;
             int stop = goInt * itemsPerPage;
-            if (Integer.parseInt(go) < 1 || Integer.parseInt(go) > (int) Math.ceil(((double) CityDatabase.getCityGoCount(city,role)) / ((double) itemsPerPage))) {
+            if (Integer.parseInt(args[0]) < 1 || Integer.parseInt(args[0]) > (int) Math.ceil(((double) CityDatabase.getCityGoCount(city,role)) / ((double) itemsPerPage))) {
                 plugin.sendMessage(player, "messages.error.missing.page");
                 return;
             }
@@ -408,24 +409,73 @@ public class CommandCity extends BaseCommand {
                 if (name == null) {
                     break;
                 }
-                tmpMessage.append(name).append(", ");
+                tmpMessage.append(name).append("§2,§a ");
 
             }
             plugin.sendMessage(player, "messages.list.goes", "%startPage%", String.valueOf(goInt), "%totalPages%", String.valueOf((int) Math.ceil(((double) CityDatabase.getCityGoCount(city,role)) / ((double) itemsPerPage))));
             player.sendMessage("§2" + tmpMessage.substring(0, tmpMessage.length() - 2));
 
-        } else {
+        } else if (args.length == 2) {
+            if (!CityDatabase.cityGoExists(args[0],city)) {
+                plugin.sendMessage(player, "messages.error.missing.go", "%cityname%", city.getCityName());
+                return;
+            }
+            if  (!args[1].equals("delete")) {
+                plugin.sendMessage(player, "messages.syntax.city.go");
+                return;
+            }
+            if (!player.hasPermission("metropolis.city.go.delete")) {
+                plugin.sendMessage(player, "messages.error.permissionDenied");
+                return;
+            }
+            if (!CityDatabase.cityGoExists(args[0],city)) {
+                plugin.sendMessage(player, "messages.error.missing.go", "%cityname%", city.getCityName());
+                return;
+            }
+
+            String goAccessLevel = CityDatabase.getCityGoAccessLevel(args[0], city);
+            if (goAccessLevel == null || goAccessLevel.equals("inviter") || goAccessLevel.equals("assistant") || goAccessLevel.equals("vicemayor")) {
+                boolean isViceMayor = role.equals("vicemayor") || role.equals("mayor");
+                if (!isViceMayor) {
+                    plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                    return;
+                }
+                CityDatabase.deleteGo(args[0], city);
+                Database.addLogEntry(city,"{ \"type\": \"delete\", \"subtype\": \"go\", \"name\": " + args[0] + ", \"player\": " + player.getUniqueId().toString() + " }");
+                plugin.sendMessage(player, "messages.success.delete.citygo", "%name%", args[0]);
+            }
+
+        } else if (args.length == 4) {
+            if (!CityDatabase.cityGoExists(args[0],city)) {
+                plugin.sendMessage(player, "messages.error.missing.go", "%cityname%", city.getCityName());
+                return;
+            }
+            if (!args[1].equals("set")) {
+                plugin.sendMessage(player, "messages.syntax.city.go");
+                return;
+            }
+            if (args[2].equals("displayname")) {
+
+            }
+            if (args[2].equals("name")) {
+
+            }
+            if (args[2].equals("accesslevel")) {
+
+            }
+            plugin.sendMessage(player, "messages.syntax.city.go");
+        } else if (args.length == 1) {
             if (!player.hasPermission("metropolis.city.go.teleport")) {
                 plugin.sendMessage(player, "messages.error.permissionDenied");
                 return;
             }
-            if (!CityDatabase.cityGoExists(go,city)) {
+            if (!CityDatabase.cityGoExists(args[0],city)) {
                 plugin.sendMessage(player, "messages.error.missing.go", "%cityname%", city.getCityName());
                 return;
             }
-            String goAccessLevel = CityDatabase.getCityGoAccessLevel(go, city);
+            String goAccessLevel = CityDatabase.getCityGoAccessLevel(args[0], city);
             if (goAccessLevel == null) {
-                Location location = CityDatabase.getCityGoLocation(go, city);
+                Location location = CityDatabase.getCityGoLocation(args[0], city);
                 assert location != null;
                 player.teleport(location);
                 //Istället för player.teleport här så ska vi ha en call till Mandatory, som sköter VIP teleportering.
@@ -458,7 +508,7 @@ public class CommandCity extends BaseCommand {
                 plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                 return;
             }
-            Location location = CityDatabase.getCityGoLocation(go, city);
+            Location location = CityDatabase.getCityGoLocation(args[0], city);
             assert location != null;
             player.teleport(location);
             //Istället för player.teleport här så ska vi ha en call till Mandatory, som sköter VIP teleportering.

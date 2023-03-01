@@ -23,6 +23,7 @@ messages:
     goes: "§2--- §aStadsteleporteringspunkter (sida §l%startPage% §r§aav §l%totalPages%§r§a) §2---"
   syntax:
     city:
+      go: "§7Syntax: /city go §nnamn \n§7Syntax: /city go §nnamn§r §7delete -\n§7Syntax: /city go §nnamn§r §7set displayname §nvisningsnamn\n§7Syntax: /city go §nnamn§r §7set displayname -\n§7/city go §nnamn§r §7set accesslevel §nåtkomstnivå\n§7/city go §nnamn§r §7set accesslevel -"
       buy:
         bonus: "§7Syntax: /city buy bonus §nantal"
         district: "§7Syntax: /city buy district §nnamn"
@@ -252,6 +253,8 @@ messages:
       owner: "§2§lÄgare:"
       price: "§2§lTill salu:"
     successful:
+      delete:
+        citygo: "§e%cityname% §7|§a Stadsteleporteringspunkten %name% togs bort."
       remove:
         enterMessage: "§e%cityname% §7|§a Meddelandet vid stadsankomst togs bort."
       join: "§e%cityname% §7| §b%playername% gick med i staden."

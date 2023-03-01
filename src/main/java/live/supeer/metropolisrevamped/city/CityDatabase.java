@@ -232,6 +232,14 @@ public class CityDatabase {
         return null;
     }
 
+    public static void deleteGo(String name, City city) {
+        try {
+            DB.executeUpdate("DELETE FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static Optional<City> getCity(String cityName) {
         for (City city : cities) {
             if (city.getCityName().equalsIgnoreCase(cityName)) return Optional.of(city);
