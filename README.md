@@ -10,5 +10,6 @@
 - metropolis.city.set.enter
 - metropolis.city.set.exit
 - metropolis.homecity
+- metropolis.city.go
 
 
