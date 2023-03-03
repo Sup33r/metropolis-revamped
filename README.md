@@ -11,5 +11,6 @@
 - metropolis.city.set.exit
 - metropolis.homecity
 - metropolis.city.go
+- metropolis.city.go.delete
 
 
