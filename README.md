@@ -12,5 +12,6 @@
 - metropolis.homecity
 - metropolis.city.go
 - metropolis.city.go.delete
+- metropolis.city.go.set.name
 
 
