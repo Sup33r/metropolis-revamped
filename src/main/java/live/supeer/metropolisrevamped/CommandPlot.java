@@ -1671,7 +1671,7 @@ public class CommandPlot extends BaseCommand {
                     economy.withdrawPlayer(player,plot.getPlotPrice());
                     city.addCityBalance(plot.getPlotPrice());
                     Database.addLogEntry(city,"{ \"type\": \"buy\", \"subtype\": \"plot\", \"id\": " + plot.getPlotID() + ", \"name\": " + plot.getPlotName() + ", \"player\": " + player.getUniqueId().toString() + " }");
-                    plot.setPlotOwner(player.getDisplayName());
+                    plot.setPlotOwner(player.getName());
                     plot.setPlotOwnerUUID(player.getUniqueId().toString());
                     plugin.sendMessage(player, "messages.plot.buy.success", "%cityname%", city.getCityName(), "%plotname%", plot.getPlotName(), "%price%", String.valueOf(plot.getPlotPrice()));
                     plot.setForSale(false);

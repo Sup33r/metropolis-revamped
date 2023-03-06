@@ -72,11 +72,11 @@ public class CityDatabase {
 
     public static City newCity(String cityName, Player player) {
         try {
-            DB.executeUpdate("INSERT INTO `mp_cities` (`cityName`, `originalMayorUUID`, `originalMayorName`, `cityBalance`, `citySpawn`, `createDate`, `isRemoved`) VALUES (" + Database.sqlString(cityName) + ", " + Database.sqlString(player.getUniqueId().toString()) + ", " + Database.sqlString(player.getDisplayName()) + ", " + MetropolisRevamped.configuration.getCityStartingBalance() + ", " + Database.sqlString(Utilities.locationToString(player.getLocation())) + ", " + Utilities.getTimestamp() + ", " + "0" + ");");
+            DB.executeUpdate("INSERT INTO `mp_cities` (`cityName`, `originalMayorUUID`, `originalMayorName`, `cityBalance`, `citySpawn`, `createDate`, `isRemoved`) VALUES (" + Database.sqlString(cityName) + ", " + Database.sqlString(player.getUniqueId().toString()) + ", " + Database.sqlString(player.getName()) + ", " + MetropolisRevamped.configuration.getCityStartingBalance() + ", " + Database.sqlString(Utilities.locationToString(player.getLocation())) + ", " + Utilities.getTimestamp() + ", " + "0" + ");");
             City city = new City(DB.getFirstRow("SELECT * FROM `mp_cities` WHERE `cityName` = " + Database.sqlString(cityName) + ";"));
             cities.add(city);
             newMember(city, player);
-            plugin.getLogger().info(player.getDisplayName() + " created a new city: " + cityName);
+            plugin.getLogger().info(player.getName() + " created a new city: " + cityName);
             return city;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -87,7 +87,7 @@ public class CityDatabase {
     public static void newMember(City city, Player player) {
         try {
             String cityName = city.getCityName();
-            DB.executeUpdate("INSERT INTO `mp_members` (`playerName`, `playerUUID`, `cityID`, `cityName`, `cityRole`, `joinDate`) VALUES (" + Database.sqlString(player.getDisplayName()) + ", " + Database.sqlString(player.getUniqueId().toString()) + ", " + city.getCityID() + ", " + Database.sqlString(cityName) + ", " + "'mayor'" + ", " + Utilities.getTimestamp() + ");");
+            DB.executeUpdate("INSERT INTO `mp_members` (`playerName`, `playerUUID`, `cityID`, `cityName`, `cityRole`, `joinDate`) VALUES (" + Database.sqlString(player.getName()) + ", " + Database.sqlString(player.getUniqueId().toString()) + ", " + city.getCityID() + ", " + Database.sqlString(cityName) + ", " + "NULL" + ", " + Utilities.getTimestamp() + ");");
             city.addCityMember(new Member(DB.getFirstRow("SELECT * FROM `mp_members` WHERE `cityName` = " + Database.sqlString(cityName) + " AND `playerUUID` = " + Database.sqlString(player.getUniqueId().toString()) + ";")));
             HCDatabase.setHomeCity(player.getUniqueId().toString(), city);
         } catch (SQLException e) {
@@ -116,6 +116,16 @@ public class CityDatabase {
     public static boolean cityGoExists(String name, City city) {
         try {
             var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
+            return results.size() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean memberExists(String player, City city) {
+        try {
+            var results = DB.getResults("SELECT * FROM `mp_members` WHERE `cityID` = " + city.getCityID() + " AND `playerName` = " + Database.sqlString(player) + ";");
             return results.size() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -239,17 +249,10 @@ public class CityDatabase {
             e.printStackTrace();
         }
     }
-    public static void removeCityGoAccessLevel(String name, City city) {
-        try {
-            DB.executeUpdate("UPDATE `mp_citygoes` SET `accessLevel` = " + "NULL" + " WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     public static void setCityGoDisplayname(String name, City city, String displayname) {
         try {
-            DB.executeUpdate("UPDATE `mp_citygoes` SET `goNickname` = '" + Database.sqlString(displayname) + "' WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
+            DB.executeUpdate("UPDATE `mp_citygoes` SET `goNickname` = " + Database.sqlString(displayname) + " WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -226,6 +226,10 @@ messages:
           2: "§7f = frame, g = go, h = home, j = jukebox"
           3: "§7r = repair (anvil), s = switch, t = teleport, v = villager"
   city:
+    helpop:
+      sent:
+      noStaffOnline:
+      receive: "§e%cityname% §7| §a%player% §7| §a%message%"
     blockhistory:
       noData: "§cIngen blockdata hittades på det specificerade blocket."
       header: "§2--- §aBlockhistorik: %location% (sida %page%/%totalpages%) §2---"
@@ -266,7 +270,9 @@ messages:
         citygo: "§e%cityname% §7|§a Stadsteleporteringspunkten %name% togs bort."
       remove:
         enterMessage: "§e%cityname% §7|§a Meddelandet vid stadsankomst togs bort."
-      join: "§e%cityname% §7| §b%playername% gick med i staden."
+      join:
+        self: "§e%cityname% §7| Du gick med i staden."
+        others: "§e%cityname% §7| §b%playername% gick med i staden."
       withdraw: "§e%cityname% §7|§a Du tog ut %amount% minemynt från stadskassan."
       deposit: "§e%cityname% §7|§a Du satte in %amount% minemynt i stadskassan."
       creation:
