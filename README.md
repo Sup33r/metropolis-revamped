@@ -10,5 +10,9 @@
 - metropolis.city.set.enter
 - metropolis.city.set.exit
 - metropolis.homecity
+- metropolis.city.go
+- metropolis.city.go.delete
+- metropolis.city.go.set.name
+- metropolis.city.go.set.accesslevel
 
 
