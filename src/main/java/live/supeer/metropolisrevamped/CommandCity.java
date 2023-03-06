@@ -362,7 +362,6 @@ public class CommandCity extends BaseCommand {
             plugin.sendMessage(player, "messages.error.permissionDenied");
             return;
         }
-        player.sendMessage(args.length + "");
         if (HCDatabase.hasHomeCity(player.getUniqueId().toString()) || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
             plugin.sendMessage(player, "messages.error.missing.homeCity");
             return;
@@ -386,6 +385,9 @@ public class CommandCity extends BaseCommand {
             if (CityDatabase.getCityGoCount(city,role) == 0) {
                 plugin.sendMessage(player, "messages.error.missing.goes");
                 return;
+            }
+            if (args.length == 0) {
+                args = new String[]{"1"};
             }
             if (args[0] == null) {
                 args[0] = "1";
@@ -414,10 +416,9 @@ public class CommandCity extends BaseCommand {
                     break;
                 }
                 tmpMessage.append(name).append("§2,§a ");
-
             }
             plugin.sendMessage(player, "messages.list.goes", "%startPage%", String.valueOf(goInt), "%totalPages%", String.valueOf((int) Math.ceil(((double) CityDatabase.getCityGoCount(city,role)) / ((double) itemsPerPage))));
-            player.sendMessage("§2" + tmpMessage.substring(0, tmpMessage.length() - 2));
+            player.sendMessage("§a" + tmpMessage.substring(0, tmpMessage.length() - 2));
 
         } else if (args.length == 2) {
             if (!CityDatabase.cityGoExists(args[0],city)) {
@@ -508,7 +509,7 @@ public class CommandCity extends BaseCommand {
                             plugin.sendMessage(player, "messages.error.city.go.alreadyAccessLevel", "%cityname%", city.getCityName());
                             return;
                         }
-                        CityDatabase.setCityGoAccessLevel(args[0], city, null);
+                        CityDatabase.removeCityGoAccessLevel(args[0], city);
                         plugin.sendMessage(player, "messages.city.go.changedAccessLevel", "%cityname%", city.getCityName(), "%name%", args[0], "%accesslevel%", "Medlemmar");
                         return;
                     }
@@ -790,8 +791,8 @@ public class CommandCity extends BaseCommand {
             final String regex = "[^\\p{L}_0-9\\\\-]+";
             final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
             final Matcher matcher = pattern.matcher(name);
-            if (matcher.find() || name.matches("^[0-9].*") || name.length() > 20) {
-                plugin.sendMessage(player, "messages.error.city.go.invalidName");
+            if (matcher.find() || name.matches("^[0-9].*") || name.length() > 20 || name.startsWith("-")) {
+                plugin.sendMessage(player, "messages.error.city.go.invalidName", "%cityname%", city.getCityName());
                 return;
             }
             String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
