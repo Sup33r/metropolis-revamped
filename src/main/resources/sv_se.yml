@@ -23,7 +23,7 @@ messages:
     goes: "§2--- §aStadsteleporteringspunkter (sida §l%startPage% §r§aav §l%totalPages%§r§a) §2---"
   syntax:
     city:
-      go: "§7Syntax: /city go §nnamn \n§7Syntax: /city go §nnamn§r §7delete -\n§7Syntax: /city go §nnamn§r §7set displayname §nvisningsnamn\n§7Syntax: /city go §nnamn§r §7set displayname -\n§7/city go §nnamn§r §7set accesslevel §nåtkomstnivå\n§7/city go §nnamn§r §7set accesslevel -"
+      go: "§7Syntax: /city go §nnamn\n§7Syntax: /city go §nnamn§r §7delete\n§7Syntax: /city go §nnamn§r §7set displayname §nvisningsnamn\n§7Syntax: /city go §nnamn§r §7set displayname -\n§7/city go §nnamn§r §7set accesslevel §nåtkomstnivå\n§7/city go §nnamn§r §7set accesslevel -"
       buy:
         bonus: "§7Syntax: /city buy bonus §nantal"
         district: "§7Syntax: /city buy district §nnamn"
@@ -59,6 +59,11 @@ messages:
       notInCity: "§cSpelaren är inte medlem i någon stad."
     city:
       go:
+        alreadyAccessLevel: "§e%cityname% §7| §cTeleporteringspunkten har redan den angivna åtkomstnivån."
+        accessLevelTooHigh: "§e%cityname% §7| §cDu kan inte ändra åtkomstnivån för teleporteringspunkter till en högre nivå än din egen rank."
+        invalidAccessLevel: "§e%cityname% §7| §cDen angivna åtkomstnivån är ogiltig."
+        sameDisplayname: "§e%cityname% §7| §cVisningsnamnet för teleporteringspunkten är redan %name%."
+        invalidDisplayname: "§e%cityname% §7| §cVisningsnamnet för teleporteringspunkten får inte överstiga 30 tecken."
         invalidName: "§e%cityname% §7| §cTeleporteringspunkter får inte börja med en siffra, vara längre än 20 tecken, eller innehålla några specialtecken."
         outsideCity: "§e%cityname% §7| §cDu kan inte skapa en teleporteringspunkt utanför staden."
         alreadyExists: "§e%cityname% §7| §cDet finns redan en teleporteringspunkt med detta namn i denna stad."
@@ -225,6 +230,10 @@ messages:
       noData: "§cIngen blockdata hittades på det specificerade blocket."
       header: "§2--- §aBlockhistorik: %location% (sida %page%/%totalpages%) §2---"
     go:
+      deleted: "§e%cityname% §7| §aDen specificerade teleporteringspunkten har tagits bort."
+      changedAccessLevel: "§e%cityname% §7| §aDu har ändrat tillgänglighetsnivån för teleporteringspunkten %name% till §2%accesslevel%§a."
+      changedName: "§e%cityname% §7| §aNamnet för stadsteleporteringspunkten %name% ändrades."
+      changedDisplayname: "§e%cityname% §7| §aVisningsnamnet för stadsteleporteringspunkten %name% ändrades."
       created: "§e%cityname% §7| §aDu har skapat teleporteringspunkten %name% för 5 000 minemynt."
     invite:
       invited: "§e%cityname% §7| §e%player% har blivit inbjuden till staden av %inviter%."

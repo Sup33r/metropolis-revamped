@@ -232,6 +232,40 @@ public class CityDatabase {
         return null;
     }
 
+    public static void setCityGoAccessLevel(String name, City city, String accessLevel) {
+        try {
+            DB.executeUpdate("UPDATE `mp_citygoes` SET `accessLevel` = '" + Database.sqlString(accessLevel) + "' WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void setCityGoDisplayname(String name, City city, String displayname) {
+        try {
+            DB.executeUpdate("UPDATE `mp_citygoes` SET `goNickname` = '" + Database.sqlString(displayname) + "' WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void setCityGoName(String name, City city, String newName) {
+        try {
+            DB.executeUpdate("UPDATE `mp_citygoes` SET `goName` = '" + Database.sqlString(newName) + "' WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static String getCityGoDisplayname(String name, City city) {
+        try {
+            var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
+            if (results.size() == 1) {
+                return results.get(0).getString("goNickname");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static void deleteGo(String name, City city) {
         try {
             DB.executeUpdate("DELETE FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");

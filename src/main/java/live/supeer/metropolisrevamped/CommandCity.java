@@ -374,6 +374,10 @@ public class CommandCity extends BaseCommand {
             plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
             return;
         }
+        boolean isInviter = role.equals("inviter") || role.equals("assistant") || role.equals("vicemayor") || role.equals("mayor");
+        boolean isAssistant = role.equals("assistant") || role.equals("vicemayor") || role.equals("mayor");
+        boolean isViceMayor = role.equals("vicemayor") || role.equals("mayor");
+        boolean isMayor = role.equals("mayor");
         if (args.length == 0 || args.length == 1 && !args[0].replaceAll("[0-9]", "").matches("[^0-9].*")) {
             if (!player.hasPermission("metropolis.city.go.list")) {
                 plugin.sendMessage(player, "messages.error.permissionDenied");
@@ -435,14 +439,13 @@ public class CommandCity extends BaseCommand {
 
             String goAccessLevel = CityDatabase.getCityGoAccessLevel(args[0], city);
             if (goAccessLevel == null || goAccessLevel.equals("inviter") || goAccessLevel.equals("assistant") || goAccessLevel.equals("vicemayor")) {
-                boolean isViceMayor = role.equals("vicemayor") || role.equals("mayor");
                 if (!isViceMayor) {
                     plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
                     return;
                 }
                 CityDatabase.deleteGo(args[0], city);
                 Database.addLogEntry(city,"{ \"type\": \"delete\", \"subtype\": \"go\", \"name\": " + args[0] + ", \"player\": " + player.getUniqueId().toString() + " }");
-                plugin.sendMessage(player, "messages.success.delete.citygo", "%name%", args[0]);
+                plugin.sendMessage(player, "messages.city.go.deleted", "%cityname%", city.getCityName());
             }
 
         } else if (args.length == 4) {
@@ -454,14 +457,114 @@ public class CommandCity extends BaseCommand {
                 plugin.sendMessage(player, "messages.syntax.city.go");
                 return;
             }
+            String goAccessLevel = CityDatabase.getCityGoAccessLevel(args[0], city);
             if (args[2].equals("displayname")) {
-
+                if (!isViceMayor) {
+                    plugin.sendMessage(player,"messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                    return;
+                }
+                if (args[3].length() > 30) {
+                    plugin.sendMessage(player,"messages.error.city.go.invalidDisplayname","%cityname%", city.getCityName());
+                }
+                if (Objects.equals(CityDatabase.getCityGoDisplayname(args[0], city), args[3])) {
+                    plugin.sendMessage(player,"messages.error.city.go.sameDisplayname","%cityname%",city.getCityName(),"%name%",args[3]);
+                    return;
+                }
+                CityDatabase.setCityGoDisplayname(args[0],city,args[3]);
+                plugin.sendMessage(player,"messages.city.go.changedDisplayname","%cityname%",city.getCityName(),"%name%",args[0]);
             }
             if (args[2].equals("name")) {
+                if (!isViceMayor) {
+                    plugin.sendMessage(player,"messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                    return;
+                }
+                final String regex = "[^\\p{L}_0-9\\\\-]+";
+                final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+                final Matcher matcher = pattern.matcher(args[3]);
+                if (matcher.find() || args[3].matches("^[0-9].*") || args[3].length() > 20) {
+                    plugin.sendMessage(player, "messages.error.city.go.invalidName");
+                    return;
+                }
+                if (CityDatabase.cityGoExists(args[3], city)) {
+                    plugin.sendMessage(player,"messages.error.city.go.alreadyExists","%cityname%",city.getCityName());
+                    return;
+                }
+                CityDatabase.setCityGoName(args[0],city,args[3]);
+                plugin.sendMessage(player,"messages.city.go.changedName","%cityname%",city.getCityName(),"%name%",args[0]);
 
             }
             if (args[2].equals("accesslevel")) {
-
+                if (!args[3].equals("-") && !args[3].equals("inviter") && !args[3].equals("assistant") && !args[3].equals("vicemayor") && !args[3].equals("mayor")) {
+                    plugin.sendMessage(player, "messages.error.city.go.invalidAccessLevel", "%cityname%", city.getCityName());
+                    return;
+                }
+                switch (args[3]) {
+                    case "-" -> {
+                        if (!isAssistant) {
+                            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        if (goAccessLevel == null) {
+                            plugin.sendMessage(player, "messages.error.city.go.alreadyAccessLevel", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        CityDatabase.setCityGoAccessLevel(args[0], city, null);
+                        plugin.sendMessage(player, "messages.city.go.changedAccessLevel", "%cityname%", city.getCityName(), "%name%", args[0], "%accesslevel%", "Medlemmar");
+                        return;
+                    }
+                    case "inviter" -> {
+                        if (!isAssistant) {
+                            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        if (goAccessLevel != null && goAccessLevel.equals("inviter")) {
+                            plugin.sendMessage(player, "messages.error.city.go.alreadyAccessLevel", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        CityDatabase.setCityGoAccessLevel(args[0], city, args[3]);
+                        plugin.sendMessage(player, "messages.city.go.changedAccessLevel", "%cityname%", city.getCityName(), "%name%", args[0], "%accesslevel%", "Inbjudare");
+                        return;
+                    }
+                    case "assistant" -> {
+                        if (!isAssistant) {
+                            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        if (goAccessLevel != null && goAccessLevel.equals("assistant")) {
+                            plugin.sendMessage(player, "messages.error.city.go.alreadyAccessLevel", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        CityDatabase.setCityGoAccessLevel(args[0], city, args[3]);
+                        plugin.sendMessage(player, "messages.city.go.changedAccessLevel", "%cityname%", city.getCityName(), "%name%", args[0], "%accesslevel%", "Assistenter");
+                        return;
+                    }
+                    case "vicemayor" -> {
+                        if (!isViceMayor) {
+                            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        if (goAccessLevel != null && goAccessLevel.equals("vicemayor")) {
+                            plugin.sendMessage(player, "messages.error.city.go.alreadyAccessLevel", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        CityDatabase.setCityGoAccessLevel(args[0], city, args[3]);
+                        plugin.sendMessage(player, "messages.city.go.changedAccessLevel", "%cityname%", city.getCityName(), "%name%", args[0], "%accesslevel%", "Vice Borgmästare");
+                        return;
+                    }
+                    case "mayor" -> {
+                        if (!isMayor) {
+                            plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        if (goAccessLevel != null && goAccessLevel.equals("mayor")) {
+                            plugin.sendMessage(player, "messages.error.city.go.alreadyAccessLevel", "%cityname%", city.getCityName());
+                            return;
+                        }
+                        CityDatabase.setCityGoAccessLevel(args[0], city, args[3]);
+                        plugin.sendMessage(player, "messages.city.go.changedAccessLevel", "%cityname%", city.getCityName(), "%name%", args[0], "%accesslevel%", "Borgmästare");
+                        return;
+                    }
+                }
             }
             plugin.sendMessage(player, "messages.syntax.city.go");
         } else if (args.length == 1) {
@@ -484,22 +587,22 @@ public class CommandCity extends BaseCommand {
             boolean hasAccess = false;
             switch (goAccessLevel) {
                 case "mayor" -> {
-                    if (role.equals("mayor")) {
+                    if (isMayor) {
                         hasAccess = true;
                     }
                 }
                 case "vicemayor" -> {
-                    if (role.equals("vicemayor") || role.equals("mayor")) {
+                    if (isViceMayor) {
                         hasAccess = true;
                     }
                 }
                 case "assistant" -> {
-                    if (role.equals("assistant") || role.equals("vicemayor") || role.equals("mayor")) {
+                    if (isAssistant) {
                         hasAccess = true;
                     }
                 }
                 case "inviter" -> {
-                    if (role.equals("inviter") || role.equals("assistant") || role.equals("vicemayor") || role.equals("mayor")) {
+                    if (isInviter) {
                         hasAccess = true;
                     }
                 }
@@ -512,6 +615,8 @@ public class CommandCity extends BaseCommand {
             assert location != null;
             player.teleport(location);
             //Istället för player.teleport här så ska vi ha en call till Mandatory, som sköter VIP teleportering.
+        } else {
+            plugin.sendMessage(player, "messages.syntax.city.go");
         }
     }
 
