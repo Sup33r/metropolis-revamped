@@ -227,9 +227,9 @@ messages:
           3: "§7r = repair (anvil), s = switch, t = teleport, v = villager"
   city:
     helpop:
-      sent:
-      noStaffOnline:
-      receive: "§e%cityname% §7| §a%player% §7| §a%message%"
+      sent: "§e%cityname% §7| §aDitt meddelande har skickats till stadsledningen."
+      noStaffOnline: "§e%cityname% §7| §cIngen inom stadsledningen är online för tillfället."
+      receive: "§e%cityname% §7| §a%player% behöver hjälp: §a%message%"
     blockhistory:
       noData: "§cIngen blockdata hittades på det specificerade blocket."
       header: "§2--- §aBlockhistorik: %location% (sida %page%/%totalpages%) §2---"

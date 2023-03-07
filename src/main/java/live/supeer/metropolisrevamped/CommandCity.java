@@ -11,6 +11,7 @@ import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.CoalType;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -937,6 +938,22 @@ public class CommandCity extends BaseCommand {
             return;
         }
         plugin.sendMessage(player, "messages.city.helpop.sent", "%message%", message);
+    }
+
+    @Subcommand("leave")
+    public static void onLeave(Player player, String cityname) {
+        if (!player.hasPermission("metropolis.city.leave")) {
+            plugin.sendMessage(player, "messages.error.permissionDenied");
+            return;
+        }
+        if (HCDatabase.hasHomeCity(player.getUniqueId().toString()) || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
+            plugin.sendMessage(player, "messages.error.missing.homeCity");
+            return;
+        }
+        if (CityDatabase.getCity(cityname).isEmpty()) {
+            plugin.sendMessage(player, "messages.error.missing.city");
+            return;
+        }
     }
 
 }
