@@ -3,20 +3,22 @@ package live.supeer.metropolisrevamped;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import co.aikar.commands.annotation.Optional;
+import co.aikar.idb.DB;
 import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.city.Claim;
+import live.supeer.metropolisrevamped.city.Member;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
-import org.bukkit.CoalType;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -928,7 +930,7 @@ public class CommandCity extends BaseCommand {
         int cityStaffOnline = 0;
         boolean isCityStaff = Objects.equals(CityDatabase.getCityRole(city, String.valueOf(player.getUniqueId())), "mayor") || Objects.equals(CityDatabase.getCityRole(city, String.valueOf(player.getUniqueId())), "vicemayor") || Objects.equals(CityDatabase.getCityRole(city, String.valueOf(player.getUniqueId())), "assistant");
         for (Player online : Bukkit.getOnlinePlayers()) {
-            if (CityDatabase.memberExists(player.getName(),city) && isCityStaff) {
+            if (CityDatabase.memberExists(online.getName(),city) && isCityStaff) {
                 cityStaffOnline++;
                 plugin.sendMessage(online, "messages.city.helpop.receive", "%player%", player.getName(), "%message%", message);
             }
@@ -941,7 +943,7 @@ public class CommandCity extends BaseCommand {
     }
 
     @Subcommand("leave")
-    public static void onLeave(Player player, String cityname) {
+    public static void onLeave(Player player, String cityname) throws SQLException {
         if (!player.hasPermission("metropolis.city.leave")) {
             plugin.sendMessage(player, "messages.error.permissionDenied");
             return;
@@ -952,7 +954,25 @@ public class CommandCity extends BaseCommand {
         }
         if (CityDatabase.getCity(cityname).isEmpty()) {
             plugin.sendMessage(player, "messages.error.missing.city");
+        }
+        City city = HCDatabase.getHomeCityToCity(player.getUniqueId().toString());
+        if (!CityDatabase.memberExists(player.getUniqueId().toString(),CityDatabase.getCity(cityname).get())) {
+            plugin.sendMessage(player, "messages.error.city.notInCity");
             return;
+        }
+        if (Objects.equals(CityDatabase.getCityRole(CityDatabase.getCity(cityname).get(), String.valueOf(player.getUniqueId())), "mayor")) {
+            plugin.sendMessage(player, "messages.error.city.leave.mayor", "%cityname%", cityname);
+            return;
+        }
+        assert city != null;
+        city.removeCityMember(new Member(DB.getFirstRow("SELECT * FROM `mp_members` WHERE `cityName` = " + Database.sqlString(cityname) + " AND `playerUUID` = " + Database.sqlString(player.getUniqueId().toString()) + ";")));
+        plugin.sendMessage(player, "messages.city.leave.success", "%cityname%", cityname);
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            if (CityDatabase.memberExists(online.getName(),city)) {
+                if (!online.getUniqueId().equals(player.getUniqueId())) {
+                    plugin.sendMessage(online, "messages.city.leave.message", "%player%", player.getName(), "%cityname%", cityname);
+                }
+            }
         }
     }
 

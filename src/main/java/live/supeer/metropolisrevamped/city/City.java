@@ -64,6 +64,11 @@ public class City {
         DB.executeUpdateAsync("UPDATE `mp_cities` SET `cityBalance` = " + this.cityBalance + " WHERE `cityID` = " + cityID + ";");
     }
 
+    public void removeCityMember(Member member) {
+        this.cityMembers.remove(member);
+        DB.executeUpdateAsync("DELETE FROM `mp_members` WHERE `cityID` = " + cityID + " AND `playerUUID` = " + Database.sqlString(member.getPlayerUUID()) + ";");
+    }
+
     public void setCitySpawn(Location citySpawn) {
         this.citySpawn = citySpawn;
         DB.executeUpdateAsync("UPDATE `mp_cities` SET `citySpawn` = " + Database.sqlString(Utilities.locationToString(citySpawn)) + " WHERE `cityID` = " + cityID + ";");
