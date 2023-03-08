@@ -976,4 +976,44 @@ public class CommandCity extends BaseCommand {
         }
     }
 
+    @Subcommand("spawn")
+    public static void onSpawn(Player player, @Optional String cityName) {
+        if (!player.hasPermission("metropolis.city.spawn")) {
+            plugin.sendMessage(player, "messages.error.permissionDenied");
+            return;
+        }
+        if (cityName == null) {
+            if (HCDatabase.hasHomeCity(player.getUniqueId().toString()) || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
+                plugin.sendMessage(player, "messages.error.missing.homeCity");
+                return;
+            }
+            City city = HCDatabase.getHomeCityToCity(player.getUniqueId().toString());
+            assert city != null;
+            if (city.getCitySpawn() == null) {
+                plugin.sendMessage(player, "messages.error.missing.spawn");
+                return;
+            }
+            player.teleport(city.getCitySpawn());
+            plugin.sendMessage(player, "messages.teleport", "%to%", "din hemstads startpunkt");
+            return;
+        }
+        if (CityDatabase.getCity(cityName).isEmpty()) {
+            plugin.sendMessage(player, "messages.error.missing.city");
+            return;
+        }
+        City city = CityDatabase.getCity(cityName).get();
+        if (city.getCitySpawn() == null) {
+            plugin.sendMessage(player, "messages.error.missing.spawn");
+            return;
+        }
+        if (!city.isOpen()) {
+            plugin.sendMessage(player, "messages.error.city.closed", "%cityname%", city.getCityName());
+            return;
+        }
+        player.teleport(city.getCitySpawn());
+        plugin.sendMessage(player, "messages.teleport", "%to%", "startpunkten i " + city.getCityName());
+    }
+
+
+
 }
