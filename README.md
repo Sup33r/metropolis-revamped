@@ -14,6 +14,5 @@
 - metropolis.city.go.delete
 - metropolis.city.go.set.name
 - metropolis.city.go.set.accesslevel
-- metropolis.city.go
-
+- metropolis.city.go.info
 
