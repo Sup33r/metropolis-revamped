@@ -16,7 +16,14 @@ public class HCDatabase {
     public static void setHomeCity(String uuid, City city) {
         try {
             if (hasHomeCity(uuid)) {
-                DB.executeInsert("INSERT INTO mp_homecities (playerUUID, playerName, cityName) VALUES (" + Database.sqlString(uuid) + ", " + Database.sqlString(Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName()) + ", " + Database.sqlString(city.getCityName()) + ");");
+        DB.executeInsert(
+            "INSERT INTO mp_homecities (playerUUID, playerName, cityName) VALUES ("
+                + Database.sqlString(uuid)
+                + ", "
+                + Database.sqlString(Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName())
+                + ", "
+                + Database.sqlString(city.getCityName())
+                + ");");
                 return;
             }
             DB.executeUpdate("UPDATE mp_homecities SET cityName = " + Database.sqlString(city.getCityName()) + ", playerName = " + Database.sqlString(plugin.getServer().getOfflinePlayer(UUID.fromString(uuid)).getName()) + " WHERE playerUUID = " + Database.sqlString(uuid));

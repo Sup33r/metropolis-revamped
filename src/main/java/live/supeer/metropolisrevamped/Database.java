@@ -9,40 +9,44 @@ import java.sql.SQLException;
 
 public class Database {
 
-    public static MetropolisRevamped plugin;
+  public static MetropolisRevamped plugin;
 
-    public static void initialize() {
-        try {
-            BukkitDB.createHikariDatabase(MetropolisRevamped.getPlugin(),
-                    MetropolisRevamped.configuration.getSqlUsername(),
-                    MetropolisRevamped.configuration.getSqlPassword(),
-                    MetropolisRevamped.configuration.getSqlDatabase(),
-                    MetropolisRevamped.configuration.getSqlHost() + ":" + MetropolisRevamped.configuration.getSqlPort()
-            );
-            createTables();
-        } catch (Exception e) {
-            plugin.getLogger().warning("Failed to initialize database, disabling plugin.");
-            plugin.getServer().getPluginManager().disablePlugin(plugin);
-        }
+  public static void initialize() {
+    try {
+      BukkitDB.createHikariDatabase(
+          MetropolisRevamped.getPlugin(),
+          MetropolisRevamped.configuration.getSqlUsername(),
+          MetropolisRevamped.configuration.getSqlPassword(),
+          MetropolisRevamped.configuration.getSqlDatabase(),
+          MetropolisRevamped.configuration.getSqlHost()
+              + ":"
+              + MetropolisRevamped.configuration.getSqlPort());
+      createTables();
+    } catch (Exception e) {
+      plugin.getLogger().warning("Failed to initialize database, disabling plugin.");
+      plugin.getServer().getPluginManager().disablePlugin(plugin);
     }
+  }
 
-    public static void synchronize() {
-        try {
-            CityDatabase.initDBSync();
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            plugin.getLogger().warning("Failed to synchronize database, disabling plugin.");
-            plugin.getServer().getPluginManager().disablePlugin(plugin);
-        }
+  public static void synchronize() {
+    try {
+      CityDatabase.initDBSync();
+    } catch (Exception exception) {
+      exception.printStackTrace();
+      plugin.getLogger().warning("Failed to synchronize database, disabling plugin.");
+      plugin.getServer().getPluginManager().disablePlugin(plugin);
     }
+  }
 
-    public static String sqlString(String string) {
-        return string == null ? "NULL" : "'" + string.replace("\\", "\\\\").replace("'", "\\'") + "'";
-    }
-    public static void createTables() {
-        try {
+  public static String sqlString(String string) {
+    return string == null ? "NULL" : "'" + string.replace("\\", "\\\\").replace("'", "\\'") + "'";
+  }
 
-            DB.executeUpdate("""
+  public static void createTables() {
+    try {
+
+      DB.executeUpdate(
+          """
                     CREATE TABLE IF NOT EXISTS `mp_cities` (
                       `cityID` int(11) NOT NULL AUTO_INCREMENT,
                       `cityName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -60,7 +64,8 @@ public class Database {
                       PRIMARY KEY (`cityID`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;""");
 
-            DB.executeUpdate("""
+      DB.executeUpdate(
+          """
                     CREATE TABLE IF NOT EXISTS `mp_members` (
                       `playerName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `playerUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -71,7 +76,8 @@ public class Database {
                       PRIMARY KEY (cityID,playerUUID)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
 
-            DB.executeUpdate("""
+      DB.executeUpdate(
+          """
                     CREATE TABLE IF NOT EXISTS `mp_homecities` (
                       `playerUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       `playerName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -79,7 +85,8 @@ public class Database {
                       PRIMARY KEY (`playerUUID`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
 
-            DB.executeUpdate("""
+      DB.executeUpdate(
+          """
                     CREATE TABLE IF NOT EXISTS `mp_claims` (
                       `claimId` int(11) NOT NULL AUTO_INCREMENT,
                       `claimerName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -93,7 +100,8 @@ public class Database {
                       PRIMARY KEY (`claimId`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
 
-            DB.executeUpdate("""
+      DB.executeUpdate(
+          """
                     CREATE TABLE IF NOT EXISTS `mp_citylogs` (
                       `logId` int(11) NOT NULL AUTO_INCREMENT,
                       `cityId` int(11) NOT NULL,
@@ -102,7 +110,8 @@ public class Database {
                       PRIMARY KEY (logId)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
 
-            DB.executeUpdate("""
+      DB.executeUpdate(
+          """
                     CREATE TABLE IF NOT EXISTS `mp_plots` (
                       `plotId` int(11) NOT NULL AUTO_INCREMENT,
                       `cityId` int(11) NOT NULL,
@@ -126,7 +135,8 @@ public class Database {
                       PRIMARY KEY (`plotId`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
 
-            DB.executeUpdate("""
+      DB.executeUpdate(
+          """
                     CREATE TABLE IF NOT EXISTS `mp_plotperms` (
                       `plotId` int(11) NOT NULL,
                       `cityId` int(11) NOT NULL,
@@ -135,7 +145,8 @@ public class Database {
                       `playerName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
                       PRIMARY KEY (plotId,playerUUID)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
-            DB.executeUpdate("""
+      DB.executeUpdate(
+          """
                     CREATE TABLE IF NOT EXISTS `mp_cityperms` (
                       `cityId` int(11) NOT NULL,
                       `cityPerms` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -144,7 +155,8 @@ public class Database {
                       PRIMARY KEY (cityId,playerUUID)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
 
-            DB.executeUpdate("""
+      DB.executeUpdate(
+          """
                     CREATE TABLE IF NOT EXISTS `mp_citygoes` (
                       `cityID` int(11) NOT NULL,
                       `goName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -155,16 +167,24 @@ public class Database {
                       `createDate` bigint(30) DEFAULT NULL,
                        PRIMARY KEY (cityID,goName)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
+    } catch (SQLException exception) {
+      exception.printStackTrace();
     }
-    public static void addLogEntry (City city, String logEntry) {
-        try {
-            int cityId = city.getCityID();
-            DB.executeInsert("INSERT INTO `mp_citylogs` (`cityId`, `dateTime`, `jsonLog`) VALUES (" + cityId + ", " + Utilities.getTimestamp() + ", " + Database.sqlString(logEntry) + ");");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+  }
+
+  public static void addLogEntry(City city, String logEntry) {
+    try {
+      int cityId = city.getCityID();
+      DB.executeInsert(
+          "INSERT INTO `mp_citylogs` (`cityId`, `dateTime`, `jsonLog`) VALUES ("
+              + cityId
+              + ", "
+              + Utilities.getTimestamp()
+              + ", "
+              + Database.sqlString(logEntry)
+              + ");");
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
 }

@@ -88,7 +88,14 @@ public class CityDatabase {
         try {
             String cityName = city.getCityName();
             DB.executeUpdate("INSERT INTO `mp_members` (`playerName`, `playerUUID`, `cityID`, `cityName`, `cityRole`, `joinDate`) VALUES (" + Database.sqlString(player.getName()) + ", " + Database.sqlString(player.getUniqueId().toString()) + ", " + city.getCityID() + ", " + Database.sqlString(cityName) + ", " + "NULL" + ", " + Utilities.getTimestamp() + ");");
-            city.addCityMember(new Member(DB.getFirstRow("SELECT * FROM `mp_members` WHERE `cityName` = " + Database.sqlString(cityName) + " AND `playerUUID` = " + Database.sqlString(player.getUniqueId().toString()) + ";")));
+      city.addCityMember(
+          new Member(
+              DB.getFirstRow(
+                  "SELECT * FROM `mp_members` WHERE `cityName` = "
+                      + Database.sqlString(cityName)
+                      + " AND `playerUUID` = "
+                      + Database.sqlString(player.getUniqueId().toString())
+                      + ";")));
             HCDatabase.setHomeCity(player.getUniqueId().toString(), city);
         } catch (SQLException e) {
             e.printStackTrace();

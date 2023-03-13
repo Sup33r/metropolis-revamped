@@ -68,7 +68,7 @@ public class CommandHomeCity extends BaseCommand implements Listener {
                 return;
             }
 
-            String cityname = e.getCurrentItem().getItemMeta().getDisplayName().substring(4);
+      String cityname = e.getCurrentItem().getItemMeta().getDisplayName().substring(4);
             if (CityDatabase.getCity(cityname).isEmpty()) {
                 return;
             }
