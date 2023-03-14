@@ -1460,4 +1460,15 @@ public class CommandCity extends BaseCommand {
     player.teleport(city.getCitySpawn());
     plugin.sendMessage(player, "messages.teleport", "%to%", "startpunkten i " + city.getCityName());
   }
+
+  @Subcommand("chunk")
+  public static void onChunk(Player player) {
+    if (!player.hasPermission("metropolis.city.chunk")) {
+      plugin.sendMessage(player, "messages.error.permissionDenied");
+      return;
+    }
+
+
+  }
+
 }

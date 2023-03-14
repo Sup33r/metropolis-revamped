@@ -283,8 +283,8 @@ messages:
       withdraw: "§e%cityname% §7|§a Du tog ut %amount% minemynt från stadskassan."
       deposit: "§e%cityname% §7|§a Du satte in %amount% minemynt i stadskassan."
       creation:
-       others: "§b%playername% skapade staden %cityname%."
-       self: "§aDu skapade staden %cityname%."
+        others: "§b%playername% skapade staden %cityname%."
+        self: "§aDu skapade staden %cityname%."
       claim: "§e%cityname% §7|§a Markbit övertagen för %amount% minemynt."
       set:
         enter:
@@ -294,8 +294,8 @@ messages:
           removed: "§e%cityname% §7|§a Meddelandet vid stadsavfärd togs bort."
           set: "§e%cityname% §7|§a Meddelandet vid stadsavfärd ändrades."
         motd:
-            removed: "§e%cityname% §7|§a Det dagliga meddelandet (MOTD) togs bort."
-            set: "§e%cityname% §7|§a Det dagliga meddelandet (MOTD) ändrades."
+          removed: "§e%cityname% §7|§a Det dagliga meddelandet (MOTD) togs bort."
+          set: "§e%cityname% §7|§a Det dagliga meddelandet (MOTD) ändrades."
         plot:
           delete: "§e%cityname% §7|§a Tomten %plot% togs bort."
           market:
