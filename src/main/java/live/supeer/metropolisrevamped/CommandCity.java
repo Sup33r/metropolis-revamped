@@ -1467,7 +1467,10 @@ public class CommandCity extends BaseCommand {
       plugin.sendMessage(player, "messages.error.permissionDenied");
       return;
     }
-
+    if (CityDatabase.getClaim(player.getLocation()) == null) {
+      plugin.sendMessage(player, "messages.error.missing.claim");
+      return;
+    }
 
   }
 
