@@ -4,10 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import co.aikar.commands.annotation.Optional;
 import co.aikar.idb.DB;
-import live.supeer.metropolisrevamped.city.City;
-import live.supeer.metropolisrevamped.city.CityDatabase;
-import live.supeer.metropolisrevamped.city.Claim;
-import live.supeer.metropolisrevamped.city.Member;
+import live.supeer.metropolisrevamped.city.*;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
@@ -247,6 +244,7 @@ public class CommandCity extends BaseCommand {
             + ", \"player\": "
             + player.getUniqueId().toString()
             + " }");
+    CityDatabase.setCityRole(city, player.getUniqueId().toString(), "mayor");
     Claim claim =
         CityDatabase.createClaim(
             city, player.getLocation(), false, player.getUniqueId().toString(), player.getName());
@@ -288,7 +286,7 @@ public class CommandCity extends BaseCommand {
       plugin.sendMessage(player, "messages.error.permissionDenied");
       return;
     }
-    if (HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
+    if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
       plugin.sendMessage(player, "messages.error.missing.homeCity");
       return;
     }
@@ -302,6 +300,10 @@ public class CommandCity extends BaseCommand {
       return;
     }
     City city = CityDatabase.getCity(cityName).get();
+    if (CityDatabase.getCityBalance(city) < MetropolisRevamped.configuration.getCityClaimCost()) {
+      plugin.sendMessage(player, "messages.error.missing.claimCost", "%cityname%", city.getCityName(), "%cost%", ""+MetropolisRevamped.configuration.getCityClaimCost());
+      return;
+    }
     if (Utilities.isCloseToOtherCity(player, player.getLocation(), "city")) {
       plugin.sendMessage(player, "messages.error.city.tooCloseToOtherCity");
       return;
@@ -334,7 +336,7 @@ public class CommandCity extends BaseCommand {
         player,
         "messages.city.successful.claim",
         "%cityname%",
-        cityName,
+        city.getCityName(),
         "%amount%",
         Utilities.formattedMoney(MetropolisRevamped.configuration.getCityClaimCost()));
   }
@@ -422,7 +424,7 @@ public class CommandCity extends BaseCommand {
       plugin.sendMessage(player, "messages.error.permissionDenied");
       return;
     }
-    if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
+    if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
         || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
       plugin.sendMessage(player, "messages.error.missing.homeCity");
       return;
@@ -527,7 +529,7 @@ public class CommandCity extends BaseCommand {
       plugin.sendMessage(player, "messages.error.permissionDenied");
       return;
     }
-    if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
+    if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
         || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
       plugin.sendMessage(player, "messages.error.missing.homeCity");
       return;
@@ -636,6 +638,7 @@ public class CommandCity extends BaseCommand {
               player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
           return;
         }
+        String goName = CityDatabase.getCityGoDisplayname(args[0], city);
         CityDatabase.deleteGo(args[0], city);
         Database.addLogEntry(
             city,
@@ -644,7 +647,7 @@ public class CommandCity extends BaseCommand {
                 + ", \"player\": "
                 + player.getUniqueId().toString()
                 + " }");
-        plugin.sendMessage(player, "messages.city.go.deleted", "%cityname%", city.getCityName());
+        plugin.sendMessage(player, "messages.city.successful.delete.citygo", "%cityname%", city.getCityName(), "%name%", goName);
       }
 
     } else if (args.length == 4) {
@@ -944,7 +947,7 @@ public class CommandCity extends BaseCommand {
         plugin.sendMessage(player, "messages.error.permissionDenied");
         return;
       }
-      if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
+      if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
           || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
         plugin.sendMessage(player, "messages.error.missing.homeCity");
         return;
@@ -1004,7 +1007,7 @@ public class CommandCity extends BaseCommand {
         plugin.sendMessage(player, "messages.error.permissionDenied");
         return;
       }
-      if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
+      if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
           || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
         plugin.sendMessage(player, "messages.error.missing.homeCity");
         return;
@@ -1064,7 +1067,7 @@ public class CommandCity extends BaseCommand {
         plugin.sendMessage(player, "messages.error.permissionDenied");
         return;
       }
-      if (HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
+      if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
         plugin.sendMessage(player, "messages.error.missing.homeCity");
         return;
       }
@@ -1116,6 +1119,42 @@ public class CommandCity extends BaseCommand {
       plugin.sendMessage(
           player, "messages.city.successful.set.motd.set", "%cityname%", city.getCityName());
     }
+    @Subcommand("spawn")
+    public static void onSpawn(Player player) {
+      if (!player.hasPermission("metropolis.city.set.spawn")) {
+        plugin.sendMessage(player, "messages.error.permissionDenied");
+        return;
+      }
+      if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
+        plugin.sendMessage(player, "messages.error.missing.homeCity");
+        return;
+      }
+      City city = HCDatabase.getHomeCityToCity(player.getUniqueId().toString());
+      assert city != null;
+      String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
+      if (role == null) {
+        plugin.sendMessage(
+                player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+        return;
+      }
+      boolean isViceMayor = role.equals("mayor") || role.equals("vicemayor");
+      if (!isViceMayor) {
+        plugin.sendMessage(
+                player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+        return;
+      }
+      Database.addLogEntry(
+              city,
+              "{ \"type\": \"set\", \"subtype\": \"spawn\", \"from\": "
+                      + "([" + city.getCitySpawn().getWorld().getName() + "]" + city.getCitySpawn().getX() + ", " + city.getCitySpawn().getY() + ", " + city.getCitySpawn().getZ() + ")"
+                      + ", \"to\": "
+                      + "([" + player.getLocation().getWorld().getName() + "]" + player.getLocation().getX() + ", " + player.getLocation().getY() + ", " + player.getLocation().getZ() + ")"
+                      + ", \"player\": "
+                      + player.getUniqueId().toString()
+                      + " }");
+      city.setCitySpawn(player.getLocation());
+      plugin.sendMessage(player, "messages.city.successful.set.spawn", "%cityname%", city.getCityName());
+    }
   }
 
   @Subcommand("buy")
@@ -1145,7 +1184,7 @@ public class CommandCity extends BaseCommand {
         plugin.sendMessage(player, "messages.error.permissionDenied");
         return;
       }
-      if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
+      if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
           || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
         plugin.sendMessage(player, "messages.error.missing.homeCity");
         return;
@@ -1183,8 +1222,8 @@ public class CommandCity extends BaseCommand {
             player, "messages.error.city.go.alreadyExists", "%cityname%", city.getCityName());
         return;
       }
-      if (CityDatabase.getCityByClaim(player.getLocation()) != null) {
-        plugin.sendMessage(player, "messages.error.city.go.outsideCity");
+      if (CityDatabase.getCityByClaim(player.getLocation()) != city) {
+        plugin.sendMessage(player, "messages.error.city.go.outsideCity", "%cityname%", city.getCityName());
         return;
       }
       CityDatabase.newCityGo(player.getLocation(), name, city);
@@ -1231,7 +1270,7 @@ public class CommandCity extends BaseCommand {
         blockEnabled.add(player);
         plugin.sendMessage(player, "messages.block.enabled");
       }
-      if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
+      if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
           || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
         plugin.sendMessage(player, "messages.error.missing.homeCity");
       }
@@ -1332,7 +1371,7 @@ public class CommandCity extends BaseCommand {
       plugin.sendMessage(player, "messages.error.permissionDenied");
       return;
     }
-    if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
+    if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
         || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
       plugin.sendMessage(player, "messages.error.missing.homeCity");
       return;
@@ -1376,7 +1415,7 @@ public class CommandCity extends BaseCommand {
       plugin.sendMessage(player, "messages.error.permissionDenied");
       return;
     }
-    if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
+    if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
         || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
       plugin.sendMessage(player, "messages.error.missing.homeCity");
       return;
@@ -1422,56 +1461,173 @@ public class CommandCity extends BaseCommand {
     }
   }
 
-  @Subcommand("spawn")
-  public static void onSpawn(Player player, @Optional String cityName) {
-    if (!player.hasPermission("metropolis.city.spawn")) {
+  @Subcommand("members")
+  public static void onMember(Player player, String cityname) {
+    if (!player.hasPermission("metropolis.city.members")) {
       plugin.sendMessage(player, "messages.error.permissionDenied");
       return;
     }
+    if (CityDatabase.getCity(cityname).isEmpty()) {
+      plugin.sendMessage(player, "messages.error.missing.city");
+      return;
+    }
+    City city = CityDatabase.getCity(cityname).get();
+    plugin.sendMessage(player, "messages.city.members.header", "%cityname%", city.getCityName(), "%membercount%",String.valueOf(CityDatabase.getCityMemberCount(city)));
+    player.sendMessage(CityDatabase.getCityMembers(city));
+  }
+
+  @Subcommand("online")
+  public static void onOnline(Player player, String cityname) {
+    if (!player.hasPermission("metropolis.city.online")) {
+      plugin.sendMessage(player, "messages.error.permissionDenied");
+      return;
+    }
+    if (CityDatabase.getCity(cityname).isEmpty()) {
+      plugin.sendMessage(player, "messages.error.missing.city");
+      return;
+    }
+    City city = CityDatabase.getCity(cityname).get();
+    //Check if any players with the role of mayor, assistant, inviter or vice mayor is online
+    int cityStaffOnline = 0;
+    int cityMembersOnline = 0;
+    int totalOnline = 0;
+    HashMap<String,String> onlinePlayers = new HashMap<>();
+    for (Player online : Bukkit.getOnlinePlayers()) {
+      if (CityDatabase.memberExists(online.getName(), city)) {
+        onlinePlayers.put(online.getName(),CityDatabase.getCityRole(city,online.getUniqueId().toString()));
+      }
+    }
+    StringBuilder onlineStaff = new StringBuilder().append("§2");
+    StringBuilder onlineMembers = new StringBuilder().append("§2");
+    for (String role : onlinePlayers.values()) {
+      if (role.equals("mayor") || role.equals("assistant") || role.equals("inviter") || role.equals("vice mayor")) {
+        cityStaffOnline++;
+      } else {
+        cityMembersOnline++;
+      }
+      totalOnline++;
+    }
+
+    for (String name : onlinePlayers.keySet()) {
+      if (onlinePlayers.get(name).equals("mayor") || onlinePlayers.get(name).equals("assistant") || onlinePlayers.get(name).equals("inviter") || onlinePlayers.get(name).equals("vice mayor")) {
+        onlineStaff.append(name).append("§a, §2");
+      } else {
+        onlineMembers.append(name).append("§a, §2");
+      }
+    }
+    if (totalOnline == 0) {
+      plugin.sendMessage(player, "messages.city.online.none", "%cityname%", city.getCityName());
+      return;
+    }
+    plugin.sendMessage(player, "messages.city.online.header", "%cityname%", city.getCityName(), "%online%",String.valueOf(cityStaffOnline + cityMembersOnline), "%membercount%",String.valueOf(CityDatabase.getCityMemberCount(city)));
+    if (cityStaffOnline > 0) {
+      plugin.sendMessage(player, "messages.city.online.admins");
+      player.sendMessage(onlineStaff.delete(onlineStaff.length()-4,onlineStaff.length())+"");
+    }
+    if (cityStaffOnline > 0 && cityMembersOnline > 0) {
+      player.sendMessage("§2");
+    }
+    if (cityMembersOnline > 0) {
+      plugin.sendMessage(player, "messages.city.online.members");
+      player.sendMessage(onlineMembers.delete(onlineMembers.length()-4,onlineMembers.length())+"");
+    }
+    if (totalOnline > 0) {
+      player.sendMessage("§2");
+      player.sendMessage("§2" + plugin.getMessage("messages.city.online.total", "%online%", String.valueOf(totalOnline)));
+    }
+
+  }
+
+  @Subcommand("spawn")
+  public static void onSpawn(Player player,@Optional String cityName) {
     if (cityName == null) {
-      if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
-          || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
-        plugin.sendMessage(player, "messages.error.missing.homeCity");
+      if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
+        plugin.sendMessage(player, "messages.error.missing.homecity");
         return;
       }
       City city = HCDatabase.getHomeCityToCity(player.getUniqueId().toString());
-      assert city != null;
+      if (city.getCitySpawn() == null) {
+            plugin.sendMessage(player, "messages.error.missing.spawn");
+            return;
+        }
+      player.teleport(city.getCitySpawn());
+      plugin.sendMessage(player, "messages.teleport", "%to%", "startpunkten i " + city.getCityName());
+    } else {
+      if (!player.hasPermission("metropolis.city.spawn")) {
+        plugin.sendMessage(player, "messages.error.permissionDenied");
+        return;
+      }
+      if (CityDatabase.getCity(cityName).isEmpty()) {
+        plugin.sendMessage(player, "messages.error.missing.city");
+        return;
+      }
+      City city = CityDatabase.getCity(cityName).get();
       if (city.getCitySpawn() == null) {
         plugin.sendMessage(player, "messages.error.missing.spawn");
         return;
       }
+      if (player.hasPermission("metropolis.city.spawn.bypass")) {
+        player.teleport(city.getCitySpawn());
+        plugin.sendMessage(player, "messages.teleport", "%to%", "startpunkten i " + city.getCityName());
+        return;
+      }
+      if (!city.isOpen() && !CityDatabase.memberExists(player.getName(), city)) {
+        plugin.sendMessage(player, "messages.city.spawn.closed", "%cityname%", city.getCityName());
+        return;
+      }
       player.teleport(city.getCitySpawn());
-      plugin.sendMessage(player, "messages.teleport", "%to%", "din hemstads startpunkt");
-      return;
+      plugin.sendMessage(player, "messages.teleport", "%to%", "startpunkten i " + city.getCityName());
     }
-    if (CityDatabase.getCity(cityName).isEmpty()) {
-      plugin.sendMessage(player, "messages.error.missing.city");
-      return;
-    }
-    City city = CityDatabase.getCity(cityName).get();
-    if (city.getCitySpawn() == null) {
-      plugin.sendMessage(player, "messages.error.missing.spawn");
-      return;
-    }
-    if (!city.isOpen()) {
-      plugin.sendMessage(player, "messages.error.city.closed", "%cityname%", city.getCityName());
-      return;
-    }
-    player.teleport(city.getCitySpawn());
-    plugin.sendMessage(player, "messages.teleport", "%to%", "startpunkten i " + city.getCityName());
   }
 
-  @Subcommand("chunk")
-  public static void onChunk(Player player) {
-    if (!player.hasPermission("metropolis.city.chunk")) {
+  @Subcommand("ban")
+  public static void onBan(Player player, @Optional String playerName, @Optional String length, @Optional String reason) {
+    if (!player.hasPermission("metropolis.city.ban")) {
       plugin.sendMessage(player, "messages.error.permissionDenied");
       return;
     }
-    if (CityDatabase.getClaim(player.getLocation()) == null) {
-      plugin.sendMessage(player, "messages.error.missing.claim");
+    City city = HCDatabase.getHomeCityToCity(player.getUniqueId().toString());
+    if (city == null) {
+      plugin.sendMessage(player, "messages.error.missing.homecity");
       return;
     }
+    String role = CityDatabase.getCityRole(city, player.getUniqueId().toString());
+    assert role != null;
+    boolean isAssistant = role.equals("mayor") || role.equals("vicemayor") || role.equals("assistant");
+    if (!isAssistant) {
+      plugin.sendMessage(player, "messages.error.city.permissionDenied", "%cityname%", city.getCityName());
+      return;
+    }
+    if (playerName == null && length == null && reason == null) {
+        //Gör koden för att lista alla bannade spelare
+      List<Ban> bannedPlayers = CityDatabase.getCityBans(city);
+      assert bannedPlayers != null;
+      if (bannedPlayers.isEmpty()) {
+        plugin.sendMessage(player, "messages.city.ban.none", "%cityname%", city.getCityName());
+        return;
+      }
+      StringBuilder bannedPlayersList = new StringBuilder().append("§4");
+      for (Ban ban : bannedPlayers) {
+        bannedPlayersList.append(plugin.getServer().getOfflinePlayer(UUID.fromString(ban.getPlayerUUID())).getName()).append("§c, §4");
+      }
+      plugin.sendMessage(player, "messages.city.ban.header", "%cityname%", city.getCityName());
+      player.sendMessage(bannedPlayersList.delete(bannedPlayersList.length()-4,bannedPlayersList.length())+"");
+      return;
+    }
+    if (playerName != null && length == null && reason == null) {
+      //Gör koden för att lista en specifik bannad spelare
+      String playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId().toString();
+      if (CityDatabase.getCityBan(city, playerUUID) == null) {
+        plugin.sendMessage(player, "messages.city.ban.notBanned","%cityname%", city.getCityName());
+        return;
+      }
+      if (CityDatabase.getCityBan(city, playerUUID) == null) {
+        plugin.sendMessage(player, "messages.city.ban.notBanned","%cityname%", city.getCityName());
+        return;
+      }
+      return;
+    }
+    //Gör koden för att banna en spelare
 
   }
-
 }

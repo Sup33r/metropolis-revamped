@@ -17,7 +17,7 @@ messages:
     today: "i dag"
   block:
     enabled: "§aBlockdataläget är nu aktiverat. Högerklicka med en pinne eller ett jordblock för att få fram blockdatan."
-    disabled: "§aBlockdataläget är nu inaktiverat."
+    disabled: "§cBlockdataläget är nu inaktiverat."
   teleport: "§aTeleporterar dig till §2%to%§a..."
   list:
     goes: "§2--- §aStadsteleporteringspunkter (sida §l%startPage% §r§aav §l%totalPages%§r§a) §2---"
@@ -121,6 +121,7 @@ messages:
         notFound: "§cRättighetsflaggan hittades inte. Använd /plot perm för att se alla rättigheter."
         noChange: "§cDet finns inga ändringar att göra."
     missing:
+      claimCost: "§e%cityname% §7| §cStaden har inte råd med %cost% minemynt som en stad kostar."
       spawn: "§cDet finns ingen sparad startpunkt i din stad."
       goCost: "§e%cityname% §7| §cDu har inte råd med 5 000 minemynt som det kostar att köpa en stadsteleporteringspunkt."
       blockHistory: "§cDu har ingen sparad blockhistorik."
@@ -230,6 +231,20 @@ messages:
           2: "§7f = frame, g = go, h = home, j = jukebox"
           3: "§7r = repair (anvil), s = switch, t = teleport, v = villager"
   city:
+    ban:
+      none: "§e%cityname% §7| §cDet finns inga bannlysta spelare i staden."
+      header: "§4--- §cBannlysta spelare i staden: %cityname% §4---"
+      notBanned: "§e%cityname% §7| §cSpelaren i fråga är inte bannlyst från staden."
+    spawn:
+      closed: "§e%cityname% §7| §cDu kan inte teleportera till staden eftersom den är stängd."
+    online:
+      total: "§a§lTotalt antal medlemmar online: §2%online%."
+      members: "§a§lMedlemmar online:"
+      admins: "§a§lStadsledning online:"
+      header: "§2--- §aStadsmedlemmar online: %cityname% (§2%online%§a av §2%membercount%§a) §2---"
+      none: "§e%cityname% §7| §cInga spelare är online för tillfället."
+    members:
+      header: "§2--- §aStadsmedlemmar: %cityname% (§2%membercount%§a av §2%membercount%§a) §2---"
     leave:
       success: "§e%cityname% §7| §aDu har lämnat staden."
       message: "§e%cityname% §7| §e%player% lämnade staden."
@@ -241,7 +256,6 @@ messages:
       noData: "§cIngen blockdata hittades på det specificerade blocket."
       header: "§2--- §aBlockhistorik: %location% (sida %page%/%totalpages%) §2---"
     go:
-      deleted: "§e%cityname% §7| §aDen specificerade teleporteringspunkten har tagits bort."
       changedAccessLevel: "§e%cityname% §7| §aDu har ändrat tillgänglighetsnivån för teleporteringspunkten %name% till §2%accesslevel%§a."
       changedName: "§e%cityname% §7| §aNamnet för stadsteleporteringspunkten %name% ändrades."
       changedDisplayname: "§e%cityname% §7| §aVisningsnamnet för stadsteleporteringspunkten %name% ändrades."
@@ -249,11 +263,11 @@ messages:
     invite:
       invited: "§e%cityname% §7| §e%player% har blivit inbjuden till staden av %inviter%."
       inviteMessage: "§e%cityname% §7| §aDu har blivit inbjuden till staden av %inviter%.\n§aSkriv /city join %cityname% för att gå med."
-    enter: "§e%cityname% §7|§e %enter%"
-    exit: "§e%cityname% §7|§e %exit%"
+    enter: "§e%cityname% §7|§b %enter%"
+    exit: "§e%cityname% §7|§b %exit%"
     motd: "§e%cityname% §7|§e %motd%"
     balance: "§e%cityname% §7|§a Stadskassa: %balance% minemynt."
-    price: "§2--- §aPrislista städer §2--- \n§2Ny stad: §a%city% minemynt\n§2Överta markbit: §a%chunk% minemynt\n§2Bonusmarkbit: §2%bonus% minemynt\n§2Stadsteleporteringspunkt: §a%go% minemynt\n§2Utpost: §a%outpost% minemynt"
+    price: "§2--- §aPrislista städer §2--- \n§2Ny stad: §a%city% minemynt\n§2Överta markbit: §a%chunk% minemynt\n§2Bonusmarkbit: §a%bonus% minemynt\n§2Stadsteleporteringspunkt: §a%go% minemynt\n§2Utpost: §a%outpost% minemynt"
     markings:
       new: "§aEn ny markering har påbörjats på punkten ([%world%]%x%, %y%, %z%)."
       add: "§aPunkt %number% med koodinaterna ([%world%]%x%, %y%, %z%) har lagts till."
@@ -287,6 +301,7 @@ messages:
         self: "§aDu skapade staden %cityname%."
       claim: "§e%cityname% §7|§a Markbit övertagen för %amount% minemynt."
       set:
+        spawn: "§e%cityname% §7|§a Stadens startpunkt ändrades."
         enter:
           removed: "§e%cityname% §7|§a Meddelandet vid stadsankomst togs bort."
           set: "§e%cityname% §7|§a Meddelandet vid stadsankomst ändrades."

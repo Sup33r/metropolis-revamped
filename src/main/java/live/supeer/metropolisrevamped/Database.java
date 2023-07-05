@@ -167,6 +167,17 @@ public class Database {
                       `createDate` bigint(30) DEFAULT NULL,
                        PRIMARY KEY (cityID,goName)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
+      DB.executeUpdate(
+              """
+                        CREATE TABLE IF NOT EXISTS `mp_citybans` (
+                          `cityID` int(11) NOT NULL,
+                          `playerUUID` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                          `placeDate` bigint(30) DEFAULT NULL,
+                          `expiryDate` bigint(30) DEFAULT NULL,
+                          `reason` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                          `placeUUID` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                           PRIMARY KEY (cityID,playerUUID)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;""");
     } catch (SQLException exception) {
       exception.printStackTrace();
     }

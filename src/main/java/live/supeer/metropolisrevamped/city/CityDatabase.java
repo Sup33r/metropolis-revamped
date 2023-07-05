@@ -88,19 +88,20 @@ public class CityDatabase {
         try {
             String cityName = city.getCityName();
             DB.executeUpdate("INSERT INTO `mp_members` (`playerName`, `playerUUID`, `cityID`, `cityName`, `cityRole`, `joinDate`) VALUES (" + Database.sqlString(player.getName()) + ", " + Database.sqlString(player.getUniqueId().toString()) + ", " + city.getCityID() + ", " + Database.sqlString(cityName) + ", " + "NULL" + ", " + Utilities.getTimestamp() + ");");
-      city.addCityMember(
-          new Member(
-              DB.getFirstRow(
-                  "SELECT * FROM `mp_members` WHERE `cityName` = "
-                      + Database.sqlString(cityName)
-                      + " AND `playerUUID` = "
-                      + Database.sqlString(player.getUniqueId().toString())
-                      + ";")));
+            city.addCityMember(
+                    new Member(
+                            DB.getFirstRow(
+                                    "SELECT * FROM `mp_members` WHERE `cityName` = "
+                                            + Database.sqlString(cityName)
+                                            + " AND `playerUUID` = "
+                                            + Database.sqlString(player.getUniqueId().toString())
+                                            + ";")));
             HCDatabase.setHomeCity(player.getUniqueId().toString(), city);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
     public static Claim createClaim(City city, Location location, boolean outpost, String playername, String playerUUID) {
         try {
             String cityName = city.getCityName();
@@ -112,6 +113,7 @@ public class CityDatabase {
         }
         return null;
     }
+
     public static void newCityGo(Location location, String name, City city) {
         try {
             DB.executeInsert("INSERT INTO `mp_citygoes` (`cityID`, `goName`, `goLocation`, `createDate`) VALUES (" + city.getCityID() + ", " + Database.sqlString(name) + ", " + Database.sqlString(Utilities.locationToString(location)) + ", " + Utilities.getTimestamp() + ");");
@@ -139,6 +141,7 @@ public class CityDatabase {
         }
         return false;
     }
+
 
     public static int getCityGoCount(City city, String role) {
         if (role == null) {
@@ -183,6 +186,7 @@ public class CityDatabase {
         }
         return 0;
     }
+
     public static List<String> getCityGoNames(City city, String role) {
         if (role == null) {
             try {
@@ -226,6 +230,7 @@ public class CityDatabase {
         }
         return null;
     }
+
     public static Location getCityGoLocation(String name, City city) {
         try {
             var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
@@ -237,6 +242,7 @@ public class CityDatabase {
         }
         return null;
     }
+
     public static String getCityGoAccessLevel(String name, City city) {
         try {
             var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
@@ -264,6 +270,7 @@ public class CityDatabase {
             e.printStackTrace();
         }
     }
+
     public static void setCityGoName(String name, City city, String newName) {
         try {
             DB.executeUpdate("UPDATE `mp_citygoes` SET `goName` = '" + Database.sqlString(newName) + "' WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
@@ -271,6 +278,7 @@ public class CityDatabase {
             e.printStackTrace();
         }
     }
+
     public static String getCityGoDisplayname(String name, City city) {
         try {
             var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
@@ -297,12 +305,14 @@ public class CityDatabase {
         }
         return Optional.empty();
     }
+
     public static Optional<City> getCity(int id) {
         for (City city : cities) {
             if (city.getCityID() == id) return Optional.of(city);
         }
         return Optional.empty();
     }
+
     public static Claim getClaim(Location location) {
         for (City city : cities) {
             if (city.getCityClaim(location) != null) {
@@ -324,13 +334,23 @@ public class CityDatabase {
 
     public static String getCityRole(City city, String playerUUID) {
         try {
-            if (DB.getResults("SELECT * FROM `mp_members` WHERE `playerUUID` = " + Database.sqlString(playerUUID) + " AND `cityName` = " + Database.sqlString(city.getCityName()) + ";").isEmpty()) return null;
+            if (DB.getResults("SELECT * FROM `mp_members` WHERE `playerUUID` = " + Database.sqlString(playerUUID) + " AND `cityName` = " + Database.sqlString(city.getCityName()) + ";").isEmpty())
+                return null;
             return DB.getFirstRow("SELECT * FROM `mp_members` WHERE `playerUUID` = " + Database.sqlString(playerUUID) + " AND `cityName` = " + Database.sqlString(city.getCityName()) + ";").getString("cityRole");
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
+
+    public static void setCityRole(City city, String playerUUID, String role) {
+        try {
+            DB.executeUpdate("UPDATE `mp_members` SET `cityRole` = " + Database.sqlString(role) + " WHERE `playerUUID` = " + Database.sqlString(playerUUID) + " AND `cityName` = " + Database.sqlString(city.getCityName()) + ";");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static int getPlayerCityCount(String playerUUID) {
         try {
             return DB.getResults("SELECT * FROM `mp_members` WHERE `playerUUID` = " + Database.sqlString(playerUUID) + ";").size();
@@ -343,12 +363,15 @@ public class CityDatabase {
     public static int getCityBalance(City city) {
         return city.getCityBalance();
     }
+
     public static void addCityBalance(City city, int amount) {
         city.addCityBalance(amount);
     }
+
     public static void removeCityBalance(City city, int amount) {
         city.removeCityBalance(amount);
     }
+
     public static String[] memberCityList(String uuid) {
         try {
             return DB.getResults("SELECT `cityName` FROM `mp_members` WHERE `playerUUID` = " + Database.sqlString(uuid) + ";").stream().map(row -> row.getString("cityName")).toArray(String[]::new);
@@ -357,6 +380,7 @@ public class CityDatabase {
         }
         return null;
     }
+
     public static boolean hasClaim(int x, int z, World world) {
         try {
             return !DB.getResults("SELECT * FROM `mp_claims` WHERE `world` = '" + world + "' AND `xPosition` = " + x + " AND `zPosition` = " + z + ";").isEmpty();
@@ -365,6 +389,7 @@ public class CityDatabase {
         }
         return false;
     }
+
     public static void setCityMessage(City city, String messageType, String message) {
         if (message == null) {
             if (messageType.equals("enterMessage")) city.setEnterMessage(null);
@@ -375,5 +400,72 @@ public class CityDatabase {
         if (messageType.equals("enterMessage")) city.setEnterMessage(message);
         if (messageType.equals("exitMessage")) city.setExitMessage(message);
         if (messageType.equals("motdMessage")) city.setMotdMessage(message);
+    }
+
+    public static String getCityMembers(City city) {
+        try {
+            var results = DB.getResults("SELECT * FROM `mp_members` WHERE `cityName` = " + Database.sqlString(city.getCityName()) + ";");
+            if (results.isEmpty()) return null;
+            StringBuilder sb = new StringBuilder();
+            for (var row : results) {
+                sb.append("§2").append(row.getString("playerName")).append("§a, ");
+            }
+            sb.delete(sb.length() - 2, sb.length());
+            return sb.toString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static int getCityMemberCount(City city) {
+        try {
+            return DB.getResults("SELECT * FROM `mp_members` WHERE `cityName` = " + Database.sqlString(city.getCityName()) + ";").size();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public static void addCityBan(City city, String playerUUID, String reason, Player placer, long placeDate, long expiryDate) {
+        try {
+            DB.executeUpdate("INSERT INTO `mp_citybans` (`cityID`, `playerUUID`, `placeDate`, `expiryDate`, `reason`, `placeUUID`) VALUES (" + city.getCityID() + ", " + Database.sqlString(playerUUID) + ", " + placeDate + ", " + expiryDate + ", " + Database.sqlString(reason) + ", " + Database.sqlString(placer.getUniqueId().toString()) + ");");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static List<Ban> getCityBans(City city) {
+        try {
+            var results = DB.getResults("SELECT * FROM `mp_citybans` WHERE `cityID` = " + city.getCityID() + ";");
+            if (results.isEmpty()) return null;
+            List<Ban> bans = new ArrayList<>();
+            for (var row : results) {
+                bans.add(new Ban(row));
+            }
+            return bans;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Ban getCityBan(City city, String playerUUID) {
+        try {
+            var results = DB.getResults("SELECT * FROM `mp_citybans` WHERE `cityID` = " + city.getCityID() + " AND `playerUUID` = " + Database.sqlString(playerUUID) + ";");
+            if (results.isEmpty()) return null;
+            var row = results.get(0);
+            return new Ban(row);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static void removeCityBan(City city, String playerUUID) {
+        try {
+            DB.executeUpdate("DELETE FROM `mp_citybans` WHERE `cityID` = " + city.getCityID() + " AND `playerUUID` = " + Database.sqlString(playerUUID) + ";");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

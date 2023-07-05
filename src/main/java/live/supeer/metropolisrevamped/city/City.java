@@ -23,7 +23,7 @@ public class City {
   private String cityName;
   private final String originalMayorName;
   private final String originalMayorUUID;
-  private final Map<Member, City> cityMembers = new HashMap<>();
+  private final List<Member> cityMembers = new ArrayList<>();
   private final List<Claim> cityClaims = new ArrayList<>();
   private final List<Plot> cityPlots = new ArrayList<>();
   private int cityBalance;
@@ -141,7 +141,7 @@ public class City {
   }
 
   public void addCityMember(Member member) {
-    cityMembers.put(member, this);
+    cityMembers.add(member);
   }
 
   public void addCityClaim(Claim claim) {
