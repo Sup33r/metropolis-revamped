@@ -1,5 +1,7 @@
 # Metropolis Revamped
 
+# This is kind of abandoned, but its something atleast. Might, or might not work on it later.
+
 ## A plugin for city management, with striking similarities to towny
 
 ## Permissions
