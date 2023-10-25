@@ -1626,6 +1626,7 @@ public class CommandCity extends BaseCommand {
         return;
       }
       return;
+      
     }
     //Gör koden för att banna en spelare
 

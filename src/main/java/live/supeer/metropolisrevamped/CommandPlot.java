@@ -596,7 +596,7 @@ public class CommandPlot extends BaseCommand {
               }
             }
           }
-          if (players.size() > 0) {
+          if (!players.isEmpty()) {
             StringBuilder stringBuilder = new StringBuilder();
             for (Player p : players) {
               // dont append last player
@@ -646,7 +646,7 @@ public class CommandPlot extends BaseCommand {
           stringBuilder.append("§a").append(plot.getPlotName()).append("§2,§a ");
         }
       }
-      if (stringBuilder.toString().length() == 0) {
+      if (stringBuilder.toString().isEmpty()) {
         return;
       }
       player.sendMessage(
