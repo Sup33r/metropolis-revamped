@@ -18,3 +18,18 @@
 - metropolis.city.go.set.accesslevel
 - metropolis.city.go.info
 
+## Setup
+You need:
+- The Vault plugin
+- CoreProtect plugin
+- A MySQL DB
+
+### Hot to setup DB
+To setup the DB you need to have a user which will be able to access a specified database. Then enter in the database:s name into the config.yml file.
+sql:
+  host: YOUR_HOST
+  port: YOUR_PORT (NORMALLY 3306)
+  database: YOUR_DB_NAME
+  username: YOUR_USERNAME
+  password: YOUR_PASSWORD
+
