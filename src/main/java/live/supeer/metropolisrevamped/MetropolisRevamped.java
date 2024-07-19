@@ -7,6 +7,7 @@ import live.supeer.metropolisrevamped.city.City;
 import live.supeer.metropolisrevamped.city.CityDatabase;
 import live.supeer.metropolisrevamped.city.Member;
 import live.supeer.metropolisrevamped.homecity.HCDatabase;
+import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -19,6 +20,7 @@ import java.util.logging.Logger;
 public final class MetropolisRevamped extends JavaPlugin {
   public Logger logger = null;
   public static MetropolisRevampedConfiguration configuration;
+  @Getter
   private static MetropolisRevamped plugin;
   private LanguageManager languageManager;
   private static Economy econ = null;
@@ -81,10 +83,6 @@ public final class MetropolisRevamped extends JavaPlugin {
     }
     econ = rsp.getProvider();
     return econ != null;
-  }
-
-  public static MetropolisRevamped getPlugin() {
-    return plugin;
   }
 
   public static Economy getEconomy() {

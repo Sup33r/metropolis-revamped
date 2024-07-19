@@ -198,7 +198,7 @@ public class CommandCity extends BaseCommand {
       plugin.sendMessage(player, "messages.error.city.missing.balance.cityCost");
       return;
     }
-    if (cityName.length() < 1 || cityName.length() > 16) {
+    if (cityName.isEmpty() || cityName.length() > 16) {
       plugin.sendMessage(player, "messages.error.city.nameLength");
       return;
     }
@@ -286,7 +286,7 @@ public class CommandCity extends BaseCommand {
       plugin.sendMessage(player, "messages.error.permissionDenied");
       return;
     }
-    if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
+    if (HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
       plugin.sendMessage(player, "messages.error.missing.homeCity");
       return;
     }
@@ -373,7 +373,7 @@ public class CommandCity extends BaseCommand {
       return;
     }
     City city = CityDatabase.getCity(cityname).get();
-    if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
+    if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
         && city.getCityName()
             .equals(HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()))) {
       plugin.sendMessage(player, "messages.error.city.alreadyInCity");
@@ -424,7 +424,7 @@ public class CommandCity extends BaseCommand {
       plugin.sendMessage(player, "messages.error.permissionDenied");
       return;
     }
-    if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
+    if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
         || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
       plugin.sendMessage(player, "messages.error.missing.homeCity");
       return;
@@ -529,7 +529,7 @@ public class CommandCity extends BaseCommand {
       plugin.sendMessage(player, "messages.error.permissionDenied");
       return;
     }
-    if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
+    if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
         || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
       plugin.sendMessage(player, "messages.error.missing.homeCity");
       return;
@@ -947,7 +947,7 @@ public class CommandCity extends BaseCommand {
         plugin.sendMessage(player, "messages.error.permissionDenied");
         return;
       }
-      if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
+      if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
           || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
         plugin.sendMessage(player, "messages.error.missing.homeCity");
         return;
@@ -1007,7 +1007,7 @@ public class CommandCity extends BaseCommand {
         plugin.sendMessage(player, "messages.error.permissionDenied");
         return;
       }
-      if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
+      if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
           || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
         plugin.sendMessage(player, "messages.error.missing.homeCity");
         return;
@@ -1067,7 +1067,7 @@ public class CommandCity extends BaseCommand {
         plugin.sendMessage(player, "messages.error.permissionDenied");
         return;
       }
-      if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
+      if (HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
         plugin.sendMessage(player, "messages.error.missing.homeCity");
         return;
       }
@@ -1125,7 +1125,7 @@ public class CommandCity extends BaseCommand {
         plugin.sendMessage(player, "messages.error.permissionDenied");
         return;
       }
-      if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
+      if (HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
         plugin.sendMessage(player, "messages.error.missing.homeCity");
         return;
       }
@@ -1184,7 +1184,7 @@ public class CommandCity extends BaseCommand {
         plugin.sendMessage(player, "messages.error.permissionDenied");
         return;
       }
-      if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
+      if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
           || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
         plugin.sendMessage(player, "messages.error.missing.homeCity");
         return;
@@ -1270,7 +1270,7 @@ public class CommandCity extends BaseCommand {
         blockEnabled.add(player);
         plugin.sendMessage(player, "messages.block.enabled");
       }
-      if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
+      if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
           || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
         plugin.sendMessage(player, "messages.error.missing.homeCity");
       }
@@ -1358,7 +1358,7 @@ public class CommandCity extends BaseCommand {
                   + "§2 -- "
                   + Utilities.niceDate(result.getTimestamp() / 1000L);
         }
-        if (!row.equals("")) {
+        if (!row.isEmpty()) {
           player.sendMessage(row);
         }
       }
@@ -1371,7 +1371,7 @@ public class CommandCity extends BaseCommand {
       plugin.sendMessage(player, "messages.error.permissionDenied");
       return;
     }
-    if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
+    if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
         || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
       plugin.sendMessage(player, "messages.error.missing.homeCity");
       return;
@@ -1415,7 +1415,7 @@ public class CommandCity extends BaseCommand {
       plugin.sendMessage(player, "messages.error.permissionDenied");
       return;
     }
-    if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())
+    if (HCDatabase.hasHomeCity(player.getUniqueId().toString())
         || HCDatabase.getHomeCityToCityname(player.getUniqueId().toString()) == null) {
       plugin.sendMessage(player, "messages.error.missing.homeCity");
       return;
@@ -1541,7 +1541,7 @@ public class CommandCity extends BaseCommand {
   @Subcommand("spawn")
   public static void onSpawn(Player player,@Optional String cityName) {
     if (cityName == null) {
-      if (!HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
+      if (HCDatabase.hasHomeCity(player.getUniqueId().toString())) {
         plugin.sendMessage(player, "messages.error.missing.homecity");
         return;
       }

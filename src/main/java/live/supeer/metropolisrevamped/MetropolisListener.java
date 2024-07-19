@@ -235,7 +235,7 @@ public class MetropolisListener implements Listener {
                       + "§2 -- "
                       + Utilities.niceDate(result.getTimestamp() / 1000L);
             }
-            if (!row.equals("")) {
+            if (!row.isEmpty()) {
               player.sendMessage(row);
             }
           }
@@ -254,7 +254,7 @@ public class MetropolisListener implements Listener {
           plugin.sendMessage(player, "messages.city.markings.none");
           return;
         }
-        if (savedLocs.get(player.getUniqueId()).size() > 0
+        if (!savedLocs.get(player.getUniqueId()).isEmpty()
             && savedLocs
                 .get(player.getUniqueId())
                 .get(savedLocs.get(player.getUniqueId()).size() - 1)
@@ -262,7 +262,7 @@ public class MetropolisListener implements Listener {
           plugin.sendMessage(player, "messages.city.markings.sameBlock");
           return;
         }
-        if (savedLocs.get(player.getUniqueId()).size() > 0
+        if (!savedLocs.get(player.getUniqueId()).isEmpty()
             && !savedLocs
                 .get(player.getUniqueId())
                 .get(0)
@@ -430,7 +430,7 @@ public class MetropolisListener implements Listener {
                     + "§2 -- "
                     + Utilities.niceDate(result.getTimestamp() / 1000L);
           }
-          if (!row.equals("")) {
+          if (!row.isEmpty()) {
             player.sendMessage(row);
           }
         }

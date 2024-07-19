@@ -66,7 +66,7 @@ public class Utilities {
   }
 
   public static Location stringToLocation(String string) {
-    if (string == null || string.length() == 0) {
+    if (string == null || string.isEmpty()) {
       return null;
     }
 
@@ -136,8 +136,8 @@ public class Utilities {
         return null;
       }
 
-      if (flagsRaw.length() == 0 && currentChar == '-'
-          || flagsRaw.length() == 0 && currentChar == '+') {
+      if (flagsRaw.isEmpty() && currentChar == '-'
+          || flagsRaw.isEmpty() && currentChar == '+') {
         return null;
       }
 
@@ -219,8 +219,8 @@ public class Utilities {
         return null;
       }
 
-      if (flagsRaw.length() == 0 && currentChar == '-'
-          || flagsRaw.length() == 0 && currentChar == '+') {
+      if (flagsRaw.isEmpty() && currentChar == '-'
+          || flagsRaw.isEmpty() && currentChar == '+') {
         return null;
       }
 

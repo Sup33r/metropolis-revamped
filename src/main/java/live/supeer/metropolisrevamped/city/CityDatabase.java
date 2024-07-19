@@ -125,7 +125,7 @@ public class CityDatabase {
     public static boolean cityGoExists(String name, City city) {
         try {
             var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
-            return results.size() > 0;
+            return !results.isEmpty();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -135,7 +135,7 @@ public class CityDatabase {
     public static boolean memberExists(String player, City city) {
         try {
             var results = DB.getResults("SELECT * FROM `mp_members` WHERE `cityID` = " + city.getCityID() + " AND `playerName` = " + Database.sqlString(player) + ";");
-            return results.size() > 0;
+            return !results.isEmpty();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -234,7 +234,7 @@ public class CityDatabase {
     public static Location getCityGoLocation(String name, City city) {
         try {
             var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
-            if (results.size() > 0) {
+            if (!results.isEmpty()) {
                 return Utilities.stringToLocation(results.get(0).getString("goLocation"));
             }
         } catch (SQLException e) {
@@ -246,7 +246,7 @@ public class CityDatabase {
     public static String getCityGoAccessLevel(String name, City city) {
         try {
             var results = DB.getResults("SELECT * FROM `mp_citygoes` WHERE `cityID` = " + city.getCityID() + " AND `goName` = " + Database.sqlString(name) + ";");
-            if (results.size() > 0) {
+            if (!results.isEmpty()) {
                 return results.get(0).getString("accessLevel");
             }
         } catch (SQLException e) {
